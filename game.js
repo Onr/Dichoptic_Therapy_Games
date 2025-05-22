@@ -69,15 +69,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function createBoard() {
     board.innerHTML = '';
-    cardSymbols = shuffle([...symbols, ...symbols]);
-    cardSymbols.forEach(symbol => {
+    const cardsArray = [];
+    symbols.forEach(sym => {
+      cardsArray.push({ symbol: sym, eye: 'left' });
+      cardsArray.push({ symbol: sym, eye: 'right' });
+    });
+    cardSymbols = shuffle(cardsArray);
+    cardSymbols.forEach(({ symbol, eye }) => {
       const card = document.createElement('div');
       card.classList.add('card');
       card.innerHTML = `
         <div class="inner">
           <div class="face front">
-            <div class="face-layer left-eye">${symbol}</div>
-            <div class="face-layer right-eye">${symbol}</div>
+            <div class="face-layer ${eye}-eye" style="clip-path: inset(0 0 0 0);">${symbol}</div>
           </div>
           <div class="face back"></div>
         </div>
@@ -102,8 +106,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function checkForMatch() {
-    const symbol1 = firstCard.querySelector('.face-layer.left-eye').textContent;
-    const symbol2 = secondCard.querySelector('.face-layer.left-eye').textContent;
+    const symbol1 = firstCard.querySelector('.face-layer').textContent;
+    const symbol2 = secondCard.querySelector('.face-layer').textContent;
     if (symbol1 === symbol2) {
       disableCards();
       matchedPairs++;

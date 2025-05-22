@@ -1,13 +1,13 @@
 # Therapy Memory Card Game
 
-This is a browser-based therapeutic memory card game designed for dichoptic treatment of diplopia or amblyopia using red-green anaglyph glasses. Each card reveals half of the symbol to one eye and the other half to the other eye, requiring binocular coordination to match pairs.
+This is a browser-based therapeutic memory card game designed for dichoptic treatment of diplopia or amblyopia using red-green anaglyph glasses. Each pair of cards consists of one full symbol in red visible to the left eye and one full symbol in green visible to the right eye, requiring binocular coordination to match pairs.
 
 ## How to Play
 
 1. Wear red-green anaglyph glasses (red lens on left eye, green lens on right eye).
-2. Click on a card to flip it and reveal half of the symbol.
+2. Click on a card to flip it and reveal the full symbol in red or green.
 3. Click another card to find the matching symbol.
-4. Use both eyes to merge the halves and locate matching pairs.
+4. Use both eyes to locate matching pairs of red and green symbols.
 5. Match all pairs as quickly as possible.
 
 ## Controls
