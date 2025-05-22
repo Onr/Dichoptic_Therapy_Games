@@ -80,15 +80,26 @@ footer {
   position: absolute;
   width: 100%;
   height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .face-layer.left-eye {
   clip-path: inset(0 50% 0 0);
-  color: red;
+  background-color: red;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
   filter: brightness(var(--left-brightness)) contrast(var(--left-contrast));
 }
 .face-layer.right-eye {
   clip-path: inset(0 0 0 50%);
-  color: lime;
+  background-color: lime;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
   filter: brightness(var(--right-brightness)) contrast(var(--right-contrast));
 }
 .stats {
