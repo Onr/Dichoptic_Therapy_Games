@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Therapy Memory Card Game</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Therapy Memory Card Game</h1>
+    <p>
+      Use red-green anaglyph glasses to play. Each card reveals half an image for
+      each eye; use both eyes to see the full symbol.
+    </p>
+  </header>
+  <section class="controls">
+    <fieldset>
+      <legend>Left Eye (Red) Settings</legend>
+      <label>
+        Brightness
+        <input type="range" id="left-brightness" min="0.5" max="2" step="0.1" value="1" />
+      </label>
+      <label>
+        Contrast
+        <input type="range" id="left-contrast" min="0.5" max="2" step="0.1" value="1" />
+      </label>
+    </fieldset>
+    <fieldset>
+      <legend>Right Eye (Green) Settings</legend>
+      <label>
+        Brightness
+        <input type="range" id="right-brightness" min="0.5" max="2" step="0.1" value="1" />
+      </label>
+      <label>
+        Contrast
+        <input type="range" id="right-contrast" min="0.5" max="2" step="0.1" value="1" />
+      </label>
+    </fieldset>
+  </section>
+  <main>
+    <div id="game-board" class="game-board"></div>
+  </main>
+  <footer>
+    <div id="stats" class="stats">
+      <span>Time: <span id="timer">0</span>s</span>
+      <span>Moves: <span id="moves">0</span></span>
+    </div>
+    <button id="restart">Restart</button>
+  </footer>
+  <script src="game.js"></script>
+</body>
+</html>
