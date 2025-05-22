@@ -35,7 +35,21 @@ This document outlines the specifications for a browser-based dichoptic therapy 
   * Target shooting where targets appear alternately to each eye.
 * Adjustable contrast and brightness settings to balance visual input between eyes.
 
-### 4.3 **Performance Logging**
+### 4.3 **Game Difficulty Levels**
+
+* Each game will feature multiple difficulty levels to accommodate varying user capabilities and to provide progressive challenges:
+
+  * **Memory Game**:
+
+    * *Easy*: 4x4 grid.
+    * *Medium*: 8x8 grid.
+    * *Hard*: 12x12 grid.
+  * **Other Games**:
+
+    * Difficulty levels will be defined based on game mechanics, such as speed, complexity, or number of elements to manage.
+* Users can select their preferred difficulty level, and the application may suggest level adjustments based on performance metrics.
+
+### 4.4 **Performance Logging**
 
 * Track metrics such as:
 
@@ -43,19 +57,28 @@ This document outlines the specifications for a browser-based dichoptic therapy 
   * Game scores and levels achieved.
   * Response times and accuracy.
 * Store data locally using browser storage (e.g., IndexedDB) to maintain user privacy.
-* Option to export performance data in CSV or JSON formats for clinical review.([PubMed][4])
+* Option to export performance data in CSV or JSON formats for clinical review.([Snapfish][1], [Amazon][2])
 
-### 4.4 **User Management**
+### 4.5 **User Management**
 
 * Local user profiles with customizable avatars.
 * Password-protected access to prevent unauthorized usage.
 * Caregiver or therapist access to monitor and adjust therapy settings.
 
-### 4.5 **Therapy Scheduling**
+### 4.6 **Therapy Scheduling**
 
 * Customizable therapy plans (e.g., 30 minutes daily, 5 days a week).
 * Automated reminders and notifications for scheduled sessions.
 * Progress tracking dashboards for users and caregivers.
+
+### 4.7 **Credits and Attribution**
+
+* A dedicated "Credits" section accessible from the main menu, acknowledging the creators of the application.
+* Display of the following attribution:
+
+  > *Developed by Ori Nizan and Tal Bar Nizan*
+* Placement of credits in a manner consistent with industry standards, ensuring visibility without disrupting the user experience.([gameproductionstudies.fsv.cuni.cz][3], [Game Development Stack Exchange][4])
+
 
 ## 5. **Non-Functional Requirements**
 
