@@ -4,16 +4,18 @@ This is a browser-based therapeutic memory card game designed for dichoptic trea
 
 ## How to Play
 
-1. Wear red-green anaglyph glasses (red lens on left eye, green lens on right eye).
-2. Click on a card to flip it and reveal the full symbol in red or green.
-3. Click another card to find the matching symbol.
-4. Use both eyes to locate matching pairs of red and green symbols.
-5. Match all pairs as quickly as possible.
+1. Select a difficulty level (Easy: 4×4 grid, Medium: 8×8 grid, Hard: 12×12 grid).
+2. Wear red-green anaglyph glasses (red lens on left eye, green lens on right eye).
+3. Click on a card to flip it and reveal the full symbol in red or green.
+4. Click another card to find the matching symbol.
+5. Use both eyes to locate matching pairs of red and green symbols.
+6. Match all pairs as quickly as possible.
 
 ## Controls
 
 - **Brightness & Contrast**: Adjust the sliders to balance visibility between both eyes.
 - **Moves & Time**: The game tracks the number of moves and elapsed time. Try to improve your score.
+- **Difficulty**: Choose the grid size to adjust game complexity (Easy: 4×4, Medium: 8×8, Hard: 12×12).
 
 ## Requirements
 

@@ -1,6 +1,30 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const symbols = ['🍎', '🍌', '🍇', '🍒', '🍋', '🍉', '🍍', '🥝'];
+  const baseSymbols = ['🍎', '🍌', '🍇', '🍒', '🍋', '🍉', '🍍', '🥝'];
   let cardSymbols = [];
+
+  const difficultySelect = document.getElementById('difficulty');
+  let difficulty = difficultySelect.value;
+  let pairsCount = 0;
+  difficultySelect.addEventListener('change', () => {
+    difficulty = difficultySelect.value;
+    startGame();
+  });
+
+  function getGridSize() {
+    if (difficulty === 'medium') return 8;
+    if (difficulty === 'hard') return 12;
+    return 4;
+  }
+
+  function generateSymbols(numPairs) {
+    const symbols = baseSymbols.slice();
+    let nextNum = 1;
+    while (symbols.length < numPairs) {
+      symbols.push(String(nextNum));
+      nextNum++;
+    }
+    return symbols.slice(0, numPairs);
+  }
   const board = document.getElementById('game-board');
   const movesEl = document.getElementById('moves');
   const timerEl = document.getElementById('timer');
@@ -69,8 +93,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function createBoard() {
     board.innerHTML = '';
+    const gridSize = getGridSize();
+    const totalCards = gridSize * gridSize;
+    const symbolsList = generateSymbols(totalCards / 2);
+    pairsCount = symbolsList.length;
+    board.style.gridTemplateColumns = `repeat(${gridSize}, 80px)`;
     const cardsArray = [];
-    symbols.forEach(sym => {
+    symbolsList.forEach(sym => {
       cardsArray.push({ symbol: sym, eye: 'left' });
       cardsArray.push({ symbol: sym, eye: 'right' });
     });
@@ -111,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (symbol1 === symbol2) {
       disableCards();
       matchedPairs++;
-      if (matchedPairs === symbols.length) {
+      if (matchedPairs === pairsCount) {
         stopTimer();
         setTimeout(
           () => alert(`Congratulations! You finished in ${moves} moves and ${timer} seconds.`),
