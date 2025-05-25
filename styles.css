@@ -135,3 +135,20 @@ button:hover {
   background: #666;
 }
 
+
+.credit {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: #aaa;
+  text-align: center;
+}
+
+.credit a {
+  color: #eee;
+  text-decoration: underline;
+}
+
+.credit a:hover {
+  color: #fff;
+}
+
