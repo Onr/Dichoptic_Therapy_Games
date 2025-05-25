@@ -195,6 +195,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
   restartBtn.addEventListener('click', startGame);
 
+
+    // Toggle green/blue for the right-eye layer
+  const colorToggleBtn = document.getElementById('toggle-eye-color');
+  colorToggleBtn.addEventListener('click', () => {
+    // read current CSS var
+    const current = getComputedStyle(document.documentElement)
+                      .getPropertyValue('--right-eye-color').trim();
+    // flip it
+    const next = (current === 'lime') ? 'blue' : 'lime';
+    // apply new value
+    document.documentElement.style.setProperty('--right-eye-color', next);
+    // update button label
+    colorToggleBtn.textContent =
+      next === 'lime'
+        ? 'Switch Green ↔ Blue'
+        : 'Switch Blue ↔ Green';
+  });
+
   initSettings();
   startGame();
 });
+
