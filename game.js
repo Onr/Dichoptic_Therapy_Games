@@ -1,5 +1,100 @@
 document.addEventListener('DOMContentLoaded', () => {
- const baseSymbols = [
+  const translations = {
+    en: {
+      pageTitle: "Therapy Memory Card Game",
+      title: "Binocular Memory Card Game",
+      description: "Use red-green (or red-blue — press the button at the bottom to switch) anaglyph glasses to play. Each pair features one symbol visible only to one eye (red) and another visible to the other eye (green or blue). Use both eyes together to find matching pairs and train visual coordination.",
+      controls: {
+        difficultyLegend: "Difficulty",
+        selectDifficulty: "Select difficulty:",
+        easy: "Easy (4×4)",
+        medium: "Medium (8×8)",
+        hard: "Hard (12×12)",
+        leftEyeLegend: "Left Eye (Red) Settings",
+        rightEyeLegend: "Right Eye (Green) Settings",
+        brightness: "Brightness",
+        contrast: "Contrast",
+        restart: "Restart"
+      },
+      stats: {
+        timeLabel: "Time:",
+        movesLabel: "Moves:",
+        secondsUnit: "s"
+      },
+      switchEyeColorGreenBlue: "Switch Green ↔ Blue",
+      switchEyeColorBlueGreen: "Switch Blue ↔ Green",
+      toggleLanguage: "עברית",
+      congrats: "Congratulations! You finished in {moves} moves and {timer} seconds.",
+      creditText: "Built by Tal Bar Nizan & Ori Nizan • ",
+      contactLink: "Contact Us"
+    },
+    he: {
+      pageTitle: "משחק הזיכרון הטיפולי",
+      title: "משחק הזיכרון הבינוקולרי",
+      description: "השתמשו במשקפי אנגליף אדום-ירוק (או אדום-כחול — לחצו על הכפתור בתחתית כדי להחליף) כדי לשחק. כל זוג מכיל סמל אחד הנראה רק לעין אחת (אדום) ואחד השני הנראה רק לעין השנייה (ירוק או כחול). השתמשו בשתי העיניים יחד כדי למצוא זוגות תואמים ולשפר את שיתוף הפעולה הראייתי.",
+      controls: {
+        difficultyLegend: "רמת קושי",
+        selectDifficulty: "בחר רמת קושי:",
+        easy: "קל (4×4)",
+        medium: "בינוני (8×8)",
+        hard: "קשה (12×12)",
+        leftEyeLegend: "הגדרות עין שמאל (אדום)",
+        rightEyeLegend: "הגדרות עין ימין (ירוק)",
+        brightness: "בהירות",
+        contrast: "ניגודיות",
+        restart: "התחל מחדש"
+      },
+      stats: {
+        timeLabel: "זמן:",
+        movesLabel: "מהלכים:",
+        secondsUnit: "שניות"
+      },
+      switchEyeColorGreenBlue: "החלף ירוק ↔ כחול",
+      switchEyeColorBlueGreen: "החלף כחול ↔ ירוק",
+      toggleLanguage: "English",
+      congrats: "כל הכבוד! סיימת ב־{moves} מהלכים ו־{timer} שניות.",
+      creditText: "בנוי על ידי טל בר ניצן ואורי ניצן • ",
+      contactLink: "צור קשר"
+    }
+  };
+
+  let currentLanguage = localStorage.getItem('language') || 'en';
+
+  function updateTexts() {
+    document.documentElement.lang = currentLanguage;
+    document.documentElement.dir = currentLanguage === 'he' ? 'rtl' : 'ltr';
+    document.title = translations[currentLanguage].pageTitle;
+
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      const keys = key.split('.');
+      let text = translations[currentLanguage];
+      keys.forEach(k => { if (text) text = text[k]; });
+      if (text) el.textContent = text;
+    });
+
+    const colorToggleBtn = document.getElementById('toggle-eye-color');
+    if (colorToggleBtn) {
+      const currentColor = getComputedStyle(document.documentElement)
+        .getPropertyValue('--right-eye-color').trim();
+      const switchKey = currentColor === 'lime'
+        ? 'switchEyeColorGreenBlue'
+        : 'switchEyeColorBlueGreen';
+      colorToggleBtn.textContent = translations[currentLanguage][switchKey];
+    }
+
+    const langToggleBtn = document.getElementById('toggle-language');
+    if (langToggleBtn) langToggleBtn.textContent = translations[currentLanguage].toggleLanguage;
+  }
+
+  document.getElementById('toggle-language')?.addEventListener('click', () => {
+    currentLanguage = currentLanguage === 'en' ? 'he' : 'en';
+    localStorage.setItem('language', currentLanguage);
+    updateTexts();
+  });
+
+  updateTexts();
+  const baseSymbols = [
   '🍎','🍌','🍇','🍒','🍋','🍉','🍍','🐻',
   '🥑','🫐','🍓','🍑','🍐','🦄','⭐️','❤️',
   '🍅','🌽','🥕','🧄','🍄','🥦','🎈','🎮',
@@ -154,10 +249,13 @@ document.addEventListener('DOMContentLoaded', () => {
       matchedPairs++;
       if (matchedPairs === pairsCount) {
         stopTimer();
-        setTimeout(
-          () => alert(`Congratulations! You finished in ${moves} moves and ${timer} seconds.`),
-          500
-        );
+        setTimeout(() => {
+          alert(
+            translations[currentLanguage].congrats
+              .replace('{moves}', moves)
+              .replace('{timer}', timer)
+          );
+        }, 500);
       }
     } else {
       unflipCards();
@@ -200,18 +298,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Toggle green/blue for the right-eye layer
   const colorToggleBtn = document.getElementById('toggle-eye-color');
   colorToggleBtn.addEventListener('click', () => {
-    // read current CSS var
     const current = getComputedStyle(document.documentElement)
-                      .getPropertyValue('--right-eye-color').trim();
-    // flip it
-    const next = (current === 'lime') ? 'blue' : 'lime';
-    // apply new value
+      .getPropertyValue('--right-eye-color').trim();
+    const next = current === 'lime' ? 'blue' : 'lime';
     document.documentElement.style.setProperty('--right-eye-color', next);
-    // update button label
-    colorToggleBtn.textContent =
-      next === 'lime'
-        ? 'Switch Green ↔ Blue'
-        : 'Switch Blue ↔ Green';
+    updateTexts();
   });
 
   initSettings();

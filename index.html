@@ -8,45 +8,38 @@
 </head>
 <body>
   <header>
-  <h1>Binocular Memory Card Game</h1>
-  <p>
-    Use red-green (or red-blue — press the button at the bottom to switch) anaglyph glasses to play.  
-    Each pair features one symbol visible only to one eye (red) and another visible to the other eye (green or blue).  
-    Use both eyes together to find matching pairs and train visual coordination.
+  <h1 data-i18n="title">Binocular Memory Card Game</h1>
+  <p data-i18n="description">
+    Use red-green (or red-blue — press the button at the bottom to switch) anaglyph glasses to play. Each pair features one symbol visible only to one eye (red) and another visible to the other eye (green or blue). Use both eyes together to find matching pairs and train visual coordination.
   </p>
   </header>
 
   <section class="controls">
     <fieldset>
-      <legend>Difficulty</legend>
-      <label for="difficulty">
-        Select difficulty:
+      <legend data-i18n="controls.difficultyLegend">Difficulty</legend>
+      <label for="difficulty"><span data-i18n="controls.selectDifficulty">Select difficulty:</span>
         <select id="difficulty">
-          <option value="easy">Easy (4×4)</option>
-          <option value="medium">Medium (8×8)</option>
-          <option value="hard">Hard (12×12)</option>
+          <option value="easy" data-i18n="controls.easy">Easy (4×4)</option>
+          <option value="medium" data-i18n="controls.medium">Medium (8×8)</option>
+          <option value="hard" data-i18n="controls.hard">Hard (12×12)</option>
         </select>
       </label>
     </fieldset>
     <fieldset>
-      <legend>Left Eye (Red) Settings</legend>
-      <label>
-        Brightness
+      <legend data-i18n="controls.leftEyeLegend">Left Eye (Red) Settings</legend>
+      <label><span data-i18n="controls.brightness">Brightness</span>
         <input type="range" id="left-brightness" min="0.5" max="2" step="0.1" value="1" />
       </label>
-      <label>
-        Contrast
+      <label><span data-i18n="controls.contrast">Contrast</span>
         <input type="range" id="left-contrast" min="0.5" max="2" step="0.1" value="1" />
       </label>
     </fieldset>
     <fieldset>
-      <legend>Right Eye (Green) Settings</legend>
-      <label>
-        Brightness
+      <legend data-i18n="controls.rightEyeLegend">Right Eye (Green) Settings</legend>
+      <label><span data-i18n="controls.brightness">Brightness</span>
         <input type="range" id="right-brightness" min="0.5" max="2" step="0.1" value="1" />
       </label>
-      <label>
-        Contrast
+      <label><span data-i18n="controls.contrast">Contrast</span>
         <input type="range" id="right-contrast" min="0.5" max="2" step="0.1" value="1" />
       </label>
     </fieldset>
@@ -58,19 +51,16 @@
 
   <footer>
     <div id="stats" class="stats">
-      <span>Time: <span id="timer">0</span>s</span>
-      <span>Moves: <span id="moves">0</span></span>
+      <span><span data-i18n="stats.timeLabel">Time:</span> <span id="timer">0</span> <span data-i18n="stats.secondsUnit">s</span></span>
+      <span><span data-i18n="stats.movesLabel">Moves:</span> <span id="moves">0</span></span>
     </div>
-    <button id="restart">Restart</button>
-    <button id="toggle-eye-color">Switch Green ↔ Blue</button>
-      <p class="credit">
-        Built by Tal Bar Nizan & Ori Nizan • 
-      <a href="mailto:restin3@gmail.com?subject=Contact%20about%20the%20therapy%20game&body=Hello%2C%0D%0A%0D%0AI%27m%20contacting%20you%20about%20the%20therapy%20game.%0D%0A%0D%0ABest%20regards%2C%0D%0A%5BYour%20Name%5D">
-        Contact Us
-      </a>
-
-
-      </p>
+    <button id="restart" data-i18n="controls.restart">Restart</button>
+    <button id="toggle-eye-color"></button>
+    <button id="toggle-language"></button>
+    <p class="credit">
+      <span data-i18n="creditText">Built by Tal Bar Nizan & Ori Nizan • </span>
+      <a href="mailto:restin3@gmail.com?subject=Contact%20about%20the%20therapy%20game&body=Hello%2C%0D%0A%0D%0AI%27m%20contacting%20you%20about%20the%20therapy%20game.%0D%0A%0D%0ABest%20regards%2C%0D%0A%5BYour%20Name%5D" data-i18n="contactLink">Contact Us</a>
+    </p>
   </footer>
 
   <script src="game.js"></script>
