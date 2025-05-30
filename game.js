@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
       switchEyeColorBlueGreen: "החלף כחול ↔ ירוק",
       toggleLanguage: "English",
       congrats: "כל הכבוד! סיימת ב־{moves} מהלכים ו־{timer} שניות.",
-      creditText: "בנוי על ידי טל בר ניצן ואורי ניצן • ",
+      creditText: "נבנה על ידי טל בר ניצן ואורי ניצן • ",
       contactLink: "צור קשר"
     }
   };
