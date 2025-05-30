@@ -5,29 +5,94 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Therapy Memory Card Game</title>
   <link rel="stylesheet" href="styles.css" />
-</head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-MZPGJMSL3P"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){ dataLayer.push(arguments); }
-    gtag('js', new Date());
-    gtag('config', 'G-MZPGJMSL3P');
-  </script>
 
-  <!-- …the rest of your head… -->
+  <script>
+    // Key for storing consent
+    const COOKIE_KEY = 'cookieConsent';
+
+    // On DOM ready, decide whether to show banner or load GA
+    document.addEventListener('DOMContentLoaded', () => {
+      const consent = localStorage.getItem(COOKIE_KEY);
+      const banner = document.getElementById('cookie-banner');
+
+      if (!consent) {
+        // First visit: show banner
+        banner.style.display = 'block';
+      } else if (consent === 'granted') {
+        // Consent already given: load analytics
+        loadAnalytics();
+      }
+    });
+
+    // User clicks "Accept"
+    function acceptCookies() {
+      localStorage.setItem(COOKIE_KEY, 'granted');
+      document.getElementById('cookie-banner').style.display = 'none';
+      loadAnalytics();
+    }
+
+    // User clicks "Reject"
+    function rejectCookies() {
+      localStorage.setItem(COOKIE_KEY, 'denied');
+      document.getElementById('cookie-banner').style.display = 'none';
+      // do not load analytics
+    }
+
+    // Dynamically inject Google Analytics tag
+    function loadAnalytics() {
+      // 1. Load the gtag.js script
+      const gaScript = document.createElement('script');
+      gaScript.async = true;
+      gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-MZPGJMSL3P';
+      document.head.appendChild(gaScript);
+
+      // 2. Configure gtag
+      const inline = document.createElement('script');
+      inline.text = `
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){ dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-MZPGJMSL3P');
+      `;
+      document.head.appendChild(inline);
+    }
+  </script>
+</head>
 <body>
   <header>
-  <h1 data-i18n="title">Binocular Memory Card Game</h1>
-  <p data-i18n="description">
-    Use red-green (or red-blue — press the button at the bottom to switch) anaglyph glasses to play. Each pair features one symbol visible only to one eye (red) and another visible to the other eye (green or blue). Use both eyes together to find matching pairs and train visual coordination.
-  </p>
+    <h1 data-i18n="title">Binocular Memory Card Game</h1>
+    <p data-i18n="description">
+      Use red-green (or red-blue — press the button at the bottom to switch) anaglyph glasses to play.
+      Each pair features one symbol visible only to one eye (red) and another visible to the other eye (green or blue).
+      Use both eyes together to find matching pairs and train visual coordination.
+    </p>
   </header>
 
+  <!-- Cookie Consent Banner -->
+  <div id="cookie-banner" style="
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0,0,0,0.85);
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      z-index: 1000;
+    ">
+    This site uses analytics cookies to measure gameplay.
+    <button onclick="acceptCookies()">Accept</button>
+    <button onclick="rejectCookies()">Reject</button>
+    <a href="privacy-policy.html" style="color:#8cf; margin-left:1rem;" target="_blank">Learn more</a>
+  </div>
+
   <section class="controls">
+    <!-- existing controls… -->
     <fieldset>
       <legend data-i18n="controls.difficultyLegend">Difficulty</legend>
-      <label for="difficulty"><span data-i18n="controls.selectDifficulty">Select difficulty:</span>
+      <label for="difficulty">
+        <span data-i18n="controls.selectDifficulty">Select difficulty:</span>
         <select id="difficulty">
           <option value="easy" data-i18n="controls.easy">Easy (4×4)</option>
           <option value="medium" data-i18n="controls.medium">Medium (8×8)</option>
@@ -35,6 +100,7 @@
         </select>
       </label>
     </fieldset>
+    <!-- left & right eye settings fieldsets… -->
     <fieldset>
       <legend data-i18n="controls.leftEyeLegend">Left Eye (Red) Settings</legend>
       <label><span data-i18n="controls.brightness">Brightness</span>
@@ -61,40 +127,49 @@
 
   <footer>
     <div id="stats" class="stats">
-      <span><span data-i18n="stats.timeLabel">Time:</span> <span id="timer">0</span> <span data-i18n="stats.secondsUnit">s</span></span>
-      <span><span data-i18n="stats.movesLabel">Moves:</span> <span id="moves">0</span></span>
+      <span>
+        <span data-i18n="stats.timeLabel">Time:</span>
+        <span id="timer">0</span>
+        <span data-i18n="stats.secondsUnit">s</span>
+      </span>
+      <span>
+        <span data-i18n="stats.movesLabel">Moves:</span>
+        <span id="moves">0</span>
+      </span>
     </div>
     <button id="restart" data-i18n="controls.restart">Restart</button>
     <button id="toggle-eye-color"></button>
     <button id="toggle-language"></button>
+
     <p class="credit">
       <span data-i18n="creditText">Built by Tal Bar Nizan & Ori Nizan • </span>
-      <a href="mailto:restin3@gmail.com?subject=Contact%20about%20the%20therapy%20game&body=Hello%2C%0D%0A%0D%0AI%27m%20contacting%20you%20about%20the%20therapy%20game.%0D%0A%0D%0ABest%20regards%2C%0D%0A%5BYour%20Name%5D" data-i18n="contactLink">Contact Us</a>
+      <a href="mailto:restin3@gmail.com?subject=Contact%20about%20the%20therapy%20game" data-i18n="contactLink">Contact Us</a>
     </p>
 
-    <!-- Privacy Policy & Analytics toggle -->
+    <!-- Privacy Policy & Analytics Toggle -->
     <p class="credit">
       <a href="privacy-policy.html" target="_blank">Privacy Policy</a>
       &nbsp;|&nbsp;
       <button onclick="toggleAnalytics()">
-        Analytics: <span id="analytics-status"><script>
-          document.write(localStorage.getItem('ga-disable-G-MZPGJMSL3P')==='true' ? 'OFF' : 'ON');
-        </script></span>
+        Analytics: <span id="analytics-status">
+          <script>
+            document.write(localStorage.getItem('ga-disable-G-MZPGJMSL3P') === 'true' ? 'OFF' : 'ON');
+          </script>
+        </span>
       </button>
     </p>
   </footer>
 
   <script>
-  // Make sure toggleAnalytics() is available on the main page
-  function toggleAnalytics() {
-    const disableKey = 'ga-disable-G-MZPGJMSL3P';
-    const disabled = window[disableKey] = !window[disableKey];
-    localStorage.setItem(disableKey, disabled);
-    // update button text
-    document.getElementById('analytics-status').textContent = disabled ? 'OFF' : 'ON';
-    // you can optionally reload: location.reload();
-  }
-</script>
+    // Make toggleAnalytics available on the main page
+    function toggleAnalytics() {
+      const disableKey = 'ga-disable-G-MZPGJMSL3P';
+      const disabled = window[disableKey] = !window[disableKey];
+      localStorage.setItem(disableKey, disabled);
+      document.getElementById('analytics-status').textContent = disabled ? 'OFF' : 'ON';
+      // optional: location.reload();
+    }
+  </script>
 
   <script src="game.js"></script>
 </body>
