@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Privacy Policy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: Arial, sans-serif; padding: 1rem; line-height: 1.5; }
+    button { margin-top: 1rem; padding: 0.5rem 1rem; }
+  </style>
+  <script>
+    // === Analytics Opt-Out Setup ===
+    const disableKey = 'ga-disable-G-MZPGJMSL3P';
+    // On load, if disabled in localStorage, turn GA off
+    if (localStorage.getItem(disableKey) === 'true') {
+      window[disableKey] = true;
+    }
+    function toggleAnalytics() {
+      const disabled = window[disableKey] = !window[disableKey];
+      localStorage.setItem(disableKey, disabled);
+      alert(disabled
+        ? 'Analytics disabled. Reload to apply.'
+        : 'Analytics enabled. Reload to apply.');
+    }
+  </script>
+</head>
+<body>
+  <h1>Privacy Policy</h1>
+  <p>
+    We use <strong>Google Analytics 4</strong> (“GA4”) to collect <em>aggregate, non-identifiable</em> usage data only:
+    <ul>
+      <li>Session duration, moves, levels played</li>
+      <li>No names, emails, health or personal info ever sent</li>
+    </ul>
+  </p>
+  <p>
+    For details on how Google processes data, see
+    <a href="https://www.google.com/policies/privacy/partners/" target="_blank">
+      Google’s Privacy &amp; Terms
+    </a>.
+  </p>
+  <p>
+    You have a right to refuse analytics tracking at any time. Use the button below to opt-out or opt-in:
+  </p>
+  <button onclick="toggleAnalytics()">
+    Toggle Analytics (currently <strong id="status">
+      <script>document.write(window[disableKey] ? 'OFF' : 'ON');</script>
+    </strong>)
+  </button>
+</body>
+</html>
+
