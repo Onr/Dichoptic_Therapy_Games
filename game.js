@@ -1,3 +1,18 @@
+function getGridSize(level) {
+  if (level === 'medium') return 8;
+  if (level === 'hard') return 12;
+  return 4;
+}
+
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+if (typeof document !== 'undefined') {
 document.addEventListener('DOMContentLoaded', () => {
   const translations = {
     en: {
@@ -117,11 +132,6 @@ document.addEventListener('DOMContentLoaded', () => {
     startGame();
   });
 
-  function getGridSize() {
-    if (difficulty === 'medium') return 8;
-    if (difficulty === 'hard') return 12;
-    return 4;
-  }
 
   function generateSymbols(numPairs) {
     const symbols = baseSymbols.slice();
@@ -190,17 +200,10 @@ document.addEventListener('DOMContentLoaded', () => {
     clearInterval(timerInterval);
   }
 
-  function shuffle(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-  }
 
   function createBoard() {
     board.innerHTML = '';
-    const gridSize = getGridSize();
+    const gridSize = getGridSize(difficulty);
     const totalCards = gridSize * gridSize;
     const symbolsList = generateSymbols(totalCards / 2);
     pairsCount = symbolsList.length;
@@ -308,4 +311,9 @@ document.addEventListener('DOMContentLoaded', () => {
   initSettings();
   startGame();
 });
+}
+
+if (typeof module !== 'undefined') {
+  module.exports = { getGridSize, shuffle };
+}
 
