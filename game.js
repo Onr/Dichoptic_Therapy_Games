@@ -198,6 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function stopTimer() {
     clearInterval(timerInterval);
+    timerInterval = null;
   }
 
 
