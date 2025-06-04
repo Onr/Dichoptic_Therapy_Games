@@ -151,19 +151,19 @@
       <a href="privacy-policy.html" target="_blank">Privacy Policy</a>
       &nbsp;|&nbsp;
       <button onclick="toggleAnalytics()">
-        Analytics: <span id="analytics-status">
-          <script>
-            document.write(localStorage.getItem('ga-disable-G-MZPGJMSL3P') === 'true' ? 'OFF' : 'ON');
-          </script>
-        </span>
-      </button>
-    </p>
-  </footer>
+          Analytics: <span id="analytics-status">
+            <script>
+              document.write(localStorage.getItem('ga-disable-G-HKSKJJB4DJ') === 'true' ? 'OFF' : 'ON');
+            </script>
+          </span>
+        </button>
+      </p>
+    </footer>
 
   <script>
     // Make toggleAnalytics available on the main page
     function toggleAnalytics() {
-      const disableKey = 'ga-disable-G-MZPGJMSL3P';
+      const disableKey = 'ga-disable-G-HKSKJJB4DJ';
       const disabled = window[disableKey] = !window[disableKey];
       localStorage.setItem(disableKey, disabled);
       document.getElementById('analytics-status').textContent = disabled ? 'OFF' : 'ON';
