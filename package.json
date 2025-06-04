@@ -1,0 +1,16 @@
+{
+  "name": "dichoptic_therapy_games",
+  "version": "1.0.0",
+  "description": "This is a browser-based therapeutic memory card game designed for dichoptic treatment of diplopia or amblyopia using red-green anaglyph glasses. Each pair of cards consists of one full symbol in red visible to the left eye and one full symbol in green visible to the right eye, requiring binocular coordination to match pairs.",
+  "main": "game.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
