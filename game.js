@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+  // Translations for internalization (i18n)
   const translations = {
     en: {
       pageTitle: "Therapy Memory Card Game",
@@ -12,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
         hard: "Hard (12×12)",
         leftEyeLegend: "Left Eye (Red) Settings",
         rightEyeLegend: "Right Eye (Green) Settings",
+        rightEyeLegendBlue: "Right Eye (Blue) Settings",
         brightness: "Brightness",
         contrast: "Contrast",
         restart: "Restart"
@@ -19,14 +21,34 @@ document.addEventListener('DOMContentLoaded', () => {
       stats: {
         timeLabel: "Time:",
         movesLabel: "Moves:",
+        scoreLabel: "Score:",
         secondsUnit: "s"
+      },
+      leaderboard: {
+        title: "Leaderboard",
+        easy: "Easy",
+        medium: "Medium",
+        hard: "Hard"
       },
       switchEyeColorGreenBlue: "Switch Green ↔ Blue",
       switchEyeColorBlueGreen: "Switch Blue ↔ Green",
       toggleLanguage: "עברית",
-      congrats: "Congratulations! You finished in {moves} moves and {timer} seconds.",
+      congrats: "Congratulations!",
+      gameOver: "Game Over",
+      finalScore: "Your final score is {score}",
+      playAgain: "Play Again",
       creditText: "Built by Tal Bar Nizan & Ori Nizan • ",
-      contactLink: "Contact Us"
+      contactLink: "Contact Us",
+      card: "Card",
+      cardFlipped: "Card flipped",
+      howToPlay: "How to Play",
+      instructions: `
+        <p>The goal of this game is to find all the matching pairs of symbols.</p>
+        <p>Each pair consists of two cards: one with a red symbol and one with a green (or blue) symbol.</p>
+        <p>You need to use both eyes to see the symbols and find the matches.</p>
+        <p>Click on a card to flip it over. Then, click on another card to see if it's a match.</p>
+        <p>Have fun, and good luck with your therapy!</p>
+      `
     },
     he: {
       pageTitle: "משחק הזיכרון הטיפולי",
@@ -40,6 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
         hard: "קשה (12×12)",
         leftEyeLegend: "הגדרות עין שמאל (אדום)",
         rightEyeLegend: "הגדרות עין ימין (ירוק)",
+        rightEyeLegendBlue: "הגדרות עין ימין (כחול)",
         brightness: "בהירות",
         contrast: "ניגודיות",
         restart: "התחל מחדש"
@@ -47,84 +70,142 @@ document.addEventListener('DOMContentLoaded', () => {
       stats: {
         timeLabel: "זמן:",
         movesLabel: "מהלכים:",
+        scoreLabel: "ניקוד:",
         secondsUnit: "שניות"
+      },
+      leaderboard: {
+        title: "טבלת שיאים",
+        easy: "קל",
+        medium: "בינוני",
+        hard: "קשה"
       },
       switchEyeColorGreenBlue: "החלף ירוק ↔ כחול",
       switchEyeColorBlueGreen: "החלף כחול ↔ ירוק",
       toggleLanguage: "English",
-      congrats: "כל הכבוד! סיימת ב־{moves} מהלכים ו־{timer} שניות.",
+      congrats: "כל הכבוד!",
+      gameOver: "המשחק נגמר",
+      finalScore: "הניקוד הסופי שלך הוא {score}",
+      playAgain: "שחק שוב",
       creditText: "נבנה על ידי טל בר ניצן ואורי ניצן • ",
-      contactLink: "צור קשר"
+      contactLink: "צור קשר",
+      card: "קלף",
+      cardFlipped: "קלף הפוך",
+      howToPlay: "איך לשחק",
+      instructions: `
+        <p>מטרת המשחק היא למצוא את כל זוגות הסמלים התואמים.</p>
+        <p>כל זוג מורכב משני קלפים: אחד עם סמל אדום ואחד עם סמל ירוק (או כחול).</p>
+        <p>עליך להשתמש בשתי העיניים כדי לראות את הסמלים ולמצוא את ההתאמות.</p>
+        <p>לחץ על קלף כדי להפוך אותו. לאחר מכן, לחץ על קלף אחר כדי לראות אם הוא תואם.</p>
+        <p>תהנה, ובהצלחה עם הטיפול!</p>
+      `
     }
   };
 
-  let currentLanguage = localStorage.getItem('language') || 'en';
+  // Game state object
+  const game = {
+    currentLanguage: localStorage.getItem('language') || 'en',
+    difficulty: 'easy',
+    pairsCount: 0,
+    firstCard: null,
+    secondCard: null,
+    lockBoard: false,
+    moves: 0,
+    matchedPairs: 0,
+    timer: 0,
+    timerInterval: null,
+    score: 0,
+    baseSymbols: [
+      '🍎','🍌','🍇','🍒','🍋','🍉','🍍','🐻',
+      '🥑','🫐','🍓','🍑','🍐','🦄','⭐️','❤️',
+      '🍅','🌽','🥕','🧄','🍄','🥦','🎈','🎮',
+      '🥬','🫑','🌶️','🍆','🥒','🍞','🥨','🌸',
+      '🧀','🍖','🍗','🥩','🥓','🍔','🍟','🍕',
+      '🌭','🌮','🌯','🥙','🍣','🍤','🥟','🥠',
+      '🍙','🍡','🍧','🍨','🍦','🚗','❄️','✈️',
+      '🧁','🎂','🍰','🥧','🍮','🍯','🍿','🧋',
+      '🥤','🍺','🍻','🥂','🍷','🍸','🌵','🌴',
+    ],
+    cardSymbols: []
+  };
 
+  // DOM elements
+  const difficultySelect = document.getElementById('difficulty');
+  const board = document.getElementById('game-board');
+  const movesEl = document.getElementById('moves');
+  const timerEl = document.getElementById('timer');
+  const scoreEl = document.getElementById('score');
+  const restartBtn = document.getElementById('restart');
+  const leftBrightness = document.getElementById('left-brightness');
+  const leftContrast = document.getElementById('left-contrast');
+  const rightBrightness = document.getElementById('right-brightness');
+  const rightContrast = document.getElementById('right-contrast');
+  const colorToggleBtn = document.getElementById('toggle-eye-color');
+  const langToggleBtn = document.getElementById('toggle-language');
+  const howToPlayBtn = document.getElementById('how-to-play');
+  const rightEyeLegend = document.querySelector('[data-i18n="controls.rightEyeLegend"]');
+  const leaderboardEasy = document.getElementById('leaderboard-easy');
+  const leaderboardMedium = document.getElementById('leaderboard-medium');
+  const leaderboardHard = document.getElementById('leaderboard-hard');
+
+
+  /**
+   * Updates the UI text based on the current language.
+   */
   function updateTexts() {
-    document.documentElement.lang = currentLanguage;
-    document.documentElement.dir = currentLanguage === 'he' ? 'rtl' : 'ltr';
-    document.title = translations[currentLanguage].pageTitle;
+    document.documentElement.lang = game.currentLanguage;
+    document.documentElement.dir = game.currentLanguage === 'he' ? 'rtl' : 'ltr';
+    document.title = translations[game.currentLanguage].pageTitle;
 
     document.querySelectorAll('[data-i18n]').forEach(el => {
       const key = el.getAttribute('data-i18n');
       const keys = key.split('.');
-      let text = translations[currentLanguage];
+      let text = translations[game.currentLanguage];
       keys.forEach(k => { if (text) text = text[k]; });
       if (text) el.textContent = text;
     });
 
-    const colorToggleBtn = document.getElementById('toggle-eye-color');
     if (colorToggleBtn) {
       const currentColor = getComputedStyle(document.documentElement)
         .getPropertyValue('--right-eye-color').trim();
       const switchKey = currentColor === 'lime'
         ? 'switchEyeColorGreenBlue'
         : 'switchEyeColorBlueGreen';
-      colorToggleBtn.textContent = translations[currentLanguage][switchKey];
+      colorToggleBtn.textContent = translations[game.currentLanguage][switchKey];
+
+      // Update right eye legend
+      const legendKey = currentColor === 'lime' ? 'rightEyeLegend' : 'rightEyeLegendBlue';
+      rightEyeLegend.textContent = translations[game.currentLanguage].controls[legendKey];
     }
 
-    const langToggleBtn = document.getElementById('toggle-language');
-    if (langToggleBtn) langToggleBtn.textContent = translations[currentLanguage].toggleLanguage;
+    if (langToggleBtn) langToggleBtn.textContent = translations[game.currentLanguage].toggleLanguage;
   }
 
-  document.getElementById('toggle-language')?.addEventListener('click', () => {
-    currentLanguage = currentLanguage === 'en' ? 'he' : 'en';
-    localStorage.setItem('language', currentLanguage);
+  /**
+   * Toggles the language between English and Hebrew.
+   */
+  function toggleLanguage() {
+    game.currentLanguage = game.currentLanguage === 'en' ? 'he' : 'en';
+    localStorage.setItem('language', game.currentLanguage);
     updateTexts();
-  });
+  }
 
-  updateTexts();
-  const baseSymbols = [
-  '🍎','🍌','🍇','🍒','🍋','🍉','🍍','🐻',
-  '🥑','🫐','🍓','🍑','🍐','🦄','⭐️','❤️',
-  '🍅','🌽','🥕','🧄','🍄','🥦','🎈','🎮',
-  '🥬','🫑','🌶️','🍆','🥒','🍞','🥨','🌸',
-  '🧀','🍖','🍗','🥩','🥓','🍔','🍟','🍕',
-  '🌭','🌮','🌯','🥙','🍣','🍤','🥟','🥠',
-  '🍙','🍡','🍧','🍨','🍦','🚗','❄️','✈️',
-  '🧁','🎂','🍰','🥧','🍮','🍯','🍿','🧋',
-  '🥤','🍺','🍻','🥂','🍷','🍸','🌵','🌴',
-];
-
-
-  let cardSymbols = [];
-
-  const difficultySelect = document.getElementById('difficulty');
-  let difficulty = difficultySelect.value;
-  let pairsCount = 0;
-  difficultySelect.addEventListener('change', () => {
-    difficulty = difficultySelect.value;
-    startGame();
-  });
-
+  /**
+   * Gets the grid size based on the selected difficulty.
+   * @returns {number} The grid size.
+   */
   function getGridSize() {
-    if (difficulty === 'medium') return 8;
-    if (difficulty === 'hard') return 12;
+    if (game.difficulty === 'medium') return 8;
+    if (game.difficulty === 'hard') return 12;
     return 4;
   }
 
+  /**
+   * Generates the symbols for the game board.
+   * @param {number} numPairs The number of pairs to generate.
+   * @returns {string[]} The list of symbols.
+   */
   function generateSymbols(numPairs) {
-    const symbols = baseSymbols.slice();
+    const symbols = game.baseSymbols.slice();
     let nextNum = 1;
     while (symbols.length < numPairs) {
       symbols.push(String(nextNum));
@@ -132,64 +213,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     return symbols.slice(0, numPairs);
   }
-  const board = document.getElementById('game-board');
-  const movesEl = document.getElementById('moves');
-  const timerEl = document.getElementById('timer');
-  const restartBtn = document.getElementById('restart');
 
-  const leftBrightness = document.getElementById('left-brightness');
-  const leftContrast = document.getElementById('left-contrast');
-  const rightBrightness = document.getElementById('right-brightness');
-  const rightContrast = document.getElementById('right-contrast');
-
-  let firstCard = null,
-    secondCard = null;
-  let lockBoard = false;
-  let moves = 0;
-  let matchedPairs = 0;
-  let timer = 0;
-  let timerInterval = null;
-
-  function initSettings() {
-    [leftBrightness, leftContrast, rightBrightness, rightContrast].forEach(input => {
-      input.addEventListener('input', updateFilters);
-    });
-    updateFilters();
-  }
-
-  function updateFilters() {
-    document.documentElement.style.setProperty(
-      '--left-brightness',
-      leftBrightness.value
-    );
-    document.documentElement.style.setProperty(
-      '--left-contrast',
-      leftContrast.value
-    );
-    document.documentElement.style.setProperty(
-      '--right-brightness',
-      rightBrightness.value
-    );
-    document.documentElement.style.setProperty(
-      '--right-contrast',
-      rightContrast.value
-    );
-  }
-
-  function startTimer() {
-    timer = 0;
-    timerEl.textContent = timer;
-    clearInterval(timerInterval);
-    timerInterval = setInterval(() => {
-      timer++;
-      timerEl.textContent = timer;
-    }, 1000);
-  }
-
-  function stopTimer() {
-    clearInterval(timerInterval);
-  }
-
+  /**
+   * Shuffles an array.
+   * @param {any[]} array The array to shuffle.
+   * @returns {any[]} The shuffled array.
+   */
   function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -198,22 +227,24 @@ document.addEventListener('DOMContentLoaded', () => {
     return array;
   }
 
+  /**
+   * Creates the game board.
+   */
   function createBoard() {
     board.innerHTML = '';
     const gridSize = getGridSize();
     const totalCards = gridSize * gridSize;
     const symbolsList = generateSymbols(totalCards / 2);
-    pairsCount = symbolsList.length;
+    game.pairsCount = symbolsList.length;
     board.style.gridTemplateColumns = `repeat(${gridSize}, 80px)`;
-    const cardsArray = [];
-    symbolsList.forEach(sym => {
-      cardsArray.push({ symbol: sym, eye: 'left' });
-      cardsArray.push({ symbol: sym, eye: 'right' });
-    });
-    cardSymbols = shuffle(cardsArray);
-    cardSymbols.forEach(({ symbol, eye }) => {
+    const cardsArray = symbolsList.flatMap(sym => [{ symbol: sym, eye: 'left' }, { symbol: sym, eye: 'right' }]);
+    game.cardSymbols = shuffle(cardsArray);
+    game.cardSymbols.forEach(({ symbol, eye }, index) => {
       const card = document.createElement('div');
       card.classList.add('card');
+      card.dataset.index = index;
+      card.tabIndex = 0;
+      card.setAttribute('aria-label', `${translations[game.currentLanguage].card} ${index + 1}`);
       card.innerHTML = `
         <div class="inner">
           <div class="face front">
@@ -224,88 +255,271 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
       board.appendChild(card);
       card.addEventListener('click', flipCard);
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          flipCard.call(card);
+        }
+      });
     });
   }
 
+  /**
+   * Flips a card.
+   */
   function flipCard() {
-    if (lockBoard || this === firstCard || this.classList.contains('flipped')) return;
+    if (game.lockBoard || this === game.firstCard || this.classList.contains('flipped')) return;
     this.classList.add('flipped');
-    if (!firstCard) {
-      firstCard = this;
-      if (moves === 0 && timerInterval === null) startTimer();
+    this.setAttribute('aria-label', `${translations[game.currentLanguage].cardFlipped}: ${this.querySelector('.face-layer').textContent}`);
+    if (!game.firstCard) {
+      game.firstCard = this;
+      if (game.moves === 0 && game.timerInterval === null) startTimer();
       return;
     }
-    secondCard = this;
-    moves++;
-    movesEl.textContent = moves;
+    game.secondCard = this;
+    game.moves++;
+    movesEl.textContent = game.moves;
+    updateScore();
     checkForMatch();
   }
 
+  /**
+   * Checks if the two flipped cards match.
+   */
   function checkForMatch() {
-    const symbol1 = firstCard.querySelector('.face-layer').textContent;
-    const symbol2 = secondCard.querySelector('.face-layer').textContent;
+    const symbol1 = game.firstCard.querySelector('.face-layer').textContent;
+    const symbol2 = game.secondCard.querySelector('.face-layer').textContent;
     if (symbol1 === symbol2) {
+      game.firstCard.classList.add('matched');
+      game.secondCard.classList.add('matched');
       disableCards();
-      matchedPairs++;
-      if (matchedPairs === pairsCount) {
+      game.matchedPairs++;
+      if (game.matchedPairs === game.pairsCount) {
         stopTimer();
         setTimeout(() => {
-          alert(
-            translations[currentLanguage].congrats
-              .replace('{moves}', moves)
-              .replace('{timer}', timer)
-          );
+          updateLeaderboard();
+          showGameOverModal();
         }, 500);
       }
     } else {
+      game.firstCard.classList.add('mismatched');
+      game.secondCard.classList.add('mismatched');
       unflipCards();
     }
   }
 
+  /**
+   * Disables the two matched cards.
+   */
   function disableCards() {
-    firstCard.removeEventListener('click', flipCard);
-    secondCard.removeEventListener('click', flipCard);
+    game.firstCard.removeEventListener('click', flipCard);
+    game.secondCard.removeEventListener('click', flipCard);
     resetBoardState();
   }
 
+  /**
+   * Unflips the two cards if they don't match.
+   */
   function unflipCards() {
-    lockBoard = true;
+    game.lockBoard = true;
     setTimeout(() => {
-      firstCard.classList.remove('flipped');
-      secondCard.classList.remove('flipped');
+      game.firstCard.classList.remove('flipped', 'mismatched');
+      game.secondCard.classList.remove('flipped', 'mismatched');
+      game.firstCard.setAttribute('aria-label', `${translations[game.currentLanguage].card} ${game.firstCard.dataset.index + 1}`);
+      game.secondCard.setAttribute('aria-label', `${translations[game.currentLanguage].card} ${game.secondCard.dataset.index + 1}`);
       resetBoardState();
     }, 1000);
   }
 
+  /**
+   * Resets the board state after a move.
+   */
   function resetBoardState() {
-    [firstCard, secondCard] = [null, null];
-    lockBoard = false;
+    [game.firstCard, game.secondCard] = [null, null];
+    game.lockBoard = false;
   }
 
+  /**
+   * Starts the game.
+   */
   function startGame() {
     resetBoardState();
-    matchedPairs = 0;
-    moves = 0;
-    movesEl.textContent = moves;
+    game.matchedPairs = 0;
+    game.moves = 0;
+    game.score = 0;
+    movesEl.textContent = game.moves;
+    scoreEl.textContent = game.score;
     stopTimer();
     timerEl.textContent = 0;
+    game.timerInterval = null;
     createBoard();
   }
 
-  restartBtn.addEventListener('click', startGame);
+  /**
+   * Starts the timer.
+   */
+  function startTimer() {
+    game.timer = 0;
+    timerEl.textContent = game.timer;
+    clearInterval(game.timerInterval);
+    game.timerInterval = setInterval(() => {
+      game.timer++;
+      timerEl.textContent = game.timer;
+      updateScore();
+    }, 1000);
+  }
 
+  /**
+   * Stops the timer.
+   */
+  function stopTimer() {
+    clearInterval(game.timerInterval);
+  }
 
-    // Toggle green/blue for the right-eye layer
-  const colorToggleBtn = document.getElementById('toggle-eye-color');
-  colorToggleBtn.addEventListener('click', () => {
+  /**
+   * Updates the score.
+   */
+  function updateScore() {
+    game.score = Math.max(0, (game.pairsCount * 100) - (game.moves * 5) - (game.timer * 2));
+    scoreEl.textContent = game.score;
+  }
+
+  /**
+   * Shows the game over modal.
+   */
+  function showGameOverModal() {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.innerHTML = `
+      <div class="modal-content">
+        <h2 data-i18n="gameOver">${translations[game.currentLanguage].gameOver}</h2>
+        <p>${translations[game.currentLanguage].congrats}</p>
+        <p>${translations[game.currentLanguage].finalScore.replace('{score}', game.score)}</p>
+        <button id="play-again" data-i18n="playAgain">${translations[game.currentLanguage].playAgain}</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    document.getElementById('play-again').addEventListener('click', () => {
+      modal.remove();
+      startGame();
+    });
+  }
+
+  /**
+   * Shows the how to play modal.
+   */
+  function showHowToPlayModal() {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.innerHTML = `
+      <div class="modal-content">
+        <h2 data-i18n="howToPlay">${translations[game.currentLanguage].howToPlay}</h2>
+        <div>${translations[game.currentLanguage].instructions}</div>
+        <button id="close-how-to-play">Close</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    document.getElementById('close-how-to-play').addEventListener('click', () => {
+      modal.remove();
+    });
+  }
+
+  /**
+   * Updates the CSS filters for brightness and contrast and saves them to localStorage.
+   */
+  function updateFilters() {
+    const settings = {
+      leftBrightness: leftBrightness.value,
+      leftContrast: leftContrast.value,
+      rightBrightness: rightBrightness.value,
+      rightContrast: rightContrast.value
+    };
+
+    localStorage.setItem('eyeSettings', JSON.stringify(settings));
+
+    document.documentElement.style.setProperty('--left-brightness', settings.leftBrightness);
+    document.documentElement.style.setProperty('--left-contrast', settings.leftContrast);
+    document.documentElement.style.setProperty('--right-brightness', settings.rightBrightness);
+    document.documentElement.style.setProperty('--right-contrast', settings.rightContrast);
+  }
+
+  /**
+   * Initializes the settings controls.
+   */
+  function initSettings() {
+    const savedSettings = JSON.parse(localStorage.getItem('eyeSettings'));
+    if (savedSettings) {
+      leftBrightness.value = savedSettings.leftBrightness;
+      leftContrast.value = savedSettings.leftContrast;
+      rightBrightness.value = savedSettings.rightBrightness;
+      rightContrast.value = savedSettings.rightContrast;
+    }
+
+    [leftBrightness, leftContrast, rightBrightness, rightContrast].forEach(input => {
+      input.addEventListener('input', updateFilters);
+    });
+    updateFilters();
+  }
+
+  /**
+   * Toggles the color of the right eye between green and blue.
+   */
+  function toggleEyeColor() {
     const current = getComputedStyle(document.documentElement)
       .getPropertyValue('--right-eye-color').trim();
     const next = current === 'lime' ? 'blue' : 'lime';
     document.documentElement.style.setProperty('--right-eye-color', next);
     updateTexts();
-  });
+  }
 
+  /**
+   * Updates the leaderboard with the new score.
+   */
+  function updateLeaderboard() {
+    const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || {
+      easy: [],
+      medium: [],
+      hard: []
+    };
+
+    const scores = leaderboard[game.difficulty];
+    scores.push(game.score);
+    scores.sort((a, b) => b - a);
+    leaderboard[game.difficulty] = scores.slice(0, 5);
+
+    localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+    displayLeaderboard();
+  }
+
+  /**
+   * Displays the leaderboard.
+   */
+  function displayLeaderboard() {
+    const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || {
+      easy: [],
+      medium: [],
+      hard: []
+    };
+
+    leaderboardEasy.querySelector('ol').innerHTML = leaderboard.easy.map(score => `<li>${score}</li>`).join('');
+    leaderboardMedium.querySelector('ol').innerHTML = leaderboard.medium.map(score => `<li>${score}</li>`).join('');
+    leaderboardHard.querySelector('ol').innerHTML = leaderboard.hard.map(score => `<li>${score}</li>`).join('');
+  }
+
+  // Event Listeners
+  difficultySelect.addEventListener('change', () => {
+    game.difficulty = difficultySelect.value;
+    startGame();
+  });
+  restartBtn.addEventListener('click', startGame);
+  colorToggleBtn.addEventListener('click', toggleEyeColor);
+  langToggleBtn?.addEventListener('click', toggleLanguage);
+  howToPlayBtn.addEventListener('click', showHowToPlayModal);
+
+
+  // Initial setup
+  updateTexts();
   initSettings();
   startGame();
+  displayLeaderboard();
 });
 

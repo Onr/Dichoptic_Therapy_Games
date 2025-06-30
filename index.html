@@ -5,56 +5,72 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Therapy Memory Card Game</title>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
 
   <script>
-    // Key for storing consent
+    const GA_ID = 'G-HKSKJJB4DJ';
     const COOKIE_KEY = 'cookieConsent';
 
-    // On DOM ready, decide whether to show banner or load GA
-    document.addEventListener('DOMContentLoaded', () => {
-      const consent = localStorage.getItem(COOKIE_KEY);
-      const banner = document.getElementById('cookie-banner');
-
-      if (!consent) {
-        // First visit: show banner
-        banner.style.display = 'block';
-      } else if (consent === 'granted') {
-        // Consent already given: load analytics
-        loadAnalytics();
-      }
-    });
-
-    // User clicks "Accept"
-    function acceptCookies() {
-      localStorage.setItem(COOKIE_KEY, 'granted');
-      document.getElementById('cookie-banner').style.display = 'none';
-      loadAnalytics();
-    }
-
-    // User clicks "Reject"
-    function rejectCookies() {
-      localStorage.setItem(COOKIE_KEY, 'denied');
-      document.getElementById('cookie-banner').style.display = 'none';
-      // do not load analytics
-    }
-
-    // Dynamically inject Google Analytics tag
+    // Function to load Google Analytics
     function loadAnalytics() {
-      // 1. Load the gtag.js script
+      const existingScript = document.querySelector(`script[src*="${GA_ID}"]`);
+      if (existingScript) return; // Avoid duplicate loading
+
       const gaScript = document.createElement('script');
       gaScript.async = true;
-      gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-HKSKJJB4DJ';
+      gaScript.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
       document.head.appendChild(gaScript);
 
-      // 2. Configure gtag
-      const inline = document.createElement('script');
-      inline.text = `
+      const inlineScript = document.createElement('script');
+      inlineScript.text = `
         window.dataLayer = window.dataLayer || [];
         function gtag(){ dataLayer.push(arguments); }
         gtag('js', new Date());
-        gtag('config', 'G-HKSKJJB4DJ');
+        gtag('config', '${GA_ID}');
       `;
-      document.head.appendChild(inline);
+      document.head.appendChild(inlineScript);
+    }
+
+    // Function to handle analytics toggling
+    function toggleAnalytics(enable) {
+      window[`ga-disable-${GA_ID}`] = !enable;
+      localStorage.setItem('cookieConsent', enable ? 'granted' : 'denied');
+      document.getElementById('analytics-status').textContent = enable ? 'ON' : 'OFF';
+      if (enable) {
+        loadAnalytics();
+      } else {
+        // Optional: remove analytics scripts if you want to be very strict
+        location.reload(); // Reload to ensure scripts are not executed
+      }
+    }
+
+    // On DOM ready, check consent and load analytics if needed
+    document.addEventListener('DOMContentLoaded', () => {
+      const consent = localStorage.getItem(COOKIE_KEY);
+      const banner = document.getElementById('cookie-banner');
+      const analyticsStatus = document.getElementById('analytics-status');
+
+      if (consent === 'granted') {
+        loadAnalytics();
+        analyticsStatus.textContent = 'ON';
+      } else if (consent === 'denied') {
+        window[`ga-disable-${GA_ID}`] = true;
+        analyticsStatus.textContent = 'OFF';
+      } else {
+        banner.style.display = 'block';
+        analyticsStatus.textContent = 'OFF';
+      }
+    });
+
+    // Functions for cookie banner buttons
+    function acceptCookies() {
+      document.getElementById('cookie-banner').style.display = 'none';
+      toggleAnalytics(true);
+    }
+
+    function rejectCookies() {
+      document.getElementById('cookie-banner').style.display = 'none';
+      toggleAnalytics(false);
     }
   </script>
 </head>
@@ -88,7 +104,6 @@
   </div>
 
   <section class="controls">
-    <!-- existing controls… -->
     <fieldset>
       <legend data-i18n="controls.difficultyLegend">Difficulty</legend>
       <label for="difficulty">
@@ -100,7 +115,6 @@
         </select>
       </label>
     </fieldset>
-    <!-- left & right eye settings fieldsets… -->
     <fieldset>
       <legend data-i18n="controls.leftEyeLegend">Left Eye (Red) Settings</legend>
       <label><span data-i18n="controls.brightness">Brightness</span>
@@ -123,10 +137,25 @@
 
   <main>
     <div id="game-board" class="game-board"></div>
+    <section id="leaderboard" class="leaderboard">
+      <h2 data-i18n="leaderboard.title">Leaderboard</h2>
+      <div id="leaderboard-easy">
+        <h3 data-i18n="leaderboard.easy">Easy</h3>
+        <ol></ol>
+      </div>
+      <div id="leaderboard-medium">
+        <h3 data-i18n="leaderboard.medium">Medium</h3>
+        <ol></ol>
+      </div>
+      <div id="leaderboard-hard">
+        <h3 data-i18n="leaderboard.hard">Hard</h3>
+        <ol></ol>
+      </div>
+    </section>
   </main>
 
   <footer>
-    <div id="stats" class="stats">
+    <div id="stats" class="stats" aria-live="polite">
       <span>
         <span data-i18n="stats.timeLabel">Time:</span>
         <span id="timer">0</span>
@@ -136,10 +165,15 @@
         <span data-i18n="stats.movesLabel">Moves:</span>
         <span id="moves">0</span>
       </span>
+      <span>
+        <span data-i18n="stats.scoreLabel">Score:</span>
+        <span id="score">0</span>
+      </span>
     </div>
     <button id="restart" data-i18n="controls.restart">Restart</button>
     <button id="toggle-eye-color"></button>
     <button id="toggle-language"></button>
+    <button id="how-to-play" data-i18n="howToPlay">How to Play</button>
 
     <p class="credit">
       <span data-i18n="creditText">Built by Tal Bar Nizan & Ori Nizan • </span>
@@ -150,26 +184,11 @@
     <p class="credit">
       <a href="privacy-policy.html" target="_blank">Privacy Policy</a>
       &nbsp;|&nbsp;
-      <button onclick="toggleAnalytics()">
-        Analytics: <span id="analytics-status">
-          <script>
-            document.write(localStorage.getItem('ga-disable-G-MZPGJMSL3P') === 'true' ? 'OFF' : 'ON');
-          </script>
-        </span>
+      <button onclick="toggleAnalytics(localStorage.getItem('cookieConsent') !== 'granted')">
+        Analytics: <span id="analytics-status">OFF</span>
       </button>
     </p>
   </footer>
-
-  <script>
-    // Make toggleAnalytics available on the main page
-    function toggleAnalytics() {
-      const disableKey = 'ga-disable-G-MZPGJMSL3P';
-      const disabled = window[disableKey] = !window[disableKey];
-      localStorage.setItem(disableKey, disabled);
-      document.getElementById('analytics-status').textContent = disabled ? 'OFF' : 'ON';
-      // optional: location.reload();
-    }
-  </script>
 
   <script src="game.js"></script>
 </body>

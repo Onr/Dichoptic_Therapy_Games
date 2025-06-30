@@ -152,3 +152,49 @@ button:hover {
   color: #fff;
 }
 
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #333;
+  padding: 2rem;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.modal-content h2 {
+  margin-bottom: 1rem;
+}
+
+.modal-content p {
+  margin-bottom: 1.5rem;
+}
+
+.modal-content button {
+  padding: 0.75rem 1.5rem;
+}
+
+.card.matched .face {
+  border: 2px solid gold;
+}
+
+.card.mismatched .face {
+  animation: shake 0.5s;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
