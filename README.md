@@ -30,6 +30,11 @@ This game implements dichoptic therapy principles based on the [Requirements Doc
 - HTML5, CSS3, JavaScript (ES6+)
 - No external dependencies; works offline after initial load.
 
+## Running Tests
+
+1. Install dependencies with `npm install`.
+2. Run `npm test` to execute the Jest test suite.
+
 ## License
 
 This project is provided for therapeutic and educational purposes.

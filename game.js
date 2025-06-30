@@ -1,3 +1,14 @@
+
+
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+if (typeof document !== 'undefined') {
 document.addEventListener('DOMContentLoaded', () => {
   // Translations for internalization (i18n)
   const translations = {
@@ -193,9 +204,9 @@ document.addEventListener('DOMContentLoaded', () => {
    * Gets the grid size based on the selected difficulty.
    * @returns {number} The grid size.
    */
-  function getGridSize() {
-    if (game.difficulty === 'medium') return 8;
-    if (game.difficulty === 'hard') return 12;
+  function getGridSize(level) {
+    if (level === 'medium') return 8;
+    if (level === 'hard') return 12;
     return 4;
   }
 
@@ -215,24 +226,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /**
-   * Shuffles an array.
-   * @param {any[]} array The array to shuffle.
-   * @returns {any[]} The shuffled array.
-   */
-  function shuffle(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-  }
-
-  /**
    * Creates the game board.
    */
   function createBoard() {
     board.innerHTML = '';
-    const gridSize = getGridSize();
+    const gridSize = getGridSize(game.difficulty);
     const totalCards = gridSize * gridSize;
     const symbolsList = generateSymbols(totalCards / 2);
     game.pairsCount = symbolsList.length;
@@ -522,4 +520,9 @@ document.addEventListener('DOMContentLoaded', () => {
   startGame();
   displayLeaderboard();
 });
+}
+
+if (typeof module !== 'undefined') {
+  module.exports = { getGridSize, shuffle };
+}
 
