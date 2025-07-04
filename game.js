@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     en: {
       pageTitle: "Therapy Memory Card Game",
       title: "Binocular Memory Card Game",
-      description: "Use red-green (or red-blue — press the button at the bottom to switch) anaglyph glasses to play. Each pair features one symbol visible only to one eye (red) and another visible to the other eye (green or blue). Use both eyes together to find matching pairs and train visual coordination.",
+      description: "Play using red–green anaglyph glasses (or red–blue – click the button at the bottom to switch between modes). Each pair contains one symbol visible only to one eye (red) and another visible only to the other eye (green or blue). Use both eyes together to find matching pairs and improve binocular vision.",
       controls: {
         difficultyLegend: "Difficulty",
         selectDifficulty: "Select difficulty:",
@@ -58,13 +58,13 @@ document.addEventListener('DOMContentLoaded', () => {
         <p>Each pair consists of two cards: one with a red symbol and one with a green (or blue) symbol.</p>
         <p>You need to use both eyes to see the symbols and find the matches.</p>
         <p>Click on a card to flip it over. Then, click on another card to see if it's a match.</p>
-        <p>Have fun, and good luck with your therapy!</p>
+        <p>Have fun, and good luck!</p>
       `
     },
     he: {
       pageTitle: "משחק הזיכרון הטיפולי",
       title: "משחק הזיכרון הבינוקולרי",
-      description: "השתמשו במשקפי אנגליף אדום-ירוק (או אדום-כחול — לחצו על הכפתור בתחתית כדי להחליף) כדי לשחק. כל זוג מכיל סמל אחד הנראה רק לעין אחת (אדום) ואחד השני הנראה רק לעין השנייה (ירוק או כחול). השתמשו בשתי העיניים יחד כדי למצוא זוגות תואמים ולשפר את שיתוף הפעולה הראייתי.",
+      description: "שחקו באמצעות משקפי אנגליף אדום–ירוק (או אדום–כחול – לחצו על הכפתור שבתחתית כדי להחליף בין האפשרויות). בכל זוג תמצאו סמל אחד הנראה רק לעין אחת (באדום) וסמל נוסף הנראה לעין השנייה בלבד (בירוק או בכחול). הסתכלו בשתי העיניים יחד כדי למצוא זוגות תואמים ולתרגל ראייה בינוקולרית.",
       controls: {
         difficultyLegend: "רמת קושי",
         selectDifficulty: "בחר רמת קושי:",
@@ -103,11 +103,11 @@ document.addEventListener('DOMContentLoaded', () => {
       cardFlipped: "קלף הפוך",
       howToPlay: "איך לשחק",
       instructions: `
-        <p>מטרת המשחק היא למצוא את כל זוגות הסמלים התואמים.</p>
-        <p>כל זוג מורכב משני קלפים: אחד עם סמל אדום ואחד עם סמל ירוק (או כחול).</p>
-        <p>עליך להשתמש בשתי העיניים כדי לראות את הסמלים ולמצוא את ההתאמות.</p>
-        <p>לחץ על קלף כדי להפוך אותו. לאחר מכן, לחץ על קלף אחר כדי לראות אם הוא תואם.</p>
-        <p>תהנה, ובהצלחה עם הטיפול!</p>
+      <p>מטרת המשחק היא למצוא את כל זוגות הסמלים התואמים.</p>
+      <p>כל זוג מורכב משני קלפים: אחד עם סמל באדום והשני עם סמל בירוק (או כחול).</p>
+      <p>כדי לראות את הסמלים, השתמשו בשתי העיניים יחד דרך משקפי האנגליף.</p>
+      <p>לחצו על קלף כדי לחשוף אותו, ולאחר מכן לחצו על קלף נוסף כדי לבדוק אם יש התאמה.</p>
+      <p>בהצלחה ואל תשכחו ליהנות!</p>
       `
     }
   };

@@ -19,58 +19,45 @@
       const gaScript = document.createElement('script');
       gaScript.async = true;
       gaScript.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
-      document.head.appendChild(gaScript);
-
+      
       const inlineScript = document.createElement('script');
-      inlineScript.text = `
+      inlineScript.textContent = `
         window.dataLayer = window.dataLayer || [];
         function gtag(){ dataLayer.push(arguments); }
         gtag('js', new Date());
         gtag('config', '${GA_ID}');
       `;
+      
+      document.head.appendChild(gaScript);
       document.head.appendChild(inlineScript);
-    }
-
-    // Function to handle analytics toggling
-    function toggleAnalytics(enable) {
-      window[`ga-disable-${GA_ID}`] = !enable;
-      localStorage.setItem('cookieConsent', enable ? 'granted' : 'denied');
-      document.getElementById('analytics-status').textContent = enable ? 'ON' : 'OFF';
-      if (enable) {
-        loadAnalytics();
-      } else {
-        // Optional: remove analytics scripts if you want to be very strict
-        location.reload(); // Reload to ensure scripts are not executed
-      }
     }
 
     // On DOM ready, check consent and load analytics if needed
     document.addEventListener('DOMContentLoaded', () => {
       const consent = localStorage.getItem(COOKIE_KEY);
       const banner = document.getElementById('cookie-banner');
-      const analyticsStatus = document.getElementById('analytics-status');
 
       if (consent === 'granted') {
         loadAnalytics();
-        analyticsStatus.textContent = 'ON';
       } else if (consent === 'denied') {
         window[`ga-disable-${GA_ID}`] = true;
-        analyticsStatus.textContent = 'OFF';
       } else {
         banner.style.display = 'block';
-        analyticsStatus.textContent = 'OFF';
       }
     });
 
     // Functions for cookie banner buttons
     function acceptCookies() {
       document.getElementById('cookie-banner').style.display = 'none';
-      toggleAnalytics(true);
+      localStorage.setItem(COOKIE_KEY, 'granted');
+      loadAnalytics();
     }
 
     function rejectCookies() {
       document.getElementById('cookie-banner').style.display = 'none';
-      toggleAnalytics(false);
+      localStorage.setItem(COOKIE_KEY, 'denied');
+      window[`ga-disable-${GA_ID}`] = true;
+      location.reload(); // Reload to ensure scripts are not executed
     }
   </script>
 </head>
@@ -78,9 +65,9 @@
   <header>
     <h1 data-i18n="title">Binocular Memory Card Game</h1>
     <p data-i18n="description">
-      Use red-green (or red-blue — press the button at the bottom to switch) anaglyph glasses to play.
-      Each pair features one symbol visible only to one eye (red) and another visible to the other eye (green or blue).
-      Use both eyes together to find matching pairs and train visual coordination.
+    Play using red–green anaglyph glasses (or red–blue – click the button at the bottom to switch between modes). 
+    Each pair contains one symbol visible only to one eye (red) and another visible only to the other eye (green or blue). 
+    Use both eyes together to find matching pairs and improve binocular vision.
     </p>
   </header>
 
@@ -180,13 +167,9 @@
       <a href="mailto:restin3@gmail.com?subject=Contact%20about%20the%20therapy%20game" data-i18n="contactLink">Contact Us</a>
     </p>
 
-    <!-- Privacy Policy & Analytics Toggle -->
+    <!-- Privacy Policy -->
     <p class="credit">
       <a href="privacy-policy.html" target="_blank">Privacy Policy</a>
-      &nbsp;|&nbsp;
-      <button onclick="toggleAnalytics(localStorage.getItem('cookieConsent') !== 'granted')">
-        Analytics: <span id="analytics-status">OFF</span>
-      </button>
       </p>
     </footer>
 
