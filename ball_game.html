@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+  <meta charset="UTF-8">
+  <title>משחק – לחצו על הכדורים לפי המספרים</title>
+  <style>
+    body { margin: 0; overflow: hidden; font-family: sans-serif; }
+    #gameCanvas { display: block; background: #f0f0f0; }
+    #message {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font: 24px sans-serif;
+      background: rgba(255,255,255,0.8);
+      padding: 8px 12px;
+      border-radius: 4px;
+    }
+    #controls {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(255,255,255,0.8);
+      padding: 10px;
+      border-radius: 5px;
+    }
+    .control-group {
+      margin-bottom: 10px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div id="message">לחצו על הכדורים בסדר: 1 → 7</div>
+  <div id="controls">
+    <div class="control-group">
+      <label>קושי:</label>
+      <button onclick="setDifficulty(0)">ללא תנועה</button>
+      <button onclick="setDifficulty(1.5)">איטי</button>
+      <button onclick="setDifficulty(4)">מהיר</button>
+    </div>
+    <div class="control-group">
+      <label for="redBrightness">בהירות (אדום):</label>
+      <input type="range" id="redBrightness" min="0" max="200" value="100">
+      <label for="redContrast">ניגודיות (אדום):</label>
+      <input type="range" id="redContrast" min="0" max="200" value="100">
+    </div>
+    <div class="control-group">
+      <label for="greenBrightness">בהירות (ירוק):</label>
+      <input type="range" id="greenBrightness" min="0" max="200" value="100">
+      <label for="greenContrast">ניגודיות (ירוק):</label>
+      <input type="range" id="greenContrast" min="0" max="200" value="100">
+    </div>
+  </div>
+  <canvas id="gameCanvas"></canvas>
+
+  <script>
+    const NUM_BALLS   = 7;
+    const BALL_RADIUS = 30;
+    let SPEED         = 2.5;
+
+    const canvas = document.getElementById('gameCanvas');
+    const ctx    = canvas.getContext('2d');
+    const msg    = document.getElementById('message');
+    let balls, nextNumber;
+
+    const redBrightnessSlider = document.getElementById('redBrightness');
+    const redContrastSlider = document.getElementById('redContrast');
+    const greenBrightnessSlider = document.getElementById('greenBrightness');
+    const greenContrastSlider = document.getElementById('greenContrast');
+
+    function applyColorTransforms(color, brightness, contrast) {
+      let r, g, b;
+      if (color === 'red') {
+        r = 255; g = 0; b = 0;
+      } else {
+        r = 0; g = 128; b = 0;
+      }
+
+      // Apply brightness
+      r = r * (brightness / 100);
+      g = g * (brightness / 100);
+      b = b * (brightness / 100);
+
+      // Apply contrast
+      const factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
+      r = factor * (r - 128) + 128;
+      g = factor * (g - 128) + 128;
+      b = factor * (b - 128) + 128;
+
+      r = Math.max(0, Math.min(255, r));
+      g = Math.max(0, Math.min(255, g));
+      b = Math.max(0, Math.min(255, b));
+
+      return `rgb(${r},${g},${b})`;
+    }
+
+
+    function setDifficulty(newSpeed) {
+      SPEED = newSpeed;
+      initGame();
+    }
+
+    function initGame() {
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
+      nextNumber = 1;
+      msg.textContent = `לחצו על הכדורים בסדר: 1 → ${NUM_BALLS}`;
+
+      const numbers = Array.from({length:NUM_BALLS}, (_,i)=>i+1);
+      shuffle(numbers);
+
+      balls = numbers.map(n => ({
+        num:   n,
+        color: Math.random() < 0.5 ? 'red' : 'green',
+        x:     Math.random() * (canvas.width  - 2*BALL_RADIUS) + BALL_RADIUS,
+        y:     Math.random() * (canvas.height - 2*BALL_RADIUS) + BALL_RADIUS,
+        vx:    (Math.random()*2-1) * SPEED,
+        vy:    (Math.random()*2-1) * SPEED,
+        clicked: false
+      }));
+
+      if (!animationFrameId) {
+        loop();
+      }
+    }
+
+    function shuffle(arr) {
+      for (let i = arr.length-1; i>0; i--) {
+        const j = Math.floor(Math.random() * (i+1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+    }
+
+    let animationFrameId;
+    function loop() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+
+      let allClicked = true;
+      for (let ball of balls) {
+        if (!ball.clicked) {
+          allClicked = false;
+          ball.x += ball.vx;
+          ball.y += ball.vy;
+
+          if (ball.x - BALL_RADIUS < 0 || ball.x + BALL_RADIUS > canvas.width)  ball.vx *= -1;
+          if (ball.y - BALL_RADIUS < 0 || ball.y + BALL_RADIUS > canvas.height) ball.vy *= -1;
+
+          ctx.beginPath();
+          ctx.arc(ball.x, ball.y, BALL_RADIUS, 0, Math.PI*2);
+          if (ball.color === 'red') {
+            ctx.fillStyle = applyColorTransforms('red', redBrightnessSlider.value, redContrastSlider.value);
+          } else {
+            ctx.fillStyle = applyColorTransforms('green', greenBrightnessSlider.value, greenContrastSlider.value);
+          }
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.fillStyle = 'white';
+          ctx.font = '26px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(ball.num, ball.x, ball.y);
+        }
+      }
+
+      if (!allClicked) {
+        animationFrameId = requestAnimationFrame(loop);
+      } else {
+        msg.textContent = 'כל הכבוד! סיימת את המשחק 🎉';
+        animationFrameId = null;
+      }
+    }
+
+    canvas.addEventListener('click', e => {
+      const rect = canvas.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
+
+      for (let ball of balls) {
+        if (!ball.clicked) {
+          const dx = mx - ball.x;
+          const dy = my - ball.y;
+          if (dx*dx + dy*dy <= BALL_RADIUS*BALL_RADIUS) {
+            if (ball.num === nextNumber) {
+              ball.clicked = true;
+              nextNumber++;
+              if (nextNumber <= NUM_BALLS) {
+                msg.textContent = `נכון! עכשיו לחצו על: ${nextNumber}`;
+              }
+            } else {
+              alert(`לחצתם על ${ball.num}, אבל הסדר הנכון הוא ${nextNumber}.`);
+            }
+            break;
+          }
+        }
+      }
+    });
+    
+    ['input', 'change'].forEach(eventName => {
+        redBrightnessSlider.addEventListener(eventName, () => !animationFrameId && loop());
+        redContrastSlider.addEventListener(eventName, () => !animationFrameId && loop());
+        greenBrightnessSlider.addEventListener(eventName, () => !animationFrameId && loop());
+        greenContrastSlider.addEventListener(eventName, () => !animationFrameId && loop());
+    });
+
+    window.addEventListener('resize', initGame);
+
+    initGame();
+  </script>
+</body>
+</html>

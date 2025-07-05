@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Therapy Memory Card Game</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+
+  <script>
+    const GA_ID = 'G-HKSKJJB4DJ';
+    const COOKIE_KEY = 'cookieConsent';
+
+    // Function to load Google Analytics
+    function loadAnalytics() {
+      const existingScript = document.querySelector(`script[src*="${GA_ID}"]`);
+      if (existingScript) return; // Avoid duplicate loading
+
+      const gaScript = document.createElement('script');
+      gaScript.async = true;
+      gaScript.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
+      
+      const inlineScript = document.createElement('script');
+      inlineScript.textContent = `
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){ dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', '${GA_ID}');
+      `;
+      
+      document.head.appendChild(gaScript);
+      document.head.appendChild(inlineScript);
+    }
+
+    // On DOM ready, check consent and load analytics if needed
+    document.addEventListener('DOMContentLoaded', () => {
+      const consent = localStorage.getItem(COOKIE_KEY);
+      const banner = document.getElementById('cookie-banner');
+
+      if (consent === 'granted') {
+        loadAnalytics();
+      } else if (consent === 'denied') {
+        window[`ga-disable-${GA_ID}`] = true;
+      } else {
+        banner.style.display = 'block';
+      }
+    });
+
+    // Functions for cookie banner buttons
+    function acceptCookies() {
+      document.getElementById('cookie-banner').style.display = 'none';
+      localStorage.setItem(COOKIE_KEY, 'granted');
+      loadAnalytics();
+    }
+
+    function rejectCookies() {
+      document.getElementById('cookie-banner').style.display = 'none';
+      localStorage.setItem(COOKIE_KEY, 'denied');
+      window[`ga-disable-${GA_ID}`] = true;
+      location.reload(); // Reload to ensure scripts are not executed
+    }
+  </script>
+</head>
+<body>
+  <header>
+    <h1 data-i18n="title">Binocular Memory Card Game</h1>
+    <p data-i18n="description">
+    Play using red–green anaglyph glasses (or red–blue – click the button at the bottom to switch between modes). 
+    Each pair contains one symbol visible only to one eye (red) and another visible only to the other eye (green or blue). 
+    Use both eyes together to find matching pairs and improve binocular vision.
+    </p>
+  </header>
+
+  <!-- Cookie Consent Banner -->
+  <div id="cookie-banner" style="
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0,0,0,0.85);
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      z-index: 1000;
+    ">
+    This site uses analytics cookies to measure gameplay.
+    <button onclick="acceptCookies()">Accept</button>
+    <button onclick="rejectCookies()">Reject</button>
+    <a href="privacy-policy.html" style="color:#8cf; margin-left:1rem;" target="_blank">Learn more</a>
+  </div>
+
+  <section class="controls">
+    <fieldset>
+      <legend data-i18n="controls.difficultyLegend">Difficulty</legend>
+      <label for="difficulty">
+        <span data-i18n="controls.selectDifficulty">Select difficulty:</span>
+        <select id="difficulty">
+          <option value="easy" data-i18n="controls.easy">Easy (4×4)</option>
+          <option value="medium" data-i18n="controls.medium">Medium (8×8)</option>
+          <option value="hard" data-i18n="controls.hard">Hard (12×12)</option>
+        </select>
+      </label>
+    </fieldset>
+    <fieldset>
+      <legend data-i18n="controls.leftEyeLegend">Left Eye (Red) Settings</legend>
+      <label><span data-i18n="controls.brightness">Brightness</span>
+        <input type="range" id="left-brightness" min="0.5" max="2" step="0.1" value="1" />
+      </label>
+      <label><span data-i18n="controls.contrast">Contrast</span>
+        <input type="range" id="left-contrast" min="0.5" max="2" step="0.1" value="1" />
+      </label>
+    </fieldset>
+    <fieldset>
+      <legend data-i18n="controls.rightEyeLegend">Right Eye (Green) Settings</legend>
+      <label><span data-i18n="controls.brightness">Brightness</span>
+        <input type="range" id="right-brightness" min="0.5" max="2" step="0.1" value="1" />
+      </label>
+      <label><span data-i18n="controls.contrast">Contrast</span>
+        <input type="range" id="right-contrast" min="0.5" max="2" step="0.1" value="1" />
+      </label>
+    </fieldset>
+  </section>
+
+  <main>
+    <div id="game-board" class="game-board"></div>
+    <section id="leaderboard" class="leaderboard">
+      <h2 data-i18n="leaderboard.title">Leaderboard</h2>
+      <div id="leaderboard-easy">
+        <h3 data-i18n="leaderboard.easy">Easy</h3>
+        <ol></ol>
+      </div>
+      <div id="leaderboard-medium">
+        <h3 data-i18n="leaderboard.medium">Medium</h3>
+        <ol></ol>
+      </div>
+      <div id="leaderboard-hard">
+        <h3 data-i18n="leaderboard.hard">Hard</h3>
+        <ol></ol>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div id="stats" class="stats" aria-live="polite">
+      <span>
+        <span data-i18n="stats.timeLabel">Time:</span>
+        <span id="timer">0</span>
+        <span data-i18n="stats.secondsUnit">s</span>
+      </span>
+      <span>
+        <span data-i18n="stats.movesLabel">Moves:</span>
+        <span id="moves">0</span>
+      </span>
+      <span>
+        <span data-i18n="stats.scoreLabel">Score:</span>
+        <span id="score">0</span>
+      </span>
+    </div>
+    <button id="restart" data-i18n="controls.restart">Restart</button>
+    <button id="toggle-eye-color"></button>
+    <button id="toggle-language"></button>
+    <button id="how-to-play" data-i18n="howToPlay">How to Play</button>
+
+    <p class="credit">
+      <span data-i18n="creditText">Built by Tal Bar Nizan & Ori Nizan • </span>
+      <a href="mailto:restin3@gmail.com?subject=Contact%20about%20the%20therapy%20game" data-i18n="contactLink">Contact Us</a>
+    </p>
+
+    <!-- Privacy Policy -->
+    <p class="credit">
+      <a href="privacy-policy.html" target="_blank">Privacy Policy</a>
+      </p>
+    </footer>
+
+
+  <script src="game.js"></script>
+</body>
+</html>
+
