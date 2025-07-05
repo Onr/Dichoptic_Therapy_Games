@@ -69,22 +69,83 @@
         font-size: 0.9rem;
         opacity: 0.8;
     }
+    #toggle-language {
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-top: 2rem;
+        font-family: 'Poppins', sans-serif;
+        transition: background 0.3s;
+    }
+    #toggle-language:hover {
+        background: rgba(255, 255, 255, 0.4);
+    }
+    [dir="rtl"] .game-card {
+        text-align: right;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Game Hub</h1>
-    <p>Choose your challenge and start playing!</p>
+    <h1 data-i18n="title">Game Hub</h1>
+    <p data-i18n="subtitle">Choose your challenge and start playing!</p>
     <div class="game-selection">
       <a href="memory_game.html" class="game-card">
-        <h2>Memory Game</h2>
-        <p>Test your memory with this classic card matching game. Enhanced for binocular vision therapy.</p>
+        <h2 data-i18n="memoryGameTitle">Memory Game</h2>
+        <p data-i18n="memoryGameDesc">Test your memory with this classic card matching game. Enhanced for binocular vision therapy.</p>
       </a>
       <a href="ball_game.html" class="game-card">
-        <h2>Ball Game</h2>
-        <p>Click the numbered balls in the correct order as they move around the screen. Adjust colors for dichoptic therapy.</p>
+        <h2 data-i18n="ballGameTitle">Ball Game</h2>
+        <p data-i18n="ballGameDesc">Click the numbered balls in the correct order as they move around the screen. Adjust colors for dichoptic therapy.</p>
       </a>
     </div>
+    <button id="toggle-language" data-i18n="languageButton">עברית</button>
   </div>
+
+  <script>
+    const translations = {
+      en: {
+        title: 'Game Hub',
+        subtitle: 'Choose your challenge and start playing!',
+        memoryGameTitle: 'Memory Game',
+        memoryGameDesc: 'Test your memory with this classic card matching game. Enhanced for binocular vision therapy.',
+        ballGameTitle: 'Ball Game',
+        ballGameDesc: 'Click the numbered balls in the correct order as they move around the screen. Adjust colors for dichoptic therapy.',
+        languageButton: 'עברית'
+      },
+      he: {
+        title: 'מרכז משחקים',
+        subtitle: 'בחר את האתגר שלך והתחל לשחק!',
+        memoryGameTitle: 'משחק זיכרון',
+        memoryGameDesc: 'בחנו את הזיכרון שלכם עם משחק קלפים קלאסי זה. מותאם לטיפול בראייה דו-עינית.',
+        ballGameTitle: 'משחק כדורים',
+        ballGameDesc: 'לחצו על הכדורים הממוספרים בסדר הנכון בזמן שהם נעים על המסך. התאימו את הצבעים לטיפול דיכופטי.',
+        languageButton: 'English'
+      }
+    };
+
+    let currentLang = 'en';
+
+    function switchLanguage(lang) {
+      currentLang = lang;
+      document.documentElement.lang = lang;
+      document.documentElement.dir = lang === 'he' ? 'rtl' : 'ltr';
+
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[lang][key]) {
+          el.textContent = translations[lang][key];
+        }
+      });
+    }
+
+    document.getElementById('toggle-language').addEventListener('click', () => {
+      const newLang = currentLang === 'en' ? 'he' : 'en';
+      switchLanguage(newLang);
+    });
+  </script>
 </body>
 </html>
