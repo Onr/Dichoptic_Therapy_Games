@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
     },
     he: {
       pageTitle: "משחק הזיכרון הטיפולי",
-      title: "משחק הזיכרון הבינוקולרי",
+      title: "אימון סריקה",
       description: "שחקו באמצעות משקפי אנגליף אדום–ירוק (או אדום–כחול – לחצו על הכפתור שבתחתית כדי להחליף בין האפשרויות). בכל זוג תמצאו סמל אחד הנראה רק לעין אחת (באדום) וסמל נוסף הנראה לעין השנייה בלבד (בירוק או בכחול). הסתכלו בשתי העיניים יחד כדי למצוא זוגות תואמים ולתרגל ראייה בינוקולרית.",
       controls: {
         difficultyLegend: "רמת קושי",
@@ -525,4 +525,3 @@ document.addEventListener('DOMContentLoaded', () => {
 if (typeof module !== 'undefined') {
   module.exports = { getGridSize, shuffle };
 }
-

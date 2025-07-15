@@ -42,6 +42,9 @@
       <button onclick="setDifficulty(4)">מהיר</button>
     </div>
     <div class="control-group">
+      <button onclick="initGame()">התחל מחדש</button>
+    </div>
+    <div class="control-group">
       <label for="redBrightness">בהירות (אדום):</label>
       <input type="range" id="redBrightness" min="0" max="200" value="100">
       <label for="redContrast">ניגודיות (אדום):</label>
@@ -58,7 +61,7 @@
 
   <script>
     const NUM_BALLS   = 7;
-    const BALL_RADIUS = 30;
+    const BALL_RADIUS = 60;
     let SPEED         = 2.5;
 
     const canvas = document.getElementById('gameCanvas');
@@ -174,20 +177,21 @@
       }
     }
 
-    canvas.addEventListener('click', e => {
+    function handlePointerDown(e) {
+      e.preventDefault(); // Prevent default touch behavior
       const rect = canvas.getBoundingClientRect();
-      const mx = e.clientX - rect.left;
-      const my = e.clientY - rect.top;
+      const mx = (e.clientX || e.touches[0].clientX) - rect.left;
+      const my = (e.clientY || e.touches[0].clientY) - rect.top;
 
       for (let ball of balls) {
         if (!ball.clicked) {
           const dx = mx - ball.x;
           const dy = my - ball.y;
-          if (dx*dx + dy*dy <= BALL_RADIUS*BALL_RADIUS) {
+          if (dx * dx + dy * dy <= BALL_RADIUS * BALL_RADIUS) {
             if (ball.num === nextNumber) {
               ball.clicked = true;
               nextNumber++;
-              if (nextNumber <= NUM_BALLS) {
+              if (nextNumber <= numBalls) {
                 msg.textContent = `נכון! עכשיו לחצו על: ${nextNumber}`;
               }
             } else {
@@ -197,7 +201,11 @@
           }
         }
       }
-    });
+    };
+
+    canvas.addEventListener('mousedown', handlePointerDown);
+    canvas.addEventListener('touchstart', handlePointerDown, { passive: false }); // Added touch support
+
     
     ['input', 'change'].forEach(eventName => {
         redBrightnessSlider.addEventListener(eventName, () => !animationFrameId && loop());

@@ -112,17 +112,17 @@
         subtitle: 'Choose your challenge and start playing!',
         memoryGameTitle: 'Scanning',
         memoryGameDesc: 'Align matching pairs, with this classic card matching game. Strengthening binocular coordination.',
-        ballGameTitle: 'Tracking',
+        ballGameTitle: 'Ball Tracking',
         ballGameDesc: 'Click the numbered balls in the correct order as they move around the screen.',
         languageButton: 'עברית'
       },
       he: {
         title: 'מרכז משחקים',
         subtitle: 'בחר את האתגר שלך והתחל לשחק!',
-        memoryGameTitle: 'משחק זיכרון',
-        memoryGameDesc: 'בחנו את הזיכרון שלכם עם משחק קלפים קלאסי זה. מותאם לטיפול בראייה דו-עינית.',
+        memoryGameTitle: 'סריקה',
+        memoryGameDesc: 'התאם זוגות תואמים במשחק קלפים קלאסי זה. מחזק תיאום בינוקולרי.',
         ballGameTitle: 'משחק כדורים',
-        ballGameDesc: 'לחצו על הכדורים הממוספרים בסדר הנכון בזמן שהם נעים על המסך. התאימו את הצבעים לטיפול דיכופטי.',
+        ballGameDesc: 'לחצו על הכדורים הממוספרים בסדר הנכון בזמן שהם נעים על המסך.',
         languageButton: 'English'
       }
     };
@@ -146,6 +146,9 @@
       const newLang = currentLang === 'en' ? 'he' : 'en';
       switchLanguage(newLang);
     });
+     const creditElement = document.createElement('p');
+    creditElement.innerHTML = '<span data-i18n="creditText">Built by Tal Bar Nizan & Ori Nizan</span>';
+    document.querySelector('.container').appendChild(creditElement);
   </script>
 </body>
 </html>
