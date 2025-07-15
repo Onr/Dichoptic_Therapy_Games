@@ -42,6 +42,10 @@
       <button onclick="setDifficulty(4)">מהיר</button>
     </div>
     <div class="control-group">
+      <label for="ballsSlider">מספר כדורים: <span id="ballsLabel">7</span></label>
+      <input type="range" id="ballsSlider" min="0" max="3" step="1" value="0">
+    </div>
+    <div class="control-group">
       <button onclick="initGame()">התחל מחדש</button>
     </div>
     <div class="control-group">
@@ -60,14 +64,24 @@
   <canvas id="gameCanvas"></canvas>
 
   <script>
-    const NUM_BALLS   = 7;
+    const BALL_COUNTS = [7, 14, 21, 35];
     const BALL_RADIUS = 60;
     let SPEED         = 2.5;
 
     const canvas = document.getElementById('gameCanvas');
     const ctx    = canvas.getContext('2d');
     const msg    = document.getElementById('message');
-    let balls, nextNumber;
+    const ballsSlider = document.getElementById('ballsSlider');
+    const ballsLabel  = document.getElementById('ballsLabel');
+    let balls, nextNumber, numBalls = BALL_COUNTS[ballsSlider.value];
+    ballsLabel.textContent = numBalls;
+
+    ballsSlider.addEventListener('input', () => {
+      numBalls = BALL_COUNTS[ballsSlider.value];
+      ballsLabel.textContent = numBalls;
+    });
+
+    ballsSlider.addEventListener('change', initGame);
 
     const redBrightnessSlider = document.getElementById('redBrightness');
     const redContrastSlider = document.getElementById('redContrast');
@@ -109,10 +123,12 @@
     function initGame() {
       canvas.width  = window.innerWidth;
       canvas.height = window.innerHeight;
+      numBalls = BALL_COUNTS[ballsSlider.value];
+      ballsLabel.textContent = numBalls;
       nextNumber = 1;
-      msg.textContent = `לחצו על הכדורים בסדר: 1 → ${NUM_BALLS}`;
+      msg.textContent = `לחצו על הכדורים בסדר: 1 → ${numBalls}`;
 
-      const numbers = Array.from({length:NUM_BALLS}, (_,i)=>i+1);
+      const numbers = Array.from({length:numBalls}, (_,i)=>i+1);
       shuffle(numbers);
 
       balls = numbers.map(n => ({
