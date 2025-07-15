@@ -51,10 +51,13 @@
       <input type="range" id="redContrast" min="0" max="200" value="100">
     </div>
     <div class="control-group">
-      <label for="greenBrightness">בהירות (ירוק):</label>
-      <input type="range" id="greenBrightness" min="0" max="200" value="100">
-      <label for="greenContrast">ניגודיות (ירוק):</label>
-      <input type="range" id="greenContrast" min="0" max="200" value="100">
+      <label id="rightBrightnessLabel" for="rightBrightness">בהירות (ירוק):</label>
+      <input type="range" id="rightBrightness" min="0" max="200" value="100">
+      <label id="rightContrastLabel" for="rightContrast">ניגודיות (ירוק):</label>
+      <input type="range" id="rightContrast" min="0" max="200" value="100">
+    </div>
+    <div class="control-group">
+      <button id="toggleColor">החלף ירוק ↔ כחול</button>
     </div>
   </div>
   <canvas id="gameCanvas"></canvas>
@@ -71,13 +74,19 @@
 
     const redBrightnessSlider = document.getElementById('redBrightness');
     const redContrastSlider = document.getElementById('redContrast');
-    const greenBrightnessSlider = document.getElementById('greenBrightness');
-    const greenContrastSlider = document.getElementById('greenContrast');
+    const rightBrightnessSlider = document.getElementById('rightBrightness');
+    const rightContrastSlider = document.getElementById('rightContrast');
+    const rightBrightnessLabel = document.getElementById('rightBrightnessLabel');
+    const rightContrastLabel = document.getElementById('rightContrastLabel');
+
+    let rightColor = 'green';
 
     function applyColorTransforms(color, brightness, contrast) {
       let r, g, b;
       if (color === 'red') {
         r = 255; g = 0; b = 0;
+      } else if (color === 'blue') {
+        r = 0; g = 0; b = 255;
       } else {
         r = 0; g = 128; b = 0;
       }
@@ -137,6 +146,16 @@
       }
     }
 
+    function toggleRightColor() {
+      rightColor = rightColor === 'green' ? 'blue' : 'green';
+      rightBrightnessLabel.textContent = `בהירות (${rightColor === 'green' ? 'ירוק' : 'כחול'})`;
+      rightContrastLabel.textContent = `ניגודיות (${rightColor === 'green' ? 'ירוק' : 'כחול'})`;
+      document.getElementById('toggleColor').textContent = rightColor === 'green'
+        ? 'החלף ירוק ↔ כחול'
+        : 'החלף כחול ↔ ירוק';
+      if (!animationFrameId) loop();
+    }
+
     let animationFrameId;
     function loop() {
       ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -156,7 +175,7 @@
           if (ball.color === 'red') {
             ctx.fillStyle = applyColorTransforms('red', redBrightnessSlider.value, redContrastSlider.value);
           } else {
-            ctx.fillStyle = applyColorTransforms('green', greenBrightnessSlider.value, greenContrastSlider.value);
+            ctx.fillStyle = applyColorTransforms(rightColor, rightBrightnessSlider.value, rightContrastSlider.value);
           }
           ctx.fill();
           ctx.stroke();
@@ -210,9 +229,11 @@
     ['input', 'change'].forEach(eventName => {
         redBrightnessSlider.addEventListener(eventName, () => !animationFrameId && loop());
         redContrastSlider.addEventListener(eventName, () => !animationFrameId && loop());
-        greenBrightnessSlider.addEventListener(eventName, () => !animationFrameId && loop());
-        greenContrastSlider.addEventListener(eventName, () => !animationFrameId && loop());
+        rightBrightnessSlider.addEventListener(eventName, () => !animationFrameId && loop());
+        rightContrastSlider.addEventListener(eventName, () => !animationFrameId && loop());
     });
+
+    document.getElementById('toggleColor').addEventListener('click', toggleRightColor);
 
     window.addEventListener('resize', initGame);
 
