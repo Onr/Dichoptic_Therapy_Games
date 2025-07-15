@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const translations = {
     en: {
       pageTitle: "Therapy Memory Card Game",
-      title: "Binocular Memory Card Game",
+      title: "Scanning Practice",
       description: "Play using red–green anaglyph glasses (or red–blue – click the button at the bottom to switch between modes). Each pair contains one symbol visible only to one eye (red) and another visible only to the other eye (green or blue). Use both eyes together to find matching pairs and improve binocular vision.",
       controls: {
         difficultyLegend: "Difficulty",

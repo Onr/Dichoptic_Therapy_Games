@@ -1,6 +1,6 @@
-# Suggestions for Improving the Memory Game
+# Suggestions for Improving the Scanning Practice
 
-This document outlines potential improvements for the binocular memory card game, focusing on enhancing gameplay, user interface (UI), and user experience (UX).
+This document outlines potential improvements for the Scanning Practice, focusing on enhancing gameplay, user interface (UI), and user experience (UX).
 
 ## Gameplay Enhancements
 

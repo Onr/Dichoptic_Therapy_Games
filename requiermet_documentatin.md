@@ -39,7 +39,7 @@ This document outlines the specifications for a browser-based dichoptic therapy 
 
 * Each game will feature multiple difficulty levels to accommodate varying user capabilities and to provide progressive challenges:
 
-  * **Memory Game**:
+  * **Scanning Practice**:
 
     * *Easy*: 4x4 grid.
     * *Medium*: 8x8 grid.
