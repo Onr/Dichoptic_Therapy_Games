@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <title>משחק – לחצו על הכדורים לפי המספרים</title>
   <style>
-    body { margin: 0; overflow: hidden; font-family: sans-serif; }
-    #gameCanvas { display: block; background: #f0f0f0; }
+    body { margin: 0; overflow: hidden; font-family: sans-serif; background:#222; color:#eee; }
+    #gameCanvas { display: block; background: #333; }
     #message {
       position: absolute;
       top: 10px;
@@ -33,7 +33,7 @@
   </style>
 </head>
 <body>
-  <div id="message">לחצו על הכדורים בסדר: 1 → 7</div>
+  <div id="message">לחצו על הכדורים בסדר עולה</div>
   <div id="controls">
     <div class="control-group">
       <label>קושי:</label>
@@ -87,7 +87,7 @@
         r = 255; g = 0; b = 0;
       } else if (color === 'blue') {
         r = 0; g = 0; b = 255;
-      } else {
+    } else {
         r = 0; g = 128; b = 0;
       }
 
@@ -119,7 +119,7 @@
       canvas.width  = window.innerWidth;
       canvas.height = window.innerHeight;
       nextNumber = 1;
-      msg.textContent = `לחצו על הכדורים בסדר: 1 → ${NUM_BALLS}`;
+      msg.textContent = `לחצו על הכדורים בסדר: 1 - ${NUM_BALLS}`;
 
       const numbers = Array.from({length:NUM_BALLS}, (_,i)=>i+1);
       shuffle(numbers);

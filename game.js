@@ -8,6 +8,13 @@ function shuffle(array) {
   return array;
 }
 
+// Expose grid size calculation for both browser and Node environments
+function getGridSize(level) {
+  if (level === 'medium') return 8;
+  if (level === 'hard') return 12;
+  return 4;
+}
+
 if (typeof document !== 'undefined') {
 document.addEventListener('DOMContentLoaded', () => {
   // Translations for internalization (i18n)
@@ -200,15 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateTexts();
   }
 
-  /**
-   * Gets the grid size based on the selected difficulty.
-   * @returns {number} The grid size.
-   */
-  function getGridSize(level) {
-    if (level === 'medium') return 8;
-    if (level === 'hard') return 12;
-    return 4;
-  }
+  // getGridSize is defined globally for tests; reuse it here
 
   /**
    * Generates the symbols for the game board.
