@@ -45,6 +45,10 @@
       <button onclick="initGame()">התחל מחדש</button>
     </div>
     <div class="control-group">
+        <label for="fontSize">גודל גופן:</label>
+        <input type="range" id="fontSize" min="10" max="50" value="26">
+    </div>
+    <div class="control-group">
       <label for="redBrightness">בהירות (אדום):</label>
       <input type="range" id="redBrightness" min="0" max="200" value="100">
       <label for="redContrast">ניגודיות (אדום):</label>
@@ -66,6 +70,7 @@
     const NUM_BALLS   = 7;
     const BALL_RADIUS = 60;
     let SPEED         = 2.5;
+    let FONT_SIZE     = 56;
 
     const canvas = document.getElementById('gameCanvas');
     const ctx    = canvas.getContext('2d');
@@ -78,6 +83,7 @@
     const rightContrastSlider = document.getElementById('rightContrast');
     const rightBrightnessLabel = document.getElementById('rightBrightnessLabel');
     const rightContrastLabel = document.getElementById('rightContrastLabel');
+    const fontSizeSlider = document.getElementById('fontSize');
 
     let rightColor = 'green';
 
@@ -181,7 +187,7 @@
           ctx.stroke();
 
           ctx.fillStyle = 'white';
-          ctx.font = '26px sans-serif';
+          ctx.font = `${FONT_SIZE}px sans-serif`;
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           ctx.fillText(ball.num, ball.x, ball.y);
@@ -231,6 +237,10 @@
         redContrastSlider.addEventListener(eventName, () => !animationFrameId && loop());
         rightBrightnessSlider.addEventListener(eventName, () => !animationFrameId && loop());
         rightContrastSlider.addEventListener(eventName, () => !animationFrameId && loop());
+        fontSizeSlider.addEventListener(eventName, () => {
+            FONT_SIZE = fontSizeSlider.value;
+            if (!animationFrameId) loop();
+        });
     });
 
     document.getElementById('toggleColor').addEventListener('click', toggleRightColor);
