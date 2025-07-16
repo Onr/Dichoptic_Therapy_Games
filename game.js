@@ -8,7 +8,9 @@ function shuffle(array) {
   return array;
 }
 
-// Expose grid size calculation for both browser and Node environments
+// Expose the grid size logic outside of the DOM environment so that it can
+// be tested with Node. The memory game also uses this helper when creating the
+// board inside the DOMContentLoaded handler.
 function getGridSize(level) {
   if (level === 'medium') return 8;
   if (level === 'hard') return 12;
