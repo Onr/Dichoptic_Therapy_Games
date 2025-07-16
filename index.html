@@ -103,6 +103,15 @@
       </a>
     </div>
     <button id="toggle-language" data-i18n="languageButton">עברית</button>
+    <div class="footer-links" style="margin-top: 2rem; font-size: 0.9rem;">
+        <p class="credit" style="margin-bottom: 0.5rem;">
+            <span data-i18n="creditText">Built by Tal Bar Nizan & Ori Nizan • </span>
+            <a href="mailto:restin3@gmail.com?subject=Contact%20about%20the%20therapy%20game" data-i18n="contactLink" style="color: #fff;">Contact Us</a>
+        </p>
+        <p class="credit">
+            <a href="privacy-policy.html" target="_blank" style="color: #fff;">Privacy Policy</a>
+        </p>
+    </div>
   </div>
 
   <script>
@@ -114,7 +123,9 @@
         memoryGameDesc: 'Align matching pairs, with this classic card matching game. Strengthening binocular coordination.',
         ballGameTitle: 'Ball Tracking',
         ballGameDesc: 'Click the numbered balls in the correct order as they move around the screen.',
-        languageButton: 'עברית'
+        languageButton: 'עברית',
+        creditText: 'Built by Tal Bar Nizan & Ori Nizan • ',
+        contactLink: 'Contact Us'
       },
       he: {
         title: 'מרכז משחקים',
@@ -123,7 +134,9 @@
         memoryGameDesc: 'התאם זוגות תואמים במשחק קלפים קלאסי זה. מחזק תיאום בינוקולרי.',
         ballGameTitle: 'משחק כדורים',
         ballGameDesc: 'לחצו על הכדורים הממוספרים בסדר הנכון בזמן שהם נעים על המסך.',
-        languageButton: 'English'
+        languageButton: 'English',
+        creditText: 'נבנה על ידי טל בר ניצן ואורי ניצן • ',
+        contactLink: 'צרו קשר'
       }
     };
 
@@ -146,9 +159,6 @@
       const newLang = currentLang === 'en' ? 'he' : 'en';
       switchLanguage(newLang);
     });
-     const creditElement = document.createElement('p');
-    creditElement.innerHTML = '<span data-i18n="creditText">Built by Tal Bar Nizan & Ori Nizan</span>';
-    document.querySelector('.container').appendChild(creditElement);
   </script>
 </body>
 </html>
