@@ -141,7 +141,7 @@
       numBalls = BALL_COUNTS[ballsSlider.value];
       ballsLabel.textContent = numBalls;
       nextNumber = 1;
-      msg.textContent = `לחצו על הכדורים בסדר: 1 → ${numBalls}`;
+      msg.textContent = `לחצו על הכדורים בסדר: 1 - ${numBalls}`;
 
       const numbers = Array.from({length:numBalls}, (_,i)=>i+1);
       shuffle(numbers);
