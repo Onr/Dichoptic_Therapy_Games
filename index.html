@@ -46,6 +46,7 @@
         display: flex;
         gap: 1.5rem;
         justify-content: center;
+        flex-wrap: wrap;
     }
     .game-card {
       background: rgba(255, 255, 255, 0.25);
@@ -101,6 +102,10 @@
         <h2 data-i18n="ballGameTitle">Tracking</h2>
         <p data-i18n="ballGameDesc">Click the numbered balls in the correct order as they move around the screen.</p>
       </a>
+      <a href="static_ball_game.html" class="game-card">
+        <h2 data-i18n="staticBallGameTitle">Saccades</h2>
+        <p data-i18n="staticBallGameDesc">Click the balls that appear one at a time in random locations.</p>
+      </a>
     </div>
     <button id="toggle-language" data-i18n="languageButton">עברית</button>
     <div class="footer-links" style="margin-top: 2rem; font-size: 0.9rem;">
@@ -123,6 +128,8 @@
         memoryGameDesc: 'Align matching pairs, with this classic card matching game. Strengthening binocular coordination.',
         ballGameTitle: 'Ball Tracking',
         ballGameDesc: 'Click the numbered balls in the correct order as they move around the screen.',
+        staticBallGameTitle: 'Saccade',
+        staticBallGameDesc: 'Click numbered balls that appear one at a time in random locations.',
         languageButton: 'עברית',
         creditText: 'Built by Tal Bar Nizan & Ori Nizan • ',
         contactLink: 'Contact Us'
@@ -134,6 +141,8 @@
         memoryGameDesc: 'התאם זוגות תואמים במשחק קלפים קלאסי זה. מחזק תיאום בינוקולרי.',
         ballGameTitle: 'מעקב',
         ballGameDesc: 'לחצו על הכדורים הממוספרים בסדר הנכון בזמן שהם נעים על המסך.',
+        staticBallGameTitle: 'סקדות',
+        staticBallGameDesc: 'לחצו על כדורים ממוספרים המופיעים אחד אחד במקומות אקראיים.',
         languageButton: 'English',
         creditText: 'נבנה על ידי טל בר ניצן ואורי ניצן • ',
         contactLink: 'צרו קשר'

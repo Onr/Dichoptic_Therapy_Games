@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+  <meta charset="UTF-8">
+  <title>משחק – לחצו על הכדורים הסטטיים</title>
+  <style>
+    body { margin: 0; overflow: hidden; font-family: sans-serif; background:#222; color:#eee; }
+    #gameCanvas { display: block; background: #333; }
+    #message {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font: 24px sans-serif;
+      background: rgba(22, 22, 22, 0.8);
+      padding: 8px 12px;
+      border-radius: 4px;
+    }
+    #controls {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(22, 22, 22, 0.8);
+      padding: 10px;
+      border-radius: 5px;
+    }
+    .control-group {
+      margin-bottom: 10px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div id="message">לחצו על הכדור</div>
+  <div id="controls">
+    <div class="control-group">
+      <button onclick="initGame()">התחל מחדש</button>
+    </div>
+    <div class="control-group">
+      <label for="redBrightness">בהירות (אדום):</label>
+      <input type="range" id="redBrightness" min="0" max="200" value="100">
+      <label for="redContrast">ניגודיות (אדום):</label>
+      <input type="range" id="redContrast" min="0" max="200" value="100">
+    </div>
+    <div class="control-group">
+      <label id="rightBrightnessLabel" for="rightBrightness">בהירות (ירוק):</label>
+      <input type="range" id="rightBrightness" min="0" max="200" value="100">
+      <label id="rightContrastLabel" for="rightContrast">ניגודיות (ירוק):</label>
+      <input type="range" id="rightContrast" min="0" max="200" value="100">
+    </div>
+    <div class="control-group">
+      <button id="toggleColor">החלף ירוק ↔ כחול</button>
+    </div>
+  </div>
+  <canvas id="gameCanvas"></canvas>
+
+  <script>
+    const BALL_RADIUS = 60;
+
+    const canvas = document.getElementById('gameCanvas');
+    const ctx    = canvas.getContext('2d');
+    const msg    = document.getElementById('message');
+    let currentBall, clickCount = 0;
+
+    const redBrightnessSlider = document.getElementById('redBrightness');
+    const redContrastSlider = document.getElementById('redContrast');
+    const rightBrightnessSlider = document.getElementById('rightBrightness');
+    const rightContrastSlider = document.getElementById('rightContrast');
+    const rightBrightnessLabel = document.getElementById('rightBrightnessLabel');
+    const rightContrastLabel = document.getElementById('rightContrastLabel');
+
+    let rightColor = 'green';
+
+    function applyColorTransforms(color, brightness, contrast) {
+      let r, g, b;
+      if (color === 'red') {
+        r = 255; g = 0; b = 0;
+      } else if (color === 'blue') {
+        r = 0; g = 0; b = 255;
+    } else {
+        r = 0; g = 128; b = 0;
+      }
+
+      // Apply brightness
+      r = r * (brightness / 100);
+      g = g * (brightness / 100);
+      b = b * (brightness / 100);
+
+      // Apply contrast
+      const factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
+      r = factor * (r - 128) + 128;
+      g = factor * (g - 128) + 128;
+      b = factor * (b - 128) + 128;
+
+      r = Math.max(0, Math.min(255, r));
+      g = Math.max(0, Math.min(255, g));
+      b = Math.max(0, Math.min(255, b));
+
+      return `rgb(${r},${g},${b})`;
+    }
+
+    function createNewBall() {
+      return {
+        color: Math.random() < 0.5 ? 'red' : rightColor,
+        x: Math.random() * (canvas.width - 2 * BALL_RADIUS) + BALL_RADIUS,
+        y: Math.random() * (canvas.height - 2 * BALL_RADIUS) + BALL_RADIUS
+      };
+    }
+
+    function initGame() {
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
+      clickCount = 0;
+      
+      msg.textContent = `כדורים שנלחצו: ${clickCount}`;
+      
+      currentBall = createNewBall();
+      drawGame();
+    }
+
+    function drawGame() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      if (currentBall) {
+        ctx.beginPath();
+        ctx.arc(currentBall.x, currentBall.y, BALL_RADIUS, 0, Math.PI * 2);
+        
+        if (currentBall.color === 'red') {
+          ctx.fillStyle = applyColorTransforms('red', redBrightnessSlider.value, redContrastSlider.value);
+        } else {
+          ctx.fillStyle = applyColorTransforms(rightColor, rightBrightnessSlider.value, rightContrastSlider.value);
+        }
+        ctx.fill();
+        ctx.stroke();
+      }
+    }
+
+    function nextBall() {
+      clickCount++;
+      currentBall = createNewBall();
+      msg.textContent = `כדורים שנלחצו: ${clickCount}`;
+      drawGame();
+    }
+
+    function toggleRightColor() {
+      rightColor = rightColor === 'green' ? 'blue' : 'green';
+      rightBrightnessLabel.textContent = `בהירות (${rightColor === 'green' ? 'ירוק' : 'כחול'})`;
+      rightContrastLabel.textContent = `ניגודיות (${rightColor === 'green' ? 'ירוק' : 'כחול'})`;
+      document.getElementById('toggleColor').textContent = rightColor === 'green'
+        ? 'החלף ירוק ↔ כחול'
+        : 'החלף כחול ↔ ירוק';
+      
+      // Update current ball color if it's not red
+      if (currentBall && currentBall.color !== 'red') {
+        currentBall.color = rightColor;
+      }
+      drawGame();
+    }
+
+    function handlePointerDown(e) {
+      e.preventDefault(); // Prevent default touch behavior
+      const rect = canvas.getBoundingClientRect();
+      const mx = (e.clientX || e.touches[0].clientX) - rect.left;
+      const my = (e.clientY || e.touches[0].clientY) - rect.top;
+
+      if (currentBall) {
+        const dx = mx - currentBall.x;
+        const dy = my - currentBall.y;
+        if (dx * dx + dy * dy <= BALL_RADIUS * BALL_RADIUS) {
+          // Ball clicked
+          nextBall();
+        }
+      }
+    }
+
+    canvas.addEventListener('mousedown', handlePointerDown);
+    canvas.addEventListener('touchstart', handlePointerDown, { passive: false }); // Added touch support
+
+    
+    ['input', 'change'].forEach(eventName => {
+        redBrightnessSlider.addEventListener(eventName, drawGame);
+        redContrastSlider.addEventListener(eventName, drawGame);
+        rightBrightnessSlider.addEventListener(eventName, drawGame);
+        rightContrastSlider.addEventListener(eventName, drawGame);
+    });
+
+    document.getElementById('toggleColor').addEventListener('click', toggleRightColor);
+
+    window.addEventListener('resize', initGame);
+
+    initGame();
+  </script>
+</body>
+</html>
