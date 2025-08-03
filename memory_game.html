@@ -90,37 +90,45 @@
     <a href="privacy-policy.html" style="color:#8cf; margin-left:1rem;" target="_blank">Learn more</a>
   </div>
 
-  <section class="controls">
-    <fieldset>
-      <legend data-i18n="controls.difficultyLegend">Difficulty</legend>
-      <label for="difficulty">
-        <span data-i18n="controls.selectDifficulty">Select difficulty:</span>
-        <select id="difficulty">
-          <option value="easy" data-i18n="controls.easy">Easy (4×4)</option>
-          <option value="medium" data-i18n="controls.medium">Medium (8×8)</option>
-          <option value="hard" data-i18n="controls.hard">Hard (12×12)</option>
-        </select>
-      </label>
-    </fieldset>
-    <fieldset>
-      <legend data-i18n="controls.leftEyeLegend">Left Eye (Red) Settings</legend>
-      <label><span data-i18n="controls.brightness">Brightness</span>
-        <input type="range" id="left-brightness" min="0.5" max="2" step="0.1" value="1" />
-      </label>
-      <label><span data-i18n="controls.contrast">Contrast</span>
-        <input type="range" id="left-contrast" min="0.5" max="2" step="0.1" value="1" />
-      </label>
-    </fieldset>
-    <fieldset>
-      <legend data-i18n="controls.rightEyeLegend">Right Eye (Green) Settings</legend>
-      <label><span data-i18n="controls.brightness">Brightness</span>
-        <input type="range" id="right-brightness" min="0.5" max="2" step="0.1" value="1" />
-      </label>
-      <label><span data-i18n="controls.contrast">Contrast</span>
-        <input type="range" id="right-contrast" min="0.5" max="2" step="0.1" value="1" />
-      </label>
-    </fieldset>
-  </section>
+  <div class="controls-container">
+    <div class="controls-header" onclick="toggleControls()">
+      <span data-i18n="controls.settings">Game Settings</span>
+      <span class="controls-toggle">▼</span>
+    </div>
+    <div class="controls-content" id="controls-content">
+      <section class="controls">
+        <fieldset>
+          <legend data-i18n="controls.difficultyLegend">Difficulty</legend>
+          <label for="difficulty">
+            <span data-i18n="controls.selectDifficulty">Select difficulty:</span>
+            <select id="difficulty">
+              <option value="easy" data-i18n="controls.easy">Easy (4×4)</option>
+              <option value="medium" data-i18n="controls.medium">Medium (8×8)</option>
+              <option value="hard" data-i18n="controls.hard">Hard (12×12)</option>
+            </select>
+          </label>
+        </fieldset>
+        <fieldset>
+          <legend data-i18n="controls.leftEyeLegend">Left Eye (Red) Settings</legend>
+          <label><span data-i18n="controls.brightness">Brightness</span>
+            <input type="range" id="left-brightness" min="0.5" max="2" step="0.1" value="1" />
+          </label>
+          <label><span data-i18n="controls.contrast">Contrast</span>
+            <input type="range" id="left-contrast" min="0.5" max="2" step="0.1" value="1" />
+          </label>
+        </fieldset>
+        <fieldset>
+          <legend data-i18n="controls.rightEyeLegend">Right Eye (Green) Settings</legend>
+          <label><span data-i18n="controls.brightness">Brightness</span>
+            <input type="range" id="right-brightness" min="0.5" max="2" step="0.1" value="1" />
+          </label>
+          <label><span data-i18n="controls.contrast">Contrast</span>
+            <input type="range" id="right-contrast" min="0.5" max="2" step="0.1" value="1" />
+          </label>
+        </fieldset>
+      </section>
+    </div>
+  </div>
 
   <main>
     <div id="game-board" class="game-board"></div>
@@ -173,7 +181,15 @@
       </p>
     </footer>
 
-
+  <script>
+    function toggleControls() {
+      const header = document.querySelector('.controls-header');
+      const content = document.getElementById('controls-content');
+      
+      header.classList.toggle('collapsed');
+      content.classList.toggle('collapsed');
+    }
+  </script>
   <script src="game.js"></script>
 </body>
 </html>

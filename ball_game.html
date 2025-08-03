@@ -4,68 +4,214 @@
   <meta charset="UTF-8">
   <title>משחק – לחצו על הכדורים לפי המספרים</title>
   <style>
-    body { margin: 0; overflow: hidden; font-family: sans-serif; background:#222; color:#eee; }
-    #gameCanvas { display: block; background: #333; }
+    body { 
+      margin: 0; 
+      overflow: hidden; 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); 
+      color: #fff; 
+    }
+    #gameCanvas { 
+      display: block; 
+      background: #1a1a2e; 
+      box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+    }
     #message {
       position: absolute;
-      top: 10px;
-      right: 10px;
-      font: 24px sans-serif;
-      background: rgba(22, 22, 22, 0.8);
-      padding: 8px 12px;
-      border-radius: 4px;
+      top: 20px;
+      right: 20px;
+      font: 700 24px 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, rgba(42, 82, 152, 0.95), rgba(30, 60, 114, 0.95));
+      padding: 12px 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     }
     #controls {
       position: absolute;
-      top: 10px;
-      left: 10px;
-      background: rgba(22, 22, 22, 0.8);
-      padding: 10px;
-      border-radius: 5px;
+      top: 20px;
+      left: 20px;
+      background: linear-gradient(135deg, rgba(42, 82, 152, 0.95), rgba(30, 60, 114, 0.95));
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      min-width: 200px;
+    }
+    
+    .controls-header {
+      padding: 1rem 1.5rem;
+      cursor: pointer;
+      background: linear-gradient(135deg, rgba(42, 82, 152, 0.95), rgba(30, 60, 114, 0.95));
+      border-radius: 16px 16px 0 0;
+      transition: all 0.3s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #e0e6ff;
+      font-weight: 600;
+      user-select: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .controls-header:hover {
+      background: linear-gradient(135deg, rgba(52, 92, 162, 0.95), rgba(40, 70, 124, 0.95));
+    }
+    
+    .controls-header.collapsed {
+      border-radius: 16px;
+      border-bottom: none;
+    }
+    
+    .controls-toggle {
+      font-size: 1.2rem;
+      transition: transform 0.3s ease;
+      color: #e0e6ff;
+    }
+    
+    .controls-header.collapsed .controls-toggle {
+      transform: rotate(-90deg);
+    }
+    
+    .controls-content {
+      overflow: hidden;
+      transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+      max-height: 1000px;
+      padding: 20px;
+    }
+    
+    .controls-content.collapsed {
+      max-height: 0;
+      padding: 0 20px;
     }
     .control-group {
-      margin-bottom: 10px;
+      margin-bottom: 20px;
+    }
+    .control-group:last-child {
+      margin-bottom: 0;
     }
     label {
       display: block;
-      margin-bottom: 5px;
+      margin-bottom: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      color: #e0e6ff;
+    }
+    
+    /* Modern Slider Styling */
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+      outline: none;
+      margin: 8px 0;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(79, 172, 254, 0.3);
+    }
+    
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      cursor: pointer;
+      border: 2px solid #fff;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      transition: all 0.3s ease;
+    }
+    
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
+    
+    input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      cursor: pointer;
+      border: 2px solid #fff;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      transition: all 0.3s ease;
+    }
+    
+    /* Modern Button Styling */
+    button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      font-family: 'Segoe UI', sans-serif;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      margin: 4px 2px;
+    }
+    
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+      background: linear-gradient(135deg, #5a6fd8 0%, #6b42a6 100%);
+    }
+    
+    button:active {
+      transform: translateY(0);
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
     }
   </style>
 </head>
 <body>
   <div id="message">לחצו על הכדורים בסדר עולה</div>
   <div id="controls">
-    <div class="control-group">
-      <label>קושי:</label>
-      <button onclick="setDifficulty(0)">ללא תנועה</button>
-      <button onclick="setDifficulty(1.5)">איטי</button>
-      <button onclick="setDifficulty(4)">מהיר</button>
+    <div class="controls-header" onclick="toggleControls()">
+      <span>הגדרות משחק</span>
+      <span class="controls-toggle">▼</span>
     </div>
-    <div class="control-group">
-      <label for="ballsSlider">מספר כדורים: <span id="ballsLabel">7</span></label>
-      <input type="range" id="ballsSlider" min="0" max="3" step="1" value="0">
-    </div>
-    <div class="control-group">
-      <button onclick="initGame()">התחל מחדש</button>
-    </div>
-    <div class="control-group">
-        <label for="fontSize">גודל גופן:</label>
-        <input type="range" id="fontSize" min="10" max="50" value="26">
-    </div>
-    <div class="control-group">
-      <label for="redBrightness">בהירות (אדום):</label>
-      <input type="range" id="redBrightness" min="0" max="200" value="100">
-      <label for="redContrast">ניגודיות (אדום):</label>
-      <input type="range" id="redContrast" min="0" max="200" value="100">
-    </div>
-    <div class="control-group">
-      <label id="rightBrightnessLabel" for="rightBrightness">בהירות (ירוק):</label>
-      <input type="range" id="rightBrightness" min="0" max="200" value="100">
-      <label id="rightContrastLabel" for="rightContrast">ניגודיות (ירוק):</label>
-      <input type="range" id="rightContrast" min="0" max="200" value="100">
-    </div>
-    <div class="control-group">
-      <button id="toggleColor">החלף ירוק ↔ כחול</button>
+    <div class="controls-content" id="controls-content">
+      <div class="control-group">
+        <label>קושי:</label>
+        <button onclick="setDifficulty(0)">ללא תנועה</button>
+        <button onclick="setDifficulty(1.5)">איטי</button>
+        <button onclick="setDifficulty(4)">מהיר</button>
+      </div>
+      <div class="control-group">
+        <label for="ballsSlider">מספר כדורים: <span id="ballsLabel">7</span></label>
+        <input type="range" id="ballsSlider" min="0" max="3" step="1" value="0">
+      </div>
+      <div class="control-group">
+        <button onclick="initGame()">התחל מחדש</button>
+      </div>
+      <div class="control-group">
+          <label for="fontSize">גודל גופן:</label>
+          <input type="range" id="fontSize" min="10" max="50" value="26">
+      </div>
+      <div class="control-group">
+        <label for="redBrightness">בהירות (אדום):</label>
+        <input type="range" id="redBrightness" min="0" max="200" value="100">
+        <label for="redContrast">ניגודיות (אדום):</label>
+        <input type="range" id="redContrast" min="0" max="200" value="100">
+      </div>
+      <div class="control-group">
+        <label id="rightBrightnessLabel" for="rightBrightness">בהירות (ירוק):</label>
+        <input type="range" id="rightBrightness" min="0" max="200" value="100">
+        <label id="rightContrastLabel" for="rightContrast">ניגודיות (ירוק):</label>
+        <input type="range" id="rightContrast" min="0" max="200" value="100">
+      </div>
+      <div class="control-group">
+        <button id="toggleColor">החלף ירוק ↔ כחול</button>
+      </div>
     </div>
   </div>
   <canvas id="gameCanvas"></canvas>
@@ -176,6 +322,14 @@
         ? 'החלף ירוק ↔ כחול'
         : 'החלף כחול ↔ ירוק';
       if (!animationFrameId) loop();
+    }
+
+    function toggleControls() {
+      const header = document.querySelector('.controls-header');
+      const content = document.getElementById('controls-content');
+      
+      header.classList.toggle('collapsed');
+      content.classList.toggle('collapsed');
     }
 
     let animationFrameId;
