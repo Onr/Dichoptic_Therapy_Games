@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
         leftEyeLegend: "Left Eye (Red) Settings",
         rightEyeLegend: "Right Eye (Green) Settings",
         rightEyeLegendBlue: "Right Eye (Blue) Settings",
+        optionsLegend: "Options",
         brightness: "Brightness",
         contrast: "Contrast",
         restart: "Restart"
@@ -83,6 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
         leftEyeLegend: "הגדרות עין שמאל (אדום)",
         rightEyeLegend: "הגדרות עין ימין (ירוק)",
         rightEyeLegendBlue: "הגדרות עין ימין (כחול)",
+        optionsLegend: "אפשרויות",
         brightness: "בהירות",
         contrast: "ניגודיות",
         restart: "התחל מחדש"
@@ -512,14 +514,18 @@ document.addEventListener('DOMContentLoaded', () => {
   restartBtn.addEventListener('click', startGame);
   colorToggleBtn.addEventListener('click', toggleEyeColor);
   langToggleBtn?.addEventListener('click', toggleLanguage);
-  howToPlayBtn.addEventListener('click', showHowToPlayModal);
+  howToPlayBtn?.addEventListener('click', showHowToPlayModal);
 
 
   // Initial setup
-  updateTexts();
-  initSettings();
-  startGame();
-  displayLeaderboard();
+  if (document.getElementById('game-board')) {
+    updateTexts();
+    initSettings();
+    displayLeaderboard();
+    
+    // Programmatically click the restart button to start the game
+    restartBtn.click();
+  }
 });
 }
 
