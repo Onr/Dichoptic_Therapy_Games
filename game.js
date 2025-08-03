@@ -34,15 +34,14 @@ document.addEventListener('DOMContentLoaded', () => {
         leftEyeLegend: "Left Eye (Red) Settings",
         rightEyeLegend: "Right Eye (Green) Settings",
         rightEyeLegendBlue: "Right Eye (Blue) Settings",
-        optionsLegend: "Options",
         brightness: "Brightness",
         contrast: "Contrast",
         restart: "Restart"
       },
       stats: {
-        timeLabel: "Time:",
-        movesLabel: "Moves:",
-        scoreLabel: "Score:",
+        timeLabel: "Time",
+        movesLabel: "Moves",
+        scoreLabel: "Score",
         secondsUnit: "s"
       },
       leaderboard: {
@@ -84,16 +83,15 @@ document.addEventListener('DOMContentLoaded', () => {
         leftEyeLegend: "הגדרות עין שמאל (אדום)",
         rightEyeLegend: "הגדרות עין ימין (ירוק)",
         rightEyeLegendBlue: "הגדרות עין ימין (כחול)",
-        optionsLegend: "אפשרויות",
         brightness: "בהירות",
         contrast: "ניגודיות",
         restart: "התחל מחדש"
       },
       stats: {
-        timeLabel: "זמן:",
-        movesLabel: "מהלכים:",
-        scoreLabel: "ניקוד:",
-        secondsUnit: "שניות"
+        timeLabel: "זמן",
+        movesLabel: "מהלכים",
+        scoreLabel: "ניקוד",
+        secondsUnit: "ש"
       },
       leaderboard: {
         title: "טבלת שיאים",
@@ -163,7 +161,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const rightContrast = document.getElementById('right-contrast');
   const colorToggleBtn = document.getElementById('toggle-eye-color');
   const langToggleBtn = document.getElementById('toggle-language');
-  const howToPlayBtn = document.getElementById('how-to-play');
   const rightEyeLegend = document.querySelector('[data-i18n="controls.rightEyeLegend"]');
   const leaderboardEasy = document.getElementById('leaderboard-easy');
   const leaderboardMedium = document.getElementById('leaderboard-medium');
@@ -406,25 +403,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /**
-   * Shows the how to play modal.
-   */
-  function showHowToPlayModal() {
-    const modal = document.createElement('div');
-    modal.className = 'modal';
-    modal.innerHTML = `
-      <div class="modal-content">
-        <h2 data-i18n="howToPlay">${translations[game.currentLanguage].howToPlay}</h2>
-        <div>${translations[game.currentLanguage].instructions}</div>
-        <button id="close-how-to-play">Close</button>
-      </div>
-    `;
-    document.body.appendChild(modal);
-    document.getElementById('close-how-to-play').addEventListener('click', () => {
-      modal.remove();
-    });
-  }
-
-  /**
    * Updates the CSS filters for brightness and contrast and saves them to localStorage.
    */
   function updateFilters() {
@@ -514,18 +492,13 @@ document.addEventListener('DOMContentLoaded', () => {
   restartBtn.addEventListener('click', startGame);
   colorToggleBtn.addEventListener('click', toggleEyeColor);
   langToggleBtn?.addEventListener('click', toggleLanguage);
-  howToPlayBtn?.addEventListener('click', showHowToPlayModal);
 
 
   // Initial setup
-  if (document.getElementById('game-board')) {
-    updateTexts();
-    initSettings();
-    displayLeaderboard();
-    
-    // Programmatically click the restart button to start the game
-    restartBtn.click();
-  }
+  updateTexts();
+  initSettings();
+  startGame();
+  displayLeaderboard();
 });
 }
 

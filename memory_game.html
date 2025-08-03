@@ -157,20 +157,21 @@
   </main>
 
   <footer>
-    <div id="stats" class="stats" aria-live="polite">
-      <span>
-        <span data-i18n="stats.timeLabel">Time:</span>
-        <span id="timer">0</span>
-        <span data-i18n="stats.secondsUnit">s</span>
-      </span>
-      <span>
-        <span data-i18n="stats.movesLabel">Moves:</span>
-        <span id="moves">0</span>
-      </span>
-      <span>
-        <span data-i18n="stats.scoreLabel">Score:</span>
-        <span id="score">0</span>
-      </span>
+        <div id="stats" class="stats" aria-live="polite">
+      <div class="stat-item">
+        <span class="stat-label" data-i18n="stats.timeLabel">Time</span>
+        <div class="stat-value">
+          <span id="timer">0</span><span data-i18n="stats.secondsUnit">s</span>
+        </div>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label" data-i18n="stats.movesLabel">Moves</span>
+        <span id="moves" class="stat-value">0</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label" data-i18n="stats.scoreLabel">Score</span>
+        <span id="score" class="stat-value">0</span>
+      </div>
     </div>
     <button id="restart" data-i18n="controls.restart">Restart</button>
 
