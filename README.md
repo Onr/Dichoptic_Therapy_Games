@@ -30,10 +30,20 @@ This game implements dichoptic therapy principles based on the [Requirements Doc
 - HTML5, CSS3, JavaScript (ES6+)
 - No external dependencies; works offline after initial load.
 
+## Automated Setup
+
+Run the interactive setup script after cloning the repository:
+
+```bash
+./setup.sh
+```
+
+The script uses the [gum](https://github.com/charmbracelet/gum) CLI to install dependencies, run tests, perform a basic npm audit and optionally capture system information. Configuration such as the selected port is saved to a `.env` file.
+
 ## Running Tests
 
 1. Install dependencies with `npm install`.
-2. Run `npm test` to execute the Jest test suite.
+2. Run `npm test` to execute the Jest test suite. The `setup.sh` script can also run these steps for you.
 
 ## License
 
