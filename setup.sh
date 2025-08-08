@@ -1,5 +1,7 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/usr/bin/env sh
+set -eu
+# Enable pipefail if supported (POSIX shells may not support it)
+set -o pipefail 2>/dev/null || true
 
 # Ensure gum is installed
 if ! command -v gum >/dev/null 2>&1; then
