@@ -38,7 +38,7 @@ Run the interactive setup script after cloning the repository:
 ./setup.sh
 ```
 
-The script uses the [gum](https://github.com/charmbracelet/gum) CLI to install dependencies, run tests, perform a basic npm audit and optionally capture system information. Configuration such as the selected port is saved to a `.env` file.
+The script uses the [gum](https://github.com/charmbracelet/gum) CLI to install dependencies, run tests, perform a basic npm audit, optionally capture system information, and even start a simple local server to host the game. Configuration such as the selected port is saved to a `.env` file. If you opt to start the server, the script prints the URL (e.g., `http://localhost:8080`).
 
 ## Running Tests
 

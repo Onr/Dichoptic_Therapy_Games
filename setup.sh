@@ -47,4 +47,15 @@ if gum confirm "Write machine info to machine_info.txt?"; then
   gum style "Saved machine info to machine_info.txt"
 fi
 
-gum style --foreground 42 --bold "Setup complete."
+if gum confirm "Start local server to serve the game now?"; then
+  gum style --foreground 42 --bold "Server running at http://localhost:$PORT (press Ctrl+C to stop)"
+  if command -v python3 >/dev/null 2>&1; then
+    python3 -m http.server "$PORT"
+  elif command -v npx >/dev/null 2>&1; then
+    npx http-server -p "$PORT"
+  else
+    gum style --foreground 196 "Neither python3 nor npx found to run a server."
+  fi
+else
+  gum style --foreground 42 --bold "Setup complete."
+fi
