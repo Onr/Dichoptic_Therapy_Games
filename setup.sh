@@ -98,36 +98,129 @@ fi
 # Main setup flow
 run_setup() {
   # Main setup header
-  gum_style "🎮 Dichoptic Therapy Games - Production Setup 🚀"
+  gum_style "🎮 Dichoptic Therapy Games - Setup Menu 🚀"
 
-  echo -e "${CYAN}This setup script will configure your machine for full production deployment${NC}"
-  echo -e "${CYAN}including all logging, monitoring, and infrastructure components.${NC}"
+  echo -e "${CYAN}Welcome to the Dichoptic Therapy Games setup system!${NC}"
+  echo -e "${CYAN}Choose from the options below to customize your setup experience.${NC}"
   echo
 
-  # Setup mode selection
-  if gum_confirm "Do you want to run the full setup process?"; then
-    FULL_SETUP=true
-  else
-    FULL_SETUP=false
-    # Show admin password management menu
-    if [[ -f "admin.html" ]]; then
-      gum_style "🔐 Quick Actions"
-      if gum_confirm "Manage admin password only?"; then
-        setup_admin_password
+  # Main menu selection
+  if command -v gum >/dev/null 2>&1; then
+    # Use gum for interactive selection
+    setup_option=$(gum choose --header "What would you like to do?" \
+      "🔧 Full Setup (Complete installation & configuration)" \
+      "📦 Install Dependencies Only" \
+      "🔐 Manage Admin Password Only" \
+      "🚀 Start Server Only" \
+      "❌ Exit")
+    
+    case "$setup_option" in
+      "🔧 Full Setup (Complete installation & configuration)")
+        echo -e "${GREEN}Starting full setup process...${NC}"
+        echo
+        # Check if user wants to setup admin password during full setup
+        if [[ -f "admin.html" ]] && gum_confirm "Setup/change admin dashboard password during setup?"; then
+          setup_admin_password
+          echo
+        fi
+        main "${@:-}"
+        ;;
+      "📦 Install Dependencies Only")
+        echo -e "${GREEN}Starting dependencies installation...${NC}"
+        echo
+        check_requirements
+        setup_environment
+        install_dependencies
+        echo -e "${GREEN}✅ Dependencies installation completed!${NC}"
+        echo
+        # Offer to start server after dependencies
+        if gum_confirm "Would you like to start a server now?"; then
+          start_server_menu
+        fi
+        ;;
+      "🔐 Manage Admin Password Only")
+        if [[ -f "admin.html" ]]; then
+          setup_admin_password
+        else
+          echo -e "${RED}❌ admin.html not found in current directory${NC}"
+          echo -e "${CYAN}Please run this script from the project root directory${NC}"
+        fi
         exit 0
-      fi
-    fi
-  fi
-
-  # Check if user wants to setup admin password during full setup
-  if [[ "$FULL_SETUP" == "true" ]] && [[ -f "admin.html" ]] && gum_confirm "Setup/change admin dashboard password now?"; then
-    setup_admin_password
+        ;;
+      "🚀 Start Server Only")
+        echo -e "${GREEN}Starting server menu...${NC}"
+        echo
+        # Set default port if not set
+        PORT=${PORT:-8080}
+        start_server_menu
+        exit 0
+        ;;
+      "❌ Exit")
+        echo -e "${YELLOW}Setup cancelled. Goodbye! 👋${NC}"
+        exit 0
+        ;;
+    esac
+  else
+    # Fallback for systems without gum
+    echo "Setup Options:"
+    echo "1) Full Setup (Complete installation & configuration)"
+    echo "2) Install Dependencies Only"
+    echo "3) Manage Admin Password Only"
+    echo "4) Start Server Only"
+    echo "5) Exit"
     echo
-  fi
-
-  # Run main function
-  if [[ "${FULL_SETUP:-true}" == "true" ]]; then
-    main "${@:-}"
+    read -p "Enter choice (1-5): " choice
+    
+    case $choice in
+      1)
+        echo -e "${GREEN}Starting full setup process...${NC}"
+        echo
+        # Check if user wants to setup admin password during full setup
+        if [[ -f "admin.html" ]] && gum_confirm "Setup/change admin dashboard password during setup?"; then
+          setup_admin_password
+          echo
+        fi
+        main "${@:-}"
+        ;;
+      2)
+        echo -e "${GREEN}Starting dependencies installation...${NC}"
+        echo
+        check_requirements
+        setup_environment
+        install_dependencies
+        echo -e "${GREEN}✅ Dependencies installation completed!${NC}"
+        echo
+        # Offer to start server after dependencies
+        if gum_confirm "Would you like to start a server now?"; then
+          start_server_menu
+        fi
+        ;;
+      3)
+        if [[ -f "admin.html" ]]; then
+          setup_admin_password
+        else
+          echo -e "${RED}❌ admin.html not found in current directory${NC}"
+          echo -e "${CYAN}Please run this script from the project root directory${NC}"
+        fi
+        exit 0
+        ;;
+      4)
+        echo -e "${GREEN}Starting server menu...${NC}"
+        echo
+        # Set default port if not set
+        PORT=${PORT:-8080}
+        start_server_menu
+        exit 0
+        ;;
+      5|"")
+        echo -e "${YELLOW}Setup cancelled. Goodbye! 👋${NC}"
+        exit 0
+        ;;
+      *)
+        echo -e "${RED}Invalid choice. Please run the script again.${NC}"
+        exit 1
+        ;;
+    esac
   fi
 }
 
@@ -547,53 +640,273 @@ save_machine_info() {
   echo
 }
 
-# Development server
-start_server() {
+# Helper function to find available port
+find_available_port() {
+  local start_port=${1:-8080}
+  local port=$start_port
+  
+  while [[ $port -lt 65535 ]]; do
+    if ! (netstat -tln 2>/dev/null | grep -q ":${port} " || ss -tln 2>/dev/null | grep -q ":${port} "); then
+      echo "$port"
+      return 0
+    fi
+    ((port++))
+  done
+  
+  echo "9999"  # fallback port
+}
+
+# Dedicated server menu function
+start_server_menu() {
   gum_style "🚀 Server Options"
   
-  local server_choice
-  if gum_confirm "Start development server now?"; then
-    echo -e "${CYAN}Choose server option:${NC}"
-    echo "1. Simple HTTP server (Python/npx)"
-    echo "2. Production build with nginx (Docker)"
-    echo "3. Development server with hot reload"
+  echo -e "${CYAN}Choose how you want to start the server:${NC}"
+  echo
+  
+  # Check if PORT is set, if not ask for it
+  if [[ -z "${PORT:-}" ]]; then
+    echo -e "${YELLOW}Port not configured. Let's set one first.${NC}"
+    PORT=$(gum_input "Enter port number (default 8080)")
+    PORT=${PORT:-8080}
+    echo -e "${GREEN}Using port: $PORT${NC}"
+    echo
+  fi
+  
+  if command -v gum >/dev/null 2>&1; then
+    # Use gum for interactive selection
+    server_option=$(gum choose --header "Choose server option:" \
+      "🌐 Simple HTTP Server (Python/npx)" \
+      "🐳 Docker Container (Production)" \
+      "⚡ Development Server (npm start)" \
+      "🔧 Change Port Number" \
+      "❌ Cancel")
     
-    read -p "Enter choice (1-3): " server_choice
-    
-    case $server_choice in
-      1)
-        echo -e "${GREEN}🌐 Starting simple HTTP server at http://localhost:$PORT${NC}"
+    case "$server_option" in
+      "🌐 Simple HTTP Server (Python/npx)")
+        # Check if port is available before starting
+        if netstat -tln 2>/dev/null | grep -q ":${PORT} " || ss -tln 2>/dev/null | grep -q ":${PORT} "; then
+          echo -e "${RED}❌ Port ${PORT} is already in use!${NC}"
+          
+          # Suggest alternative ports
+          alt_port=$(find_available_port $((PORT + 1)))
+          echo -e "${CYAN}Suggested alternative port: ${alt_port}${NC}"
+          echo -e "${CYAN}Or choose a different port, or stop the service using port ${PORT}.${NC}"
+          echo
+          
+          if gum_confirm "Would you like to use port ${alt_port}?"; then
+            PORT="$alt_port"
+            echo -e "${GREEN}Using port: $PORT${NC}"
+          elif gum_confirm "Would you like to choose a different port?"; then
+            PORT=$(gum_input "Enter new port number")
+            if [[ -n "$PORT" ]]; then
+              echo -e "${GREEN}Trying port: $PORT${NC}"
+            else
+              echo -e "${RED}No port specified, cancelling...${NC}"
+              return
+            fi
+          else
+            return
+          fi
+        fi
+        
+        echo -e "${GREEN}🌐 Starting simple HTTP server at http://localhost:${PORT}${NC}"
+        echo -e "${YELLOW}Press Ctrl+C to stop the server${NC}"
+        echo
         if command -v python3 >/dev/null 2>&1; then
-          python3 -m http.server "$PORT"
+          python3 -m http.server "${PORT}"
         elif command -v npx >/dev/null 2>&1; then
-          npx http-server -p "$PORT"
+          npx http-server -p "${PORT}"
+        else
+          echo -e "${RED}Neither python3 nor npx found to run a server.${NC}"
+        fi
+        ;;
+      "🐳 Docker Container (Production)")
+        # Check if port is available before starting
+        if netstat -tln 2>/dev/null | grep -q ":${PORT} " || ss -tln 2>/dev/null | grep -q ":${PORT} "; then
+          echo -e "${RED}❌ Port ${PORT} is already in use!${NC}"
+          
+          # Suggest alternative ports
+          alt_port=$(find_available_port $((PORT + 1)))
+          echo -e "${CYAN}Suggested alternative port: ${alt_port}${NC}"
+          echo -e "${CYAN}Or choose a different port, or stop the service using port ${PORT}.${NC}"
+          echo
+          
+          if gum_confirm "Would you like to use port ${alt_port}?"; then
+            PORT="$alt_port"
+            echo -e "${GREEN}Using port: $PORT${NC}"
+          elif gum_confirm "Would you like to choose a different port?"; then
+            PORT=$(gum_input "Enter new port number")
+            if [[ -n "$PORT" ]]; then
+              echo -e "${GREEN}Trying port: $PORT${NC}"
+            else
+              echo -e "${RED}No port specified, cancelling...${NC}"
+              return
+            fi
+          else
+            return
+          fi
+        fi
+        
+        if command -v docker >/dev/null 2>&1; then
+          echo -e "${GREEN}🐳 Starting production Docker container at http://localhost:${PORT}${NC}"
+          echo -e "${YELLOW}Press Ctrl+C to stop the container${NC}"
+          echo
+          docker run -p "${PORT}:80" dichoptic-therapy-games
+        else
+          echo -e "${RED}Docker not available${NC}"
+          echo -e "${CYAN}Install Docker to use containerized deployment${NC}"
+        fi
+        ;;
+      "⚡ Development Server (npm start)")
+        if [[ -f "package.json" ]] && grep -q "\"start\"" package.json; then
+          echo -e "${GREEN}⚡ Starting development server${NC}"
+          echo -e "${YELLOW}Press Ctrl+C to stop the server${NC}"
+          echo -e "${CYAN}Note: Development server port may be configured in package.json${NC}"
+          echo
+          npm start
+        else
+          echo -e "${YELLOW}No development server script found in package.json${NC}"
+          echo -e "${CYAN}Add a 'start' script to package.json to use this option${NC}"
+        fi
+        ;;
+      "🔧 Change Port Number")
+        PORT=$(gum_input "Enter new port number")
+        if [[ -n "$PORT" ]]; then
+          echo -e "${GREEN}Port changed to: $PORT${NC}"
+          echo
+          # Recursively call the menu with the new port
+          start_server_menu
+        else
+          echo -e "${RED}No port specified${NC}"
+        fi
+        ;;
+      "❌ Cancel")
+        echo -e "${YELLOW}Server startup cancelled.${NC}"
+        ;;
+    esac
+  else
+    # Fallback for systems without gum
+    echo "Current port: ${PORT}"
+    echo "Server Options:"
+    echo "1) Simple HTTP Server (port ${PORT})"
+    echo "2) Docker Container (port ${PORT})"
+    echo "3) Development Server (npm start)"
+    echo "4) Change Port Number"
+    echo "5) Cancel"
+    echo
+    read -p "Enter choice (1-5): " choice
+    
+    case $choice in
+      1)
+        # Check if port is available before starting
+        if netstat -tln 2>/dev/null | grep -q ":${PORT} " || ss -tln 2>/dev/null | grep -q ":${PORT} "; then
+          echo -e "${RED}❌ Port ${PORT} is already in use!${NC}"
+          
+          # Suggest alternative ports
+          alt_port=$(find_available_port $((PORT + 1)))
+          echo -e "${CYAN}Suggested alternative port: ${alt_port}${NC}"
+          echo -e "${CYAN}Or choose a different port, or stop the service using port ${PORT}.${NC}"
+          echo
+          
+          read -p "Use port ${alt_port}? (y/n) or enter new port number: " response
+          if [[ "$response" =~ ^[Yy]$ ]]; then
+            PORT="$alt_port"
+            echo -e "${GREEN}Using port: $PORT${NC}"
+          elif [[ "$response" =~ ^[0-9]+$ ]]; then
+            PORT="$response"
+            echo -e "${GREEN}Trying port: $PORT${NC}"
+          elif [[ -n "$response" ]]; then
+            PORT="$response"
+            echo -e "${GREEN}Trying port: $PORT${NC}"
+          else
+            echo -e "${RED}Cancelled${NC}"
+            return
+          fi
+        fi
+        
+        echo -e "${GREEN}🌐 Starting simple HTTP server at http://localhost:${PORT}${NC}"
+        echo -e "${YELLOW}Press Ctrl+C to stop the server${NC}"
+        echo
+        if command -v python3 >/dev/null 2>&1; then
+          python3 -m http.server "${PORT}"
+        elif command -v npx >/dev/null 2>&1; then
+          npx http-server -p "${PORT}"
         else
           echo -e "${RED}Neither python3 nor npx found to run a server.${NC}"
         fi
         ;;
       2)
+        # Check if port is available before starting
+        if netstat -tln 2>/dev/null | grep -q ":${PORT} " || ss -tln 2>/dev/null | grep -q ":${PORT} "; then
+          echo -e "${RED}❌ Port ${PORT} is already in use!${NC}"
+          
+          # Suggest alternative ports
+          alt_port=$(find_available_port $((PORT + 1)))
+          echo -e "${CYAN}Suggested alternative port: ${alt_port}${NC}"
+          echo -e "${CYAN}Or choose a different port, or stop the service using port ${PORT}.${NC}"
+          echo
+          
+          read -p "Use port ${alt_port}? (y/n) or enter new port number: " response
+          if [[ "$response" =~ ^[Yy]$ ]]; then
+            PORT="$alt_port"
+            echo -e "${GREEN}Using port: $PORT${NC}"
+          elif [[ "$response" =~ ^[0-9]+$ ]]; then
+            PORT="$response"
+            echo -e "${GREEN}Trying port: $PORT${NC}"
+          elif [[ -n "$response" ]]; then
+            PORT="$response"
+            echo -e "${GREEN}Trying port: $PORT${NC}"
+          else
+            echo -e "${RED}Cancelled${NC}"
+            return
+          fi
+        fi
+        
         if command -v docker >/dev/null 2>&1; then
-          echo -e "${GREEN}🐳 Starting production Docker container${NC}"
-          docker run -p "$PORT:80" dichoptic-therapy-games
+          echo -e "${GREEN}🐳 Starting production Docker container at http://localhost:${PORT}${NC}"
+          echo -e "${YELLOW}Press Ctrl+C to stop the container${NC}"
+          echo
+          docker run -p "${PORT}:80" dichoptic-therapy-games
         else
           echo -e "${RED}Docker not available${NC}"
+          echo -e "${CYAN}Install Docker to use containerized deployment${NC}"
         fi
         ;;
       3)
         if [[ -f "package.json" ]] && grep -q "\"start\"" package.json; then
           echo -e "${GREEN}⚡ Starting development server${NC}"
+          echo -e "${YELLOW}Press Ctrl+C to stop the server${NC}"
+          echo -e "${CYAN}Note: Development server port may be configured in package.json${NC}"
+          echo
           npm start
         else
-          echo -e "${YELLOW}No development server script found${NC}"
+          echo -e "${YELLOW}No development server script found in package.json${NC}"
+          echo -e "${CYAN}Add a 'start' script to package.json to use this option${NC}"
         fi
         ;;
+      4)
+        read -p "Enter new port number: " new_port
+        if [[ -n "$new_port" ]]; then
+          PORT="$new_port"
+          echo -e "${GREEN}Port changed to: $PORT${NC}"
+          echo
+          # Recursively call the menu with the new port
+          start_server_menu
+        else
+          echo -e "${RED}No port specified${NC}"
+        fi
+        ;;
+      5|"")
+        echo -e "${YELLOW}Server startup cancelled.${NC}"
+        ;;
       *)
-        echo -e "${YELLOW}Invalid choice${NC}"
+        echo -e "${RED}Invalid choice.${NC}"
         ;;
     esac
   fi
 }
 
+# Development server
 # Setup completion
 setup_complete() {
   gum_style "🎉 Setup Complete!"
@@ -623,7 +936,17 @@ setup_complete() {
   echo -e "  • Metrics: ${YELLOW}http://localhost:$PORT/metrics${NC}"
   echo -e "  • Application: ${YELLOW}http://localhost:$PORT${NC}"
   echo
-  echo -e "${GREEN}Happy coding! 🚀${NC}"
+  
+  # Ask if user wants to start the server immediately
+  echo -e "${CYAN}🚀 Start Server Now?${NC}"
+  echo "Would you like to start the server immediately?"
+  echo
+  
+  if gum_confirm "Start a server now?"; then
+    start_server_menu
+  else
+    echo -e "${GREEN}Setup completed successfully! Happy coding! 🚀${NC}"
+  fi
 }
 
 # Main execution
@@ -636,7 +959,6 @@ main() {
   security_audit
   docker_setup
   save_machine_info
-  start_server
   setup_complete
 }
 
