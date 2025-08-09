@@ -150,8 +150,14 @@ run_setup() {
       "🚀 Start Server Only")
         echo -e "${GREEN}Starting server menu...${NC}"
         echo
-        # Set default port if not set
-        PORT=${PORT:-8080}
+        # Always ask for port selection
+        if [[ -z "${PORT:-}" ]]; then
+          PORT=$(gum_input "Enter port number for server")
+          if [[ -z "$PORT" ]]; then
+            echo -e "${YELLOW}No port specified, using default 80${NC}"
+            PORT=80
+          fi
+        fi
         start_server_menu
         exit 0
         ;;
@@ -207,8 +213,14 @@ run_setup() {
       4)
         echo -e "${GREEN}Starting server menu...${NC}"
         echo
-        # Set default port if not set
-        PORT=${PORT:-8080}
+        # Always ask for port selection
+        if [[ -z "${PORT:-}" ]]; then
+          read -p "Enter port number for server: " PORT
+          if [[ -z "$PORT" ]]; then
+            echo -e "${YELLOW}No port specified, using default 80${NC}"
+            PORT=80
+          fi
+        fi
         start_server_menu
         exit 0
         ;;
@@ -394,7 +406,7 @@ setup_admin_password() {
     if grep -q "$password_hash" admin.html; then
       echo -e "${GREEN}✅ Password hash verified in admin.html${NC}"
       echo -e "${CYAN}🔐 New admin password has been set successfully!${NC}"
-      echo -e "${CYAN}🔗 Access admin at: http://localhost:${PORT:-8080}/admin.html${NC}"
+      echo -e "${CYAN}🔗 Access admin at: http://localhost:${PORT:-80}/admin.html${NC}"
       
       # Optionally remove backup
       if gum_confirm "Remove backup file (admin.html.backup)?"; then
@@ -423,8 +435,11 @@ setup_environment() {
   gum_style "🔧 Environment Configuration"
   
   # Port configuration
-  PORT=$(gum_input "Port for server (default 8080)")
-  PORT=${PORT:-8080}
+  PORT=$(gum_input "Port for server")
+  if [[ -z "$PORT" ]]; then
+    echo -e "${YELLOW}No port specified, using default 80${NC}"
+    PORT=80
+  fi
   
   # Environment selection
   if gum_confirm "Setup for production environment?"; then
@@ -642,7 +657,7 @@ save_machine_info() {
 
 # Helper function to find available port
 find_available_port() {
-  local start_port=${1:-8080}
+  local start_port=${1:-80}
   local port=$start_port
   
   while [[ $port -lt 65535 ]]; do
@@ -666,8 +681,11 @@ start_server_menu() {
   # Check if PORT is set, if not ask for it
   if [[ -z "${PORT:-}" ]]; then
     echo -e "${YELLOW}Port not configured. Let's set one first.${NC}"
-    PORT=$(gum_input "Enter port number (default 8080)")
-    PORT=${PORT:-8080}
+    PORT=$(gum_input "Enter port number for server")
+    if [[ -z "$PORT" ]]; then
+      echo -e "${YELLOW}No port specified, using default 80${NC}"
+      PORT=80
+    fi
     echo -e "${GREEN}Using port: $PORT${NC}"
     echo
   fi
