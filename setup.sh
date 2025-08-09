@@ -766,10 +766,47 @@ start_server_menu() {
         fi
         
         if command -v docker >/dev/null 2>&1; then
-          echo -e "${GREEN}🐳 Starting production Docker container at http://localhost:${PORT}${NC}"
-          echo -e "${YELLOW}Press Ctrl+C to stop the container${NC}"
-          echo
-          docker run -p "${PORT}:80" dichoptic-therapy-games
+          # Check if Docker daemon is running
+          if ! docker info >/dev/null 2>&1; then
+            echo -e "${RED}❌ Docker daemon is not running${NC}"
+            echo -e "${CYAN}Solutions:${NC}"
+            echo -e "1. Start Docker: ${YELLOW}sudo systemctl start docker${NC}"
+            echo -e "2. Enable Docker: ${YELLOW}sudo systemctl enable docker${NC}"
+            echo -e "3. Add user to docker group: ${YELLOW}sudo usermod -aG docker \$USER${NC}"
+            echo -e "4. Restart session after adding to docker group"
+            echo -e "5. See DOCKER_SETUP_GUIDE.md for detailed troubleshooting"
+            return
+          fi
+          
+          # Check if Docker image exists
+          if docker images -q dichoptic-therapy-games >/dev/null 2>&1; then
+            echo -e "${GREEN}🐳 Starting production Docker container at http://localhost:${PORT}${NC}"
+            echo -e "${YELLOW}Press Ctrl+C to stop the container${NC}"
+            echo
+            docker run --rm -p "${PORT}:80" dichoptic-therapy-games
+          else
+            echo -e "${YELLOW}⚠ Docker image 'dichoptic-therapy-games' not found${NC}"
+            echo -e "${CYAN}The Docker image needs to be built first.${NC}"
+            echo
+            if gum_confirm "Build Docker image now? (This may take a few minutes)"; then
+              echo -e "${CYAN}🔨 Building Docker image...${NC}"
+              if gum_spin "Building Docker image" "docker build -t dichoptic-therapy-games ."; then
+                echo -e "${GREEN}✅ Docker image built successfully${NC}"
+                echo -e "${GREEN}🐳 Starting production Docker container at http://localhost:${PORT}${NC}"
+                echo -e "${YELLOW}Press Ctrl+C to stop the container${NC}"
+                echo
+                docker run --rm -p "${PORT}:80" dichoptic-therapy-games
+              else
+                echo -e "${RED}❌ Failed to build Docker image${NC}"
+                echo -e "${CYAN}You can try building manually with: docker build -t dichoptic-therapy-games .${NC}"
+                echo -e "${CYAN}Or check the Dockerfile and dependencies${NC}"
+                echo -e "${CYAN}See DOCKER_SETUP_GUIDE.md for troubleshooting${NC}"
+              fi
+            else
+              echo -e "${YELLOW}Docker deployment cancelled${NC}"
+              echo -e "${CYAN}You can build the image later with: docker build -t dichoptic-therapy-games .${NC}"
+            fi
+          fi
         else
           echo -e "${RED}Docker not available${NC}"
           echo -e "${CYAN}Install Docker to use containerized deployment${NC}"
@@ -881,10 +918,49 @@ start_server_menu() {
         fi
         
         if command -v docker >/dev/null 2>&1; then
-          echo -e "${GREEN}🐳 Starting production Docker container at http://localhost:${PORT}${NC}"
-          echo -e "${YELLOW}Press Ctrl+C to stop the container${NC}"
-          echo
-          docker run -p "${PORT}:80" dichoptic-therapy-games
+          # Check if Docker daemon is running
+          if ! docker info >/dev/null 2>&1; then
+            echo -e "${RED}❌ Docker daemon is not running${NC}"
+            echo -e "${CYAN}Solutions:${NC}"
+            echo -e "1. Start Docker: ${YELLOW}sudo systemctl start docker${NC}"
+            echo -e "2. Enable Docker: ${YELLOW}sudo systemctl enable docker${NC}"
+            echo -e "3. Add user to docker group: ${YELLOW}sudo usermod -aG docker \$USER${NC}"
+            echo -e "4. Restart session after adding to docker group"
+            echo -e "5. See DOCKER_SETUP_GUIDE.md for detailed troubleshooting"
+            return
+          fi
+          
+          # Check if Docker image exists
+          if docker images -q dichoptic-therapy-games >/dev/null 2>&1; then
+            echo -e "${GREEN}🐳 Starting production Docker container at http://localhost:${PORT}${NC}"
+            echo -e "${YELLOW}Press Ctrl+C to stop the container${NC}"
+            echo
+            docker run --rm -p "${PORT}:80" dichoptic-therapy-games
+          else
+            echo -e "${YELLOW}⚠ Docker image 'dichoptic-therapy-games' not found${NC}"
+            echo -e "${CYAN}The Docker image needs to be built first.${NC}"
+            echo
+            read -p "Build Docker image now? (y/n): " -n 1 -r
+            echo
+            if [[ $REPLY =~ ^[Yy]$ ]]; then
+              echo -e "${CYAN}🔨 Building Docker image...${NC}"
+              if docker build -t dichoptic-therapy-games .; then
+                echo -e "${GREEN}✅ Docker image built successfully${NC}"
+                echo -e "${GREEN}🐳 Starting production Docker container at http://localhost:${PORT}${NC}"
+                echo -e "${YELLOW}Press Ctrl+C to stop the container${NC}"
+                echo
+                docker run --rm -p "${PORT}:80" dichoptic-therapy-games
+              else
+                echo -e "${RED}❌ Failed to build Docker image${NC}"
+                echo -e "${CYAN}You can try building manually with: docker build -t dichoptic-therapy-games .${NC}"
+                echo -e "${CYAN}Or check the Dockerfile and dependencies${NC}"
+                echo -e "${CYAN}See DOCKER_SETUP_GUIDE.md for troubleshooting${NC}"
+              fi
+            else
+              echo -e "${YELLOW}Docker deployment cancelled${NC}"
+              echo -e "${CYAN}You can build the image later with: docker build -t dichoptic-therapy-games .${NC}"
+            fi
+          fi
         else
           echo -e "${RED}Docker not available${NC}"
           echo -e "${CYAN}Install Docker to use containerized deployment${NC}"
