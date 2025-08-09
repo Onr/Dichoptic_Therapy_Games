@@ -351,7 +351,7 @@
         // Secure password system using SHA-256 hashing with salt
         // To generate a new password hash, use the setup.sh script or change-admin-password.sh
         // Current password will need to be reset due to salt implementation
-        const ADMIN_PASSWORD_HASH = '92ae123b4d366d26986cb9cfebfad351ee9938a30f126a7e0414af09b98ffa19'; // SHA-256 of 'CLEARED_FOR_SECURITY'
+        const ADMIN_PASSWORD_HASH = '92ae123b4d366d26986cb9cfebfad351ee9938a30f126a7e0414af09b98ffa19'; // SHA-256 of password + salt
         let isLoggedIn = false;
 
         // Password hashing function with salt

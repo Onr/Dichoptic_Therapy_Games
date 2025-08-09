@@ -397,7 +397,7 @@ setup_admin_password() {
   echo -e "${CYAN}📋 Backup created: admin.html.backup${NC}"
   
   # Update admin.html with new hash
-  local new_line="const ADMIN_PASSWORD_HASH = '$password_hash'; // SHA-256 of '$new_password'"
+  local new_line="const ADMIN_PASSWORD_HASH = '$password_hash'; // SHA-256 of password + salt"
   
   if sed -i "s|const ADMIN_PASSWORD_HASH = '[^']*';.*|$new_line|g" admin.html; then
     echo -e "${GREEN}✅ admin.html updated successfully${NC}"
