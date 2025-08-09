@@ -23,7 +23,9 @@ const STATIC_ASSETS = [
   '/src/utils/performance.js',
   '/src/utils/health.js',
   '/src/utils/errorHandler.js',
-  '/src/utils/environment.js'
+  '/src/utils/environment.js',
+  '/src/utils/userCounter.js',
+  '/src/utils/adminPanel.js'
 ];
 
 // Network-first resources (analytics, etc.)

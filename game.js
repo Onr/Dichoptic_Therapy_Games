@@ -356,6 +356,11 @@ if (typeof document !== 'undefined') {
         window.PerformanceMonitor.startGamePerformance(game.difficulty);
       }
 
+      // Track game start in user counter
+      if (window.UserCounter) {
+        window.UserCounter.recordGameStart('Memory Game (Scanning)', game.difficulty);
+      }
+
       resetBoardState();
       game.matchedPairs = 0;
       game.moves = 0;
@@ -425,6 +430,16 @@ if (typeof document !== 'undefined') {
           time: game.time,
           moves: game.moves,
           score: game.score
+        });
+      }
+
+      // Track game completion in user counter
+      if (window.UserCounter) {
+        window.UserCounter.recordGameCompletion('Memory Game (Scanning)', {
+          time: game.time,
+          moves: game.moves,
+          score: game.score,
+          difficulty: game.difficulty
         });
       }
 

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Fix</title>
+</head>
+<body>
+    <h1>Testing Fixes</h1>
+    <button onclick="testPerformance()">Test Performance Alert (Should only show in dev mode)</button>
+    <button onclick="testRecordGameMetric()">Test recordGameMetric function</button>
+    <div id="output"></div>
+
+    <!-- Production Systems -->
+    <script src="src/utils/environment.js"></script>
+    <script src="src/utils/logger.js"></script>
+    <script src="src/utils/errorHandler.js"></script>
+    <script src="src/utils/alerts.js"></script>
+    <script src="src/utils/performance.js"></script>
+    <script src="src/utils/health.js"></script>
+    <script src="src/production.js"></script>
+
+    <script>
+        function testPerformance() {
+            const output = document.getElementById('output');
+            output.innerHTML += '<p>Environment: ' + (window.EnvironmentConfig ? window.EnvironmentConfig.environment : 'not loaded') + '</p>';
+            output.innerHTML += '<p>Is Development: ' + (window.EnvironmentConfig ? window.EnvironmentConfig.isDevelopment() : 'not loaded') + '</p>';
+            
+            if (window.PerformanceMonitor) {
+                window.PerformanceMonitor.alertPerformanceIssue('Test Metric', 100, 'ms');
+                output.innerHTML += '<p>Performance alert triggered</p>';
+            } else {
+                output.innerHTML += '<p>PerformanceMonitor not available</p>';
+            }
+        }
+
+        function testRecordGameMetric() {
+            const output = document.getElementById('output');
+            if (window.PerformanceMonitor) {
+                try {
+                    window.PerformanceMonitor.recordGameMetric('test-metric', 250);
+                    output.innerHTML += '<p>✓ recordGameMetric function works</p>';
+                } catch (error) {
+                    output.innerHTML += '<p>✗ recordGameMetric error: ' + error.message + '</p>';
+                }
+            } else {
+                output.innerHTML += '<p>PerformanceMonitor not available</p>';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -95,12 +95,41 @@ else
   gum_spin() { gum spin --spinner dot --title "$1" -- bash -c "$2"; }
 fi
 
-# Main setup header
-gum_style "🎮 Dichoptic Therapy Games - Production Setup 🚀"
+# Main setup flow
+run_setup() {
+  # Main setup header
+  gum_style "🎮 Dichoptic Therapy Games - Production Setup 🚀"
 
-echo -e "${CYAN}This setup script will configure your machine for full production deployment${NC}"
-echo -e "${CYAN}including all logging, monitoring, and infrastructure components.${NC}"
-echo
+  echo -e "${CYAN}This setup script will configure your machine for full production deployment${NC}"
+  echo -e "${CYAN}including all logging, monitoring, and infrastructure components.${NC}"
+  echo
+
+  # Setup mode selection
+  if gum_confirm "Do you want to run the full setup process?"; then
+    FULL_SETUP=true
+  else
+    FULL_SETUP=false
+    # Show admin password management menu
+    if [[ -f "admin.html" ]]; then
+      gum_style "🔐 Quick Actions"
+      if gum_confirm "Manage admin password only?"; then
+        setup_admin_password
+        exit 0
+      fi
+    fi
+  fi
+
+  # Check if user wants to setup admin password during full setup
+  if [[ "$FULL_SETUP" == "true" ]] && [[ -f "admin.html" ]] && gum_confirm "Setup/change admin dashboard password now?"; then
+    setup_admin_password
+    echo
+  fi
+
+  # Run main function
+  if [[ "${FULL_SETUP:-true}" == "true" ]]; then
+    main "${@:-}"
+  fi
+}
 
 # Check system requirements
 check_requirements() {
@@ -150,6 +179,149 @@ check_requirements() {
   fi
   
   echo -e "${GREEN}✅ All required dependencies are installed!${NC}"
+  echo
+}
+
+# Generate SHA-256 hash for admin password with salt
+generate_password_hash() {
+  local password="$1"
+  
+  # Add a constant salt to the password for extra security
+  local salt="DichopticTherapyGames2025SecureSalt"
+  local salted_password="${password}${salt}"
+  
+  # Try different methods to generate SHA-256 hash
+  if command -v sha256sum >/dev/null 2>&1; then
+    echo -n "$salted_password" | sha256sum | cut -d' ' -f1
+  elif command -v shasum >/dev/null 2>&1; then
+    echo -n "$salted_password" | shasum -a 256 | cut -d' ' -f1
+  elif command -v openssl >/dev/null 2>&1; then
+    echo -n "$salted_password" | openssl dgst -sha256 | cut -d' ' -f2
+  else
+    echo -e "${RED}❌ No SHA-256 tool found (sha256sum, shasum, or openssl required)${NC}"
+    return 1
+  fi
+}
+
+# Admin password configuration
+setup_admin_password() {
+  gum_style "🔐 Admin Password Configuration"
+  
+  # Temporarily disable bash history for this function to prevent password leakage
+  set +o history
+  
+  # Trap to ensure history is re-enabled when function exits
+  trap 'set -o history' RETURN
+  
+  if [[ ! -f "admin.html" ]]; then
+    echo -e "${RED}❌ admin.html not found in current directory${NC}"
+    echo -e "${CYAN}Please run this script from the project root directory${NC}"
+    return
+  fi
+  
+  # Show current status
+  echo -e "${CYAN}Current admin.html password status:${NC}"
+  if grep -q "ADMIN_PASSWORD_HASH" admin.html; then
+    local current_hash
+    current_hash=$(grep "ADMIN_PASSWORD_HASH" admin.html | head -1 | sed "s/.*ADMIN_PASSWORD_HASH = '\([^']*\)'.*/\1/")
+    echo -e "${GREEN}✅ Password hash found: ${current_hash:0:16}...${NC}"
+    
+    # Check if it's the default password or needs reset
+    local default_hash="ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f"
+    if [[ "$current_hash" == "$default_hash" ]]; then
+      echo -e "${YELLOW}⚠ Using default password 'admin123' - should be changed${NC}"
+    elif [[ "$current_hash" == "needs_reset_due_to_salt" ]]; then
+      echo -e "${YELLOW}⚠ Password needs to be reset due to salt implementation${NC}"
+    else
+      echo -e "${GREEN}✅ Using custom password with salt${NC}"
+    fi
+  else
+    echo -e "${RED}❌ No password hash found in admin.html${NC}"
+    return
+  fi
+  echo
+  
+  if ! gum_confirm "Change admin dashboard password?"; then
+    return
+  fi
+  
+  # Get new password using secure input (no gum for password to avoid display)
+  local new_password
+  while true; do
+    echo -e "${CYAN}Enter new admin password (minimum 6 characters):${NC}"
+    read -s new_password
+    echo # Add newline after hidden input
+    
+    if [[ ${#new_password} -lt 6 ]]; then
+      echo -e "${RED}❌ Password must be at least 6 characters long${NC}"
+      continue
+    fi
+    
+    # Confirm password
+    local confirm_password
+    echo -e "${CYAN}Confirm password:${NC}"
+    read -s confirm_password
+    echo # Add newline after hidden input
+    
+    if [[ "$new_password" != "$confirm_password" ]]; then
+      echo -e "${RED}❌ Passwords do not match${NC}"
+      continue
+    fi
+    
+    break
+  done
+  
+  # Generate hash (ensure password is not exposed in process list)
+  echo -e "${CYAN}🔒 Generating SHA-256 hash...${NC}"
+  local password_hash
+  password_hash=$(generate_password_hash "$new_password")
+  
+  # Clear password from memory for security
+  new_password="CLEARED_FOR_SECURITY"
+  confirm_password="CLEARED_FOR_SECURITY"
+  
+  if [[ -z "$password_hash" ]]; then
+    echo -e "${RED}❌ Failed to generate password hash${NC}"
+    return
+  fi
+  
+  echo -e "${GREEN}✅ Password hash generated: ${password_hash:0:16}...${NC}"
+  
+  # Create backup
+  cp admin.html admin.html.backup
+  echo -e "${CYAN}📋 Backup created: admin.html.backup${NC}"
+  
+  # Update admin.html with new hash
+  local new_line="const ADMIN_PASSWORD_HASH = '$password_hash'; // SHA-256 of '$new_password'"
+  
+  if sed -i "s|const ADMIN_PASSWORD_HASH = '[^']*';.*|$new_line|g" admin.html; then
+    echo -e "${GREEN}✅ admin.html updated successfully${NC}"
+    
+    # Verify the change
+    if grep -q "$password_hash" admin.html; then
+      echo -e "${GREEN}✅ Password hash verified in admin.html${NC}"
+      echo -e "${CYAN}🔐 New admin password has been set successfully!${NC}"
+      echo -e "${CYAN}🔗 Access admin at: http://localhost:${PORT:-8080}/admin.html${NC}"
+      
+      # Optionally remove backup
+      if gum_confirm "Remove backup file (admin.html.backup)?"; then
+        rm admin.html.backup
+        echo -e "${GREEN}✅ Backup file removed${NC}"
+      fi
+    else
+      echo -e "${RED}❌ Failed to verify password update${NC}"
+      echo -e "${CYAN}Restoring from backup...${NC}"
+      mv admin.html.backup admin.html
+    fi
+  else
+    echo -e "${RED}❌ Failed to update admin.html${NC}"
+    echo -e "${CYAN}Restoring from backup...${NC}"
+    mv admin.html.backup admin.html
+  fi
+  
+  # Re-enable bash history
+  set -o history
+  
   echo
 }
 
@@ -468,5 +640,43 @@ main() {
   setup_complete
 }
 
-# Run main function
-main "$@"
+# Check if running with admin password flag
+if [[ "${1:-}" == "--admin-password" ]] || [[ "${1:-}" == "-p" ]]; then
+  echo "🔐 Admin Password Manager"
+  echo "========================"
+  echo
+  
+  if [[ ! -f "admin.html" ]]; then
+    echo "❌ admin.html not found in current directory"
+    echo "Please run this script from the project root directory"
+    exit 1
+  fi
+  
+  # Check current password status
+  echo "Current password status:"
+  if grep -q "ADMIN_PASSWORD_HASH" admin.html; then
+    current_hash=$(grep "ADMIN_PASSWORD_HASH" admin.html | head -1 | sed "s/.*ADMIN_PASSWORD_HASH = '\([^']*\)'.*/\1/")
+    echo "✅ Password hash found: ${current_hash:0:16}..."
+    
+    # Check if it's the default password
+    default_hash="ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f"
+    if [[ "$current_hash" == "$default_hash" ]]; then
+      echo "⚠ Currently using default password 'admin123'"
+      echo "⚠ It's recommended to change this for security"
+    else
+      echo "✅ Using custom password"
+    fi
+  else
+    echo "❌ No password hash found in admin.html"
+    exit 1
+  fi
+  
+  echo
+  echo "To change the password, use: ./change-admin-password.sh"
+  echo "This provides a secure way to update your admin credentials."
+  echo
+  exit 0
+fi
+
+# Run the setup flow
+run_setup "${@:-}"

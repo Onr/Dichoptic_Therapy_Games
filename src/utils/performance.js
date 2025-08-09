@@ -23,6 +23,7 @@ class PerformanceMonitor {
       // Game-specific metrics
       cardFlipTime: [],
       matchingTime: [],
+      gameMetrics: {},
 
       // Network metrics
       analyticsLatency: [],
@@ -109,6 +110,27 @@ class PerformanceMonitor {
 
     } catch (error) {
       this.logError('Performance Observer setup failed', error);
+    }
+  }
+
+  // Record game-specific metrics
+  recordGameMetric(metricName, duration) {
+    this.logInfo('Game metric recorded', { metricName, duration });
+    
+    // Store the metric for analysis
+    if (!this.metrics.gameMetrics) {
+      this.metrics.gameMetrics = {};
+    }
+    
+    if (!this.metrics.gameMetrics[metricName]) {
+      this.metrics.gameMetrics[metricName] = [];
+    }
+    
+    this.metrics.gameMetrics[metricName].push(duration);
+    
+    // Keep only last 50 measurements per metric
+    if (this.metrics.gameMetrics[metricName].length > 50) {
+      this.metrics.gameMetrics[metricName].shift();
     }
   }
 
@@ -262,7 +284,8 @@ class PerformanceMonitor {
 
   // Performance issue alerting
   alertPerformanceIssue(metric, value, unit) {
-    if (window.AlertSystem) {
+    // Only show performance warnings in development mode
+    if (window.AlertSystem && window.EnvironmentConfig && window.EnvironmentConfig.isDevelopment()) {
       window.AlertSystem.performanceWarning(metric, `${value.toFixed(1)}${unit}`);
     }
 
@@ -288,7 +311,8 @@ class PerformanceMonitor {
         cardFlipTimes: this.getStatistics(this.metrics.cardFlipTime),
         matchingTimes: this.getStatistics(this.metrics.matchingTime),
         inputResponsiveness: this.getStatistics(this.metrics.clickResponsiveness),
-        analyticsLatency: this.getStatistics(this.metrics.analyticsLatency)
+        analyticsLatency: this.getStatistics(this.metrics.analyticsLatency),
+        gameMetrics: this.metrics.gameMetrics
       },
 
       // Performance recommendations

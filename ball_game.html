@@ -289,6 +289,11 @@
       nextNumber = 1;
       msg.textContent = `לחצו על הכדורים בסדר: 1 - ${numBalls}`;
 
+      // Track game start in user counter
+      if (window.UserCounter) {
+        window.UserCounter.recordGameStart('Ball Game (Tracking)', `${numBalls} balls`);
+      }
+
       const numbers = Array.from({length:numBalls}, (_,i)=>i+1);
       shuffle(numbers);
 
@@ -369,6 +374,14 @@
       } else {
         msg.textContent = 'כל הכבוד! סיימת את המשחק 🎉';
         animationFrameId = null;
+        
+        // Track game completion in user counter
+        if (window.UserCounter) {
+          window.UserCounter.recordGameCompletion('Ball Game (Tracking)', {
+            ballCount: numBalls,
+            completed: true
+          });
+        }
       }
     }
 
@@ -419,5 +432,8 @@
 
     initGame();
   </script>
+  
+  <!-- User Tracking -->
+  <script src="src/utils/userCounter.js"></script>
 </body>
 </html>

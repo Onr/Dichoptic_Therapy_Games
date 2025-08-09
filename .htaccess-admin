@@ -1,0 +1,41 @@
+# Security measures for admin access
+# Place this in your web root or admin directory
+
+# Deny access to admin files from specific IPs (optional)
+# <RequireAll>
+#     Require ip 192.168.1.0/24
+#     Require ip 127.0.0.1
+# </RequireAll>
+
+# Rate limiting for admin access (if mod_evasive is available)
+<IfModule mod_evasive24.c>
+    DOSHashTableSize    512
+    DOSPageCount        2
+    DOSPageInterval     1
+    DOSHTTPRequestCount 10
+    DOSHTTPRequestInterval 1
+    DOSLogDir           /var/log/httpd/dos
+</IfModule>
+
+# Hide admin files from directory listing
+Options -Indexes
+
+# Block access to sensitive files
+<FilesMatch "^(admin|stats|analytics).*\.(php|html)$">
+    # Uncomment the lines below to restrict access by IP
+    # Require ip 127.0.0.1
+    # Require ip YOUR_IP_ADDRESS
+</FilesMatch>
+
+# Security headers
+<IfModule mod_headers.c>
+    Header always set X-Frame-Options "DENY"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';"
+</IfModule>
+
+# Hide server information
+ServerTokens Prod
+ServerSignature Off

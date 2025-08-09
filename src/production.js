@@ -147,7 +147,7 @@ class ProductionInit {
   }
 
   async finalizeInitialization() {
-    // Show initialization complete message
+    // Show initialization complete message only in development
     if (window.AlertSystem && window.EnvironmentConfig.isDevelopment()) {
       window.AlertSystem.success(
         'Systems Ready',

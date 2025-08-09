@@ -262,6 +262,11 @@
       
       msg.textContent = `כדורים שנלחצו: ${clickCount}`;
       
+      // Track game start in user counter
+      if (window.UserCounter) {
+        window.UserCounter.recordGameStart('Static Ball Game (Saccades)', 'Static Mode');
+      }
+      
       currentBall = createNewBall();
       drawGame();
     }
@@ -287,6 +292,15 @@
       clickCount++;
       currentBall = createNewBall();
       msg.textContent = `כדורים שנלחצו: ${clickCount}`;
+      
+      // Track milestone completions (every 10 clicks)
+      if (window.UserCounter && clickCount % 10 === 0) {
+        window.UserCounter.recordGameCompletion('Static Ball Game (Saccades)', {
+          clicks: clickCount,
+          milestone: `${clickCount} clicks`
+        });
+      }
+      
       drawGame();
     }
 
@@ -346,5 +360,8 @@
 
     initGame();
   </script>
+  
+  <!-- User Tracking -->
+  <script src="src/utils/userCounter.js"></script>
 </body>
 </html>
