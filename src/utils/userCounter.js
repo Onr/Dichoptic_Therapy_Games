@@ -34,11 +34,11 @@ class UserCounter {
   detectCurrentGame() {
     const pathname = window.location.pathname;
     const filename = pathname.split('/').pop();
-    
-    if (filename.includes('memory_game')) return 'Memory Game (Scanning)';
-    if (filename.includes('ball_game')) return 'Ball Game (Tracking)';
-    if (filename.includes('static_ball_game')) return 'Static Ball Game (Saccades)';
-    if (filename.includes('index')) return 'Main Hub';
+
+    if (filename.includes('memory_game')) {return 'Memory Game (Scanning)';}
+    if (filename.includes('ball_game')) {return 'Ball Game (Tracking)';}
+    if (filename.includes('static_ball_game')) {return 'Static Ball Game (Saccades)';}
+    if (filename.includes('index')) {return 'Main Hub';}
     return 'Other Page';
   }
 
@@ -46,7 +46,7 @@ class UserCounter {
   recordGameStart(gameName, difficulty = null) {
     const stats = this.getStats();
     const sessionIndex = stats.sessions.findIndex(s => s.sessionId === this.currentSession.sessionId);
-    
+
     if (sessionIndex !== -1) {
       const gameEntry = {
         game: gameName,
@@ -58,14 +58,14 @@ class UserCounter {
         moves: null,
         time: null
       };
-      
+
       if (!stats.sessions[sessionIndex].gamesPlayed) {
         stats.sessions[sessionIndex].gamesPlayed = [];
       }
-      
+
       stats.sessions[sessionIndex].gamesPlayed.push(gameEntry);
       this.saveStats(stats);
-      
+
       console.log(`[UserCounter] Game started: ${gameName}${difficulty ? ` (${difficulty})` : ''}`);
     }
   }
@@ -74,30 +74,30 @@ class UserCounter {
   recordGameCompletion(gameName, gameData = {}) {
     const stats = this.getStats();
     const sessionIndex = stats.sessions.findIndex(s => s.sessionId === this.currentSession.sessionId);
-    
+
     if (sessionIndex !== -1) {
       const session = stats.sessions[sessionIndex];
       if (session.gamesPlayed) {
         // Find the most recent game entry for this game type
         const gameIndex = session.gamesPlayed.findLastIndex(g => g.game === gameName && !g.completed);
-        
+
         if (gameIndex !== -1) {
           session.gamesPlayed[gameIndex].completed = true;
           session.gamesPlayed[gameIndex].endTime = new Date().toISOString();
           session.gamesPlayed[gameIndex].score = gameData.score || null;
           session.gamesPlayed[gameIndex].moves = gameData.moves || null;
           session.gamesPlayed[gameIndex].time = gameData.time || null;
-          
+
           session.gameCompletions = (session.gameCompletions || 0) + 1;
-          
+
           // Calculate game duration
           const startTime = new Date(session.gamesPlayed[gameIndex].startTime);
           const endTime = new Date(session.gamesPlayed[gameIndex].endTime);
           const gameDuration = endTime - startTime;
           session.totalGameTime = (session.totalGameTime || 0) + gameDuration;
-          
+
           this.saveStats(stats);
-          
+
           console.log(`[UserCounter] Game completed: ${gameName}`, gameData);
         }
       }
@@ -117,7 +117,7 @@ class UserCounter {
     // Update overall statistics
     stats.totalSessions += 1;
     stats.lastVisit = now.toISOString();
-    
+
     if (this.currentSession.isNewUser) {
       stats.totalUniqueUsers += 1;
       stats.firstVisit = stats.firstVisit || now.toISOString();
@@ -192,7 +192,7 @@ class UserCounter {
       const todayKey = new Date().toDateString();
       if (stats.dailyStats[todayKey]) {
         stats.dailyStats[todayKey].totalTime += duration;
-        stats.dailyStats[todayKey].averageTime = 
+        stats.dailyStats[todayKey].averageTime =
           stats.dailyStats[todayKey].totalTime / stats.dailyStats[todayKey].sessions;
       }
     }
@@ -261,7 +261,7 @@ class UserCounter {
     const cutoff = new Date();
     cutoff.setDate(cutoff.getDate() - days);
 
-    return stats.sessions.filter(session => 
+    return stats.sessions.filter(session =>
       new Date(session.startTime) >= cutoff
     );
   }
@@ -278,7 +278,7 @@ class UserCounter {
   getWeeklyDistribution() {
     const stats = this.getStats();
     const weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    
+
     return weekDays.map((day, index) => ({
       day,
       count: stats.weeklyDistribution[index] || 0
@@ -304,7 +304,7 @@ class UserCounter {
       last7Days: {
         sessions: recent.length,
         newUsers: recent.filter(s => s.isNewUser).length,
-        averageDuration: recent.length > 0 ? 
+        averageDuration: recent.length > 0 ?
           recent.reduce((sum, s) => sum + (s.duration || 0), 0) / recent.length : 0
       },
       patterns: {
@@ -332,8 +332,8 @@ class UserCounter {
   // Download stats as JSON
   downloadReport() {
     const report = this.generateReport();
-    const blob = new Blob([JSON.stringify(report, null, 2)], { 
-      type: 'application/json' 
+    const blob = new Blob([JSON.stringify(report, null, 2)], {
+      type: 'application/json'
     });
 
     const url = URL.createObjectURL(blob);
@@ -350,7 +350,7 @@ class UserCounter {
   exportUserCSV() {
     const stats = this.getStats();
     const csvData = this.generateUserCSV(stats);
-    
+
     const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -360,7 +360,7 @@ class UserCounter {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    
+
     console.log('[UserCounter] User CSV data exported');
   }
 
@@ -393,16 +393,16 @@ class UserCounter {
       const startTime = new Date(session.startTime);
       const endTime = session.endTime ? new Date(session.endTime) : null;
       const duration = endTime ? Math.round((endTime - startTime) / 60000) : 'Ongoing';
-      
-      const gamesPlayedList = session.gamesPlayed ? 
-        session.gamesPlayed.map(g => `${g.game}${g.difficulty ? `(${g.difficulty})` : ''}`).join(';') : 
+
+      const gamesPlayedList = session.gamesPlayed ?
+        session.gamesPlayed.map(g => `${g.game}${g.difficulty ? `(${g.difficulty})` : ''}`).join(';') :
         'None';
-      
-      const totalGameTime = session.totalGameTime ? 
+
+      const totalGameTime = session.totalGameTime ?
         Math.round(session.totalGameTime / 60000) : 0;
-      
-      const bestScore = session.gamesPlayed ? 
-        Math.max(...session.gamesPlayed.filter(g => g.score).map(g => g.score), 0) || 'N/A' : 
+
+      const bestScore = session.gamesPlayed ?
+        Math.max(...session.gamesPlayed.filter(g => g.score).map(g => g.score), 0) || 'N/A' :
         'N/A';
 
       const row = [
@@ -434,7 +434,7 @@ class UserCounter {
 
   // Helper function to escape CSV fields
   escapeCsvField(field) {
-    if (field === null || field === undefined) return '';
+    if (field === null || field === undefined) {return '';}
     const stringField = String(field);
     if (stringField.includes(',') || stringField.includes('"') || stringField.includes('\n')) {
       return '"' + stringField.replace(/"/g, '""') + '"';
@@ -446,7 +446,7 @@ class UserCounter {
   exportGameCSV() {
     const stats = this.getStats();
     const csvData = this.generateGameCSV(stats);
-    
+
     const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -456,7 +456,7 @@ class UserCounter {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    
+
     console.log('[UserCounter] Game CSV data exported');
   }
 
@@ -537,7 +537,7 @@ class UserCounter {
   // Display user statistics in a modal
   showStatsModal() {
     const report = this.generateReport();
-    
+
     const modal = document.createElement('div');
     modal.style.cssText = `
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -567,9 +567,9 @@ class UserCounter {
 
         <div style="margin-bottom: 20px;">
           <h3>⏰ Peak Hours</h3>
-          ${report.patterns.peakHours.map(h => 
-            `<p><strong>${h.hour}:00-${h.hour + 1}:00:</strong> ${h.count} visits</p>`
-          ).join('')}
+          ${report.patterns.peakHours.map(h =>
+    `<p><strong>${h.hour}:00-${h.hour + 1}:00:</strong> ${h.count} visits</p>`
+  ).join('')}
         </div>
 
         <div style="margin-bottom: 20px;">
@@ -591,7 +591,7 @@ class UserCounter {
     `;
 
     modal.addEventListener('click', (e) => {
-      if (e.target === modal) modal.remove();
+      if (e.target === modal) {modal.remove();}
     });
 
     document.body.appendChild(modal);
@@ -601,7 +601,7 @@ class UserCounter {
 // Initialize the user counter when the script loads
 if (typeof window !== 'undefined') {
   window.UserCounter = new UserCounter();
-  
+
   // End session when user leaves
   window.addEventListener('beforeunload', () => {
     if (window.UserCounter) {

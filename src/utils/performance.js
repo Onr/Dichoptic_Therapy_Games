@@ -116,18 +116,18 @@ class PerformanceMonitor {
   // Record game-specific metrics
   recordGameMetric(metricName, duration) {
     this.logInfo('Game metric recorded', { metricName, duration });
-    
+
     // Store the metric for analysis
     if (!this.metrics.gameMetrics) {
       this.metrics.gameMetrics = {};
     }
-    
+
     if (!this.metrics.gameMetrics[metricName]) {
       this.metrics.gameMetrics[metricName] = [];
     }
-    
+
     this.metrics.gameMetrics[metricName].push(duration);
-    
+
     // Keep only last 50 measurements per metric
     if (this.metrics.gameMetrics[metricName].length > 50) {
       this.metrics.gameMetrics[metricName].shift();

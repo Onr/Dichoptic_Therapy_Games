@@ -44,11 +44,11 @@ class AdminPanel {
       opacity: 0.3;
       transition: opacity 0.3s;
     `;
-    
+
     button.onmouseover = () => button.style.opacity = '0.8';
     button.onmouseout = () => button.style.opacity = '0.3';
     button.onclick = () => this.togglePanel();
-    
+
     document.body.appendChild(button);
   }
 
@@ -61,7 +61,7 @@ class AdminPanel {
   }
 
   showPanel() {
-    if (this.isVisible) return;
+    if (this.isVisible) {return;}
 
     this.isVisible = true;
     const report = window.UserCounter ? window.UserCounter.generateReport() : this.getEmptyReport();
@@ -133,7 +133,7 @@ class AdminPanel {
 
   generatePanelHTML(report) {
     const formatTime = (ms) => {
-      if (!ms) return '0m';
+      if (!ms) {return '0m';}
       const minutes = Math.round(ms / 60000);
       const hours = Math.floor(minutes / 60);
       const remainingMinutes = minutes % 60;
