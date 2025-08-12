@@ -671,6 +671,470 @@ find_available_port() {
   echo "9999"  # fallback port
 }
 
+# SSL Certificate management functions
+setup_ssl_certificates() {
+  gum_style "🔒 SSL Certificate Setup"
+  
+  # Create ssl directory if it doesn't exist
+  mkdir -p ssl
+  
+  if command -v gum >/dev/null 2>&1; then
+    cert_option=$(gum choose --header "Choose SSL certificate option:" \
+      "🔧 Development (Self-signed certificate)" \
+      "🌐 Production (Let's Encrypt certificate)" \
+      "📁 Production (Use existing certificate files)" \
+      "❌ Skip SSL setup")
+    
+    case "$cert_option" in
+      "🔧 Development (Self-signed certificate)")
+        setup_selfsigned_certificate
+        ;;
+      "🌐 Production (Let's Encrypt certificate)")
+        setup_letsencrypt_certificate
+        ;;
+      "📁 Production (Use existing certificate files)")
+        setup_existing_certificate
+        ;;
+      "❌ Skip SSL setup")
+        echo -e "${YELLOW}SSL setup skipped${NC}"
+        return 1
+        ;;
+    esac
+  else
+    # Fallback for systems without gum
+    echo "SSL Certificate Options:"
+    echo "1) Development (Self-signed certificate)"
+    echo "2) Production (Let's Encrypt certificate)"
+    echo "3) Production (Use existing certificate files)"
+    echo "4) Skip SSL setup"
+    echo
+    read -p "Enter choice (1-4): " choice
+    
+    case $choice in
+      1)
+        setup_selfsigned_certificate
+        ;;
+      2)
+        setup_letsencrypt_certificate
+        ;;
+      3)
+        setup_existing_certificate
+        ;;
+      4|"")
+        echo -e "${YELLOW}SSL setup skipped${NC}"
+        return 1
+        ;;
+      *)
+        echo -e "${RED}Invalid choice${NC}"
+        return 1
+        ;;
+    esac
+  fi
+}
+
+setup_selfsigned_certificate() {
+  echo -e "${CYAN}🔧 Setting up self-signed SSL certificate...${NC}"
+  
+  # Check if certificates already exist
+  if [[ -f "ssl/server.crt" ]] && [[ -f "ssl/server.key" ]]; then
+    echo -e "${GREEN}✅ SSL certificates already exist${NC}"
+    if ! gum_confirm "Regenerate certificates?"; then
+      return 0
+    fi
+  fi
+  
+  # Generate self-signed certificate
+  local domain="localhost"
+  local org="Dichoptic Therapy Games"
+  
+  if command -v gum >/dev/null 2>&1; then
+    domain=$(gum input --placeholder "Domain name (default: localhost)" --value="localhost")
+    org=$(gum input --placeholder "Organization name" --value="Dichoptic Therapy Games")
+  else
+    read -p "Domain name (default: localhost): " domain
+    domain=${domain:-localhost}
+    read -p "Organization name (default: Dichoptic Therapy Games): " org
+    org=${org:-"Dichoptic Therapy Games"}
+  fi
+  
+  echo -e "${YELLOW}Generating self-signed SSL certificate...${NC}"
+  
+  if gum_spin "Generating certificate" "openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+    -keyout ssl/server.key \
+    -out ssl/server.crt \
+    -subj \"/C=US/ST=Development/L=Local/O=${org}/CN=${domain}\" \
+    -addext \"subjectAltName=DNS:${domain},DNS:127.0.0.1,IP:127.0.0.1\""; then
+    
+    # Set appropriate permissions
+    chmod 600 ssl/server.key
+    chmod 644 ssl/server.crt
+    
+    echo -e "${GREEN}✅ Self-signed certificate generated successfully${NC}"
+    echo -e "${CYAN}Certificate details:${NC}"
+    echo -e "  Domain: ${domain}"
+    echo -e "  Organization: ${org}"
+    echo -e "  Valid for: 365 days"
+    echo -e "  Files: ssl/server.crt, ssl/server.key"
+    echo
+    echo -e "${YELLOW}⚠️  Browser Security Warning:${NC}"
+    echo -e "  Since this is a self-signed certificate, browsers will show a security warning."
+    echo -e "  Click 'Advanced' → 'Proceed to ${domain} (unsafe)' to continue."
+    echo
+    return 0
+  else
+    echo -e "${RED}❌ Failed to generate certificate${NC}"
+    return 1
+  fi
+}
+
+setup_letsencrypt_certificate() {
+  echo -e "${CYAN}🌐 Setting up Let's Encrypt SSL certificate...${NC}"
+  
+  # Check if certbot is available
+  if ! command -v certbot >/dev/null 2>&1; then
+    echo -e "${YELLOW}Installing certbot...${NC}"
+    if command -v apt-get >/dev/null 2>&1; then
+      gum_spin "Installing certbot" "sudo apt-get update && sudo apt-get install -y certbot"
+    elif command -v yum >/dev/null 2>&1; then
+      gum_spin "Installing certbot" "sudo yum install -y certbot"
+    elif command -v pacman >/dev/null 2>&1; then
+      gum_spin "Installing certbot" "sudo pacman -S certbot"
+    else
+      echo -e "${RED}❌ Unable to install certbot automatically${NC}"
+      echo -e "${CYAN}Please install certbot manually and run this script again${NC}"
+      return 1
+    fi
+  fi
+  
+  local domain email
+  
+  if command -v gum >/dev/null 2>&1; then
+    domain=$(gum input --placeholder "Your domain name (e.g., example.com)")
+    email=$(gum input --placeholder "Your email address")
+  else
+    read -p "Your domain name (e.g., example.com): " domain
+    read -p "Your email address: " email
+  fi
+  
+  if [[ -z "$domain" ]] || [[ -z "$email" ]]; then
+    echo -e "${RED}❌ Domain and email are required for Let's Encrypt${NC}"
+    return 1
+  fi
+  
+  echo -e "${YELLOW}⚠️  Important: Your domain must point to this server for verification${NC}"
+  echo -e "${CYAN}The domain ${domain} should resolve to this server's IP address${NC}"
+  echo
+  
+  if ! gum_confirm "Is your domain ${domain} correctly pointing to this server?"; then
+    echo -e "${YELLOW}Please configure your DNS settings first and run this script again${NC}"
+    return 1
+  fi
+  
+  # Stop any running servers to free up port 80
+  echo -e "${CYAN}Stopping any running servers on port 80...${NC}"
+  sudo pkill -f "python.*http.server.*80" 2>/dev/null || true
+  sudo pkill -f "npx.*http-server.*80" 2>/dev/null || true
+  docker stop $(docker ps -q --filter "publish=80") 2>/dev/null || true
+  
+  echo -e "${YELLOW}Obtaining Let's Encrypt certificate...${NC}"
+  echo -e "${CYAN}This may take a few minutes...${NC}"
+  
+  if gum_spin "Obtaining certificate" "sudo certbot certonly --standalone \
+    --preferred-challenges http \
+    --email \"${email}\" \
+    --agree-tos \
+    --no-eff-email \
+    -d \"${domain}\""; then
+    
+    # Copy certificates to ssl directory
+    sudo cp "/etc/letsencrypt/live/${domain}/fullchain.pem" ssl/server.crt
+    sudo cp "/etc/letsencrypt/live/${domain}/privkey.pem" ssl/server.key
+    
+    # Set appropriate permissions
+    sudo chown $(whoami):$(whoami) ssl/server.*
+    chmod 600 ssl/server.key
+    chmod 644 ssl/server.crt
+    
+    echo -e "${GREEN}✅ Let's Encrypt certificate obtained successfully${NC}"
+    echo -e "${CYAN}Certificate details:${NC}"
+    echo -e "  Domain: ${domain}"
+    echo -e "  Email: ${email}"
+    echo -e "  Valid for: 90 days"
+    echo -e "  Files: ssl/server.crt, ssl/server.key"
+    echo
+    echo -e "${YELLOW}📅 Certificate Renewal:${NC}"
+    echo -e "  Let's Encrypt certificates expire every 90 days."
+    echo -e "  Set up automatic renewal with:"
+    echo -e "  ${CYAN}sudo crontab -e${NC}"
+    echo -e "  Add line: ${YELLOW}0 12 * * * /usr/bin/certbot renew --quiet${NC}"
+    echo
+    return 0
+  else
+    echo -e "${RED}❌ Failed to obtain Let's Encrypt certificate${NC}"
+    echo -e "${CYAN}Please check:${NC}"
+    echo -e "  • Domain DNS settings"
+    echo -e "  • Firewall allows port 80"
+    echo -e "  • No other service is using port 80"
+    return 1
+  fi
+}
+
+setup_existing_certificate() {
+  echo -e "${CYAN}📁 Using existing SSL certificate files...${NC}"
+  
+  echo -e "${CYAN}Please place your certificate files in the ssl/ directory:${NC}"
+  echo -e "  • Certificate file: ${YELLOW}ssl/server.crt${NC}"
+  echo -e "  • Private key file: ${YELLOW}ssl/server.key${NC}"
+  echo
+  echo -e "${CYAN}Certificate formats supported:${NC}"
+  echo -e "  • PEM format (most common)"
+  echo -e "  • Certificate chain should be included in .crt file"
+  echo
+  
+  if ! gum_confirm "Have you placed the certificate files in ssl/ directory?"; then
+    echo -e "${YELLOW}Please place the files and run this script again${NC}"
+    return 1
+  fi
+  
+  # Validate certificate files
+  if [[ -f "ssl/server.crt" ]] && [[ -f "ssl/server.key" ]]; then
+    # Check certificate validity
+    if openssl x509 -in ssl/server.crt -text -noout >/dev/null 2>&1; then
+      echo -e "${GREEN}✅ Certificate file is valid${NC}"
+    else
+      echo -e "${RED}❌ Certificate file appears to be invalid${NC}"
+      return 1
+    fi
+    
+    # Check private key
+    if openssl rsa -in ssl/server.key -check >/dev/null 2>&1; then
+      echo -e "${GREEN}✅ Private key file is valid${NC}"
+    else
+      echo -e "${RED}❌ Private key file appears to be invalid${NC}"
+      return 1
+    fi
+    
+    # Set appropriate permissions
+    chmod 600 ssl/server.key
+    chmod 644 ssl/server.crt
+    
+    # Show certificate details
+    echo -e "${CYAN}Certificate details:${NC}"
+    openssl x509 -in ssl/server.crt -text -noout | grep -E "(Subject:|Not After:|DNS:|IP Address:)" | head -10
+    echo
+    echo -e "${GREEN}✅ Existing certificates configured successfully${NC}"
+    return 0
+  else
+    echo -e "${RED}❌ Certificate files not found${NC}"
+    echo -e "${CYAN}Expected files:${NC}"
+    echo -e "  • ssl/server.crt (certificate)"
+    echo -e "  • ssl/server.key (private key)"
+    return 1
+  fi
+}
+
+# Check if SSL certificates are available
+check_ssl_certificates() {
+  if [[ -f "ssl/server.crt" ]] && [[ -f "ssl/server.key" ]]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+# Start HTTPS server function
+start_https_server() {
+  local https_port=${1:-3443}
+  local http_port=${2:-3080}
+  
+  # Check if SSL certificates exist
+  if ! check_ssl_certificates; then
+    echo -e "${YELLOW}⚠️  No SSL certificates found${NC}"
+    if gum_confirm "Set up SSL certificates now?"; then
+      setup_ssl_certificates
+      if ! check_ssl_certificates; then
+        echo -e "${RED}❌ SSL certificate setup failed${NC}"
+        return 1
+      fi
+    else
+      echo -e "${YELLOW}HTTPS server requires SSL certificates${NC}"
+      return 1
+    fi
+  fi
+  
+  echo -e "${GREEN}🔒 Starting HTTPS server...${NC}"
+  echo -e "${CYAN}HTTP port: ${http_port} (redirects to HTTPS)${NC}"
+  echo -e "${CYAN}HTTPS port: ${https_port}${NC}"
+  echo
+  
+  # Check if Node.js server exists
+  if [[ -f "https-server.js" ]]; then
+    # Update ports in the server file if needed
+    sed -i "s/const HTTP_PORT = [0-9]*;/const HTTP_PORT = ${http_port};/" https-server.js
+    sed -i "s/const HTTPS_PORT = [0-9]*;/const HTTPS_PORT = ${https_port};/" https-server.js
+    
+    echo -e "${GREEN}🚀 Starting Node.js HTTPS server...${NC}"
+    echo -e "${YELLOW}Press Ctrl+C to stop the server${NC}"
+    echo
+    node https-server.js
+  elif [[ -f "https-server.py" ]]; then
+    echo -e "${GREEN}🚀 Starting Python HTTPS server...${NC}"
+    echo -e "${YELLOW}Press Ctrl+C to stop the server${NC}"
+    echo
+    # Update port in Python server
+    sed -i "s/PORT = [0-9]*/PORT = ${https_port}/" https-server.py
+    python3 https-server.py
+  else
+    echo -e "${RED}❌ No HTTPS server script found${NC}"
+    echo -e "${CYAN}Creating Node.js HTTPS server...${NC}"
+    create_https_server "$https_port" "$http_port"
+    echo -e "${GREEN}🚀 Starting HTTPS server...${NC}"
+    node https-server.js
+  fi
+}
+
+# Create HTTPS server script if it doesn't exist
+create_https_server() {
+  local https_port=${1:-3443}
+  local http_port=${2:-3080}
+  
+  cat > https-server.js << 'EOF'
+const https = require('https');
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
+const url = require('url');
+
+// SSL certificate options
+const sslOptions = {
+    key: fs.readFileSync(path.join(__dirname, 'ssl', 'server.key')),
+    cert: fs.readFileSync(path.join(__dirname, 'ssl', 'server.crt'))
+};
+
+// MIME types for different file extensions
+const mimeTypes = {
+    '.html': 'text/html',
+    '.js': 'text/javascript',
+    '.css': 'text/css',
+    '.json': 'application/json',
+    '.png': 'image/png',
+    '.jpg': 'image/jpg',
+    '.gif': 'image/gif',
+    '.ico': 'image/x-icon',
+    '.svg': 'image/svg+xml',
+    '.pdf': 'application/pdf',
+    '.doc': 'application/msword',
+    '.eot': 'application/vnd.ms-fontobject',
+    '.ttf': 'application/font-sfnt'
+};
+
+function serveFile(res, filePath) {
+    const extname = path.extname(filePath).toLowerCase();
+    const contentType = mimeTypes[extname] || 'application/octet-stream';
+
+    fs.readFile(filePath, (error, content) => {
+        if (error) {
+            if (error.code === 'ENOENT') {
+                res.writeHead(404, { 'Content-Type': 'text/html' });
+                res.end('<h1>404 - File Not Found</h1>', 'utf-8');
+            } else {
+                res.writeHead(500);
+                res.end(`Server Error: ${error.code}`, 'utf-8');
+            }
+        } else {
+            // Set security headers
+            res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+            res.setHeader('X-Content-Type-Options', 'nosniff');
+            res.setHeader('X-XSS-Protection', '1; mode=block');
+            res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+            res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+            
+            // Set cache headers
+            if (extname === '.html') {
+                res.setHeader('Cache-Control', 'public, max-age=3600');
+            } else if (['.css', '.js', '.png', '.jpg', '.gif', '.ico', '.svg'].includes(extname)) {
+                res.setHeader('Cache-Control', 'public, max-age=31536000');
+            }
+            
+            if (filePath.endsWith('sw.js')) {
+                res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+            }
+
+            res.writeHead(200, { 'Content-Type': contentType });
+            res.end(content, 'utf-8');
+        }
+    });
+}
+
+function requestHandler(req, res) {
+    const parsedUrl = url.parse(req.url);
+    let pathname = parsedUrl.pathname;
+
+    if (pathname === '/') {
+        pathname = '/index.html';
+    }
+
+    if (pathname === '/health') {
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        res.end('OK');
+        return;
+    }
+
+    const filePath = path.join(__dirname, pathname);
+    serveFile(res, filePath);
+}
+
+// Create HTTP server (redirects to HTTPS)
+const httpServer = http.createServer((req, res) => {
+    const host = req.headers.host;
+    const redirectUrl = `https://${host.replace(/:\d+/, ':HTTPS_PORT')}${req.url}`;
+    
+    res.writeHead(301, {
+        'Location': redirectUrl,
+        'Strict-Transport-Security': 'max-age=31536000; includeSubDomains'
+    });
+    res.end();
+});
+
+// Create HTTPS server
+const httpsServer = https.createServer(sslOptions, requestHandler);
+
+// Start servers
+const HTTP_PORT = HTTP_PORT_VALUE;
+const HTTPS_PORT = HTTPS_PORT_VALUE;
+
+httpServer.listen(HTTP_PORT, () => {
+    console.log(`🔓 HTTP Server running on http://localhost:${HTTP_PORT}`);
+    console.log(`   (Redirects to HTTPS)`);
+});
+
+httpsServer.listen(HTTPS_PORT, () => {
+    console.log(`🔒 HTTPS Server running on https://localhost:${HTTPS_PORT}`);
+    console.log(`\n🎮 Your Dichoptic Therapy Game is now available at:`);
+    console.log(`   https://localhost:${HTTPS_PORT}`);
+    console.log(`\n⚠️  Note: You'll see a security warning for self-signed certificates.`);
+    console.log(`   Click "Advanced" → "Proceed to localhost (unsafe)" to continue.`);
+    console.log(`\n🛑 To stop the server, press Ctrl+C`);
+});
+
+process.on('SIGINT', () => {
+    console.log('\n\n🛑 Shutting down servers...');
+    httpServer.close(() => console.log('✅ HTTP server closed'));
+    httpsServer.close(() => {
+        console.log('✅ HTTPS server closed');
+        process.exit(0);
+    });
+});
+EOF
+
+  # Replace placeholders with actual port values
+  sed -i "s/HTTP_PORT_VALUE/${http_port}/" https-server.js
+  sed -i "s/HTTPS_PORT_VALUE/${https_port}/" https-server.js
+  sed -i "s/:HTTPS_PORT/:${https_port}/" https-server.js
+  
+  echo -e "${GREEN}✅ HTTPS server script created${NC}"
+}
+
 # Dedicated server menu function
 start_server_menu() {
   gum_style "🚀 Server Options"
@@ -694,9 +1158,11 @@ start_server_menu() {
     # Use gum for interactive selection
     server_option=$(gum choose --header "Choose server option:" \
       "🌐 Simple HTTP Server (Python/npx)" \
+      "🔒 HTTPS Server (SSL/TLS encrypted)" \
       "🐳 Docker Container (Production)" \
       "⚡ Development Server (npm start)" \
-      "🔧 Change Port Number" \
+      "🔧 SSL Certificate Management" \
+      "📊 Change Port Number" \
       "❌ Cancel")
     
     case "$server_option" in
@@ -738,7 +1204,43 @@ start_server_menu() {
           echo -e "${RED}Neither python3 nor npx found to run a server.${NC}"
         fi
         ;;
-      "🐳 Docker Container (Production)")
+      "� HTTPS Server (SSL/TLS encrypted)")
+        echo -e "${CYAN}🔒 Setting up HTTPS server...${NC}"
+        
+        # Get HTTPS port
+        local https_port http_port
+        if command -v gum >/dev/null 2>&1; then
+          https_port=$(gum input --placeholder "HTTPS port (default: 3443)" --value="3443")
+          http_port=$(gum input --placeholder "HTTP redirect port (default: 3080)" --value="3080")
+        else
+          read -p "HTTPS port (default: 3443): " https_port
+          https_port=${https_port:-3443}
+          read -p "HTTP redirect port (default: 3080): " http_port
+          http_port=${http_port:-3080}
+        fi
+        
+        # Check if ports are available
+        for port in "$https_port" "$http_port"; do
+          if netstat -tln 2>/dev/null | grep -q ":${port} " || ss -tln 2>/dev/null | grep -q ":${port} "; then
+            echo -e "${RED}❌ Port ${port} is already in use!${NC}"
+            alt_port=$(find_available_port $((port + 1)))
+            echo -e "${CYAN}Suggested alternative: ${alt_port}${NC}"
+            if gum_confirm "Use port ${alt_port} instead?"; then
+              if [[ "$port" == "$https_port" ]]; then
+                https_port="$alt_port"
+              else
+                http_port="$alt_port"
+              fi
+            else
+              return
+            fi
+          fi
+        done
+        
+        # Start HTTPS server
+        start_https_server "$https_port" "$http_port"
+        ;;
+      "�🐳 Docker Container (Production)")
         # Check if port is available before starting
         if netstat -tln 2>/dev/null | grep -q ":${PORT} " || ss -tln 2>/dev/null | grep -q ":${PORT} "; then
           echo -e "${RED}❌ Port ${PORT} is already in use!${NC}"
@@ -824,7 +1326,15 @@ start_server_menu() {
           echo -e "${CYAN}Add a 'start' script to package.json to use this option${NC}"
         fi
         ;;
-      "🔧 Change Port Number")
+      "🔧 SSL Certificate Management")
+        echo -e "${CYAN}🔒 SSL Certificate Management${NC}"
+        setup_ssl_certificates
+        echo
+        if gum_confirm "Return to server menu?"; then
+          start_server_menu
+        fi
+        ;;
+      "📊 Change Port Number")
         PORT=$(gum_input "Enter new port number")
         if [[ -n "$PORT" ]]; then
           echo -e "${GREEN}Port changed to: $PORT${NC}"
@@ -844,35 +1354,27 @@ start_server_menu() {
     echo "Current port: ${PORT}"
     echo "Server Options:"
     echo "1) Simple HTTP Server (port ${PORT})"
-    echo "2) Docker Container (port ${PORT})"
-    echo "3) Development Server (npm start)"
-    echo "4) Change Port Number"
-    echo "5) Cancel"
+    echo "2) HTTPS Server (SSL/TLS encrypted)"
+    echo "3) Docker Container (port ${PORT})"
+    echo "4) Development Server (npm start)"
+    echo "5) SSL Certificate Management"
+    echo "6) Change Port Number"
+    echo "7) Cancel"
     echo
-    read -p "Enter choice (1-5): " choice
+    read -p "Enter choice (1-7): " choice
     
     case $choice in
       1)
-        # Check if port is available before starting
+        # Same HTTP server logic as above but with fallback prompts
         if netstat -tln 2>/dev/null | grep -q ":${PORT} " || ss -tln 2>/dev/null | grep -q ":${PORT} "; then
           echo -e "${RED}❌ Port ${PORT} is already in use!${NC}"
-          
-          # Suggest alternative ports
           alt_port=$(find_available_port $((PORT + 1)))
           echo -e "${CYAN}Suggested alternative port: ${alt_port}${NC}"
-          echo -e "${CYAN}Or choose a different port, or stop the service using port ${PORT}.${NC}"
-          echo
-          
-          read -p "Use port ${alt_port}? (y/n) or enter new port number: " response
+          read -p "Use port ${alt_port}? (y/n) or enter new port: " response
           if [[ "$response" =~ ^[Yy]$ ]]; then
             PORT="$alt_port"
-            echo -e "${GREEN}Using port: $PORT${NC}"
           elif [[ "$response" =~ ^[0-9]+$ ]]; then
             PORT="$response"
-            echo -e "${GREEN}Trying port: $PORT${NC}"
-          elif [[ -n "$response" ]]; then
-            PORT="$response"
-            echo -e "${GREEN}Trying port: $PORT${NC}"
           else
             echo -e "${RED}Cancelled${NC}"
             return
@@ -880,37 +1382,33 @@ start_server_menu() {
         fi
         
         echo -e "${GREEN}🌐 Starting simple HTTP server at http://localhost:${PORT}${NC}"
-        echo -e "${YELLOW}Press Ctrl+C to stop the server${NC}"
-        echo
         if command -v python3 >/dev/null 2>&1; then
           python3 -m http.server "${PORT}"
         elif command -v npx >/dev/null 2>&1; then
           npx http-server -p "${PORT}"
         else
-          echo -e "${RED}Neither python3 nor npx found to run a server.${NC}"
+          echo -e "${RED}Neither python3 nor npx found${NC}"
         fi
         ;;
       2)
-        # Check if port is available before starting
+        echo -e "${CYAN}🔒 Setting up HTTPS server...${NC}"
+        read -p "HTTPS port (default: 3443): " https_port
+        https_port=${https_port:-3443}
+        read -p "HTTP redirect port (default: 3080): " http_port
+        http_port=${http_port:-3080}
+        
+        start_https_server "$https_port" "$http_port"
+        ;;
+      3)
+        # Docker container logic (same as gum version)
         if netstat -tln 2>/dev/null | grep -q ":${PORT} " || ss -tln 2>/dev/null | grep -q ":${PORT} "; then
           echo -e "${RED}❌ Port ${PORT} is already in use!${NC}"
-          
-          # Suggest alternative ports
           alt_port=$(find_available_port $((PORT + 1)))
-          echo -e "${CYAN}Suggested alternative port: ${alt_port}${NC}"
-          echo -e "${CYAN}Or choose a different port, or stop the service using port ${PORT}.${NC}"
-          echo
-          
-          read -p "Use port ${alt_port}? (y/n) or enter new port number: " response
+          read -p "Use port ${alt_port}? (y/n) or enter new port: " response
           if [[ "$response" =~ ^[Yy]$ ]]; then
             PORT="$alt_port"
-            echo -e "${GREEN}Using port: $PORT${NC}"
           elif [[ "$response" =~ ^[0-9]+$ ]]; then
             PORT="$response"
-            echo -e "${GREEN}Trying port: $PORT${NC}"
-          elif [[ -n "$response" ]]; then
-            PORT="$response"
-            echo -e "${GREEN}Trying port: $PORT${NC}"
           else
             echo -e "${RED}Cancelled${NC}"
             return
@@ -918,79 +1416,56 @@ start_server_menu() {
         fi
         
         if command -v docker >/dev/null 2>&1; then
-          # Check if Docker daemon is running
           if ! docker info >/dev/null 2>&1; then
             echo -e "${RED}❌ Docker daemon is not running${NC}"
-            echo -e "${CYAN}Solutions:${NC}"
-            echo -e "1. Start Docker: ${YELLOW}sudo systemctl start docker${NC}"
-            echo -e "2. Enable Docker: ${YELLOW}sudo systemctl enable docker${NC}"
-            echo -e "3. Add user to docker group: ${YELLOW}sudo usermod -aG docker \$USER${NC}"
-            echo -e "4. Restart session after adding to docker group"
-            echo -e "5. See DOCKER_SETUP_GUIDE.md for detailed troubleshooting"
             return
           fi
           
-          # Check if Docker image exists
           if docker images -q dichoptic-therapy-games >/dev/null 2>&1; then
-            echo -e "${GREEN}🐳 Starting production Docker container at http://localhost:${PORT}${NC}"
-            echo -e "${YELLOW}Press Ctrl+C to stop the container${NC}"
-            echo
+            echo -e "${GREEN}🐳 Starting Docker container at http://localhost:${PORT}${NC}"
             docker run --rm -p "${PORT}:80" dichoptic-therapy-games
           else
-            echo -e "${YELLOW}⚠ Docker image 'dichoptic-therapy-games' not found${NC}"
-            echo -e "${CYAN}The Docker image needs to be built first.${NC}"
-            echo
+            echo -e "${YELLOW}⚠ Docker image not found${NC}"
             read -p "Build Docker image now? (y/n): " -n 1 -r
             echo
             if [[ $REPLY =~ ^[Yy]$ ]]; then
-              echo -e "${CYAN}🔨 Building Docker image...${NC}"
               if docker build -t dichoptic-therapy-games .; then
-                echo -e "${GREEN}✅ Docker image built successfully${NC}"
-                echo -e "${GREEN}🐳 Starting production Docker container at http://localhost:${PORT}${NC}"
-                echo -e "${YELLOW}Press Ctrl+C to stop the container${NC}"
-                echo
                 docker run --rm -p "${PORT}:80" dichoptic-therapy-games
               else
                 echo -e "${RED}❌ Failed to build Docker image${NC}"
-                echo -e "${CYAN}You can try building manually with: docker build -t dichoptic-therapy-games .${NC}"
-                echo -e "${CYAN}Or check the Dockerfile and dependencies${NC}"
-                echo -e "${CYAN}See DOCKER_SETUP_GUIDE.md for troubleshooting${NC}"
               fi
-            else
-              echo -e "${YELLOW}Docker deployment cancelled${NC}"
-              echo -e "${CYAN}You can build the image later with: docker build -t dichoptic-therapy-games .${NC}"
             fi
           fi
         else
           echo -e "${RED}Docker not available${NC}"
-          echo -e "${CYAN}Install Docker to use containerized deployment${NC}"
-        fi
-        ;;
-      3)
-        if [[ -f "package.json" ]] && grep -q "\"start\"" package.json; then
-          echo -e "${GREEN}⚡ Starting development server${NC}"
-          echo -e "${YELLOW}Press Ctrl+C to stop the server${NC}"
-          echo -e "${CYAN}Note: Development server port may be configured in package.json${NC}"
-          echo
-          npm start
-        else
-          echo -e "${YELLOW}No development server script found in package.json${NC}"
-          echo -e "${CYAN}Add a 'start' script to package.json to use this option${NC}"
         fi
         ;;
       4)
+        if [[ -f "package.json" ]] && grep -q "\"start\"" package.json; then
+          echo -e "${GREEN}⚡ Starting development server${NC}"
+          npm start
+        else
+          echo -e "${YELLOW}No development server script found${NC}"
+        fi
+        ;;
+      5)
+        echo -e "${CYAN}🔒 SSL Certificate Management${NC}"
+        setup_ssl_certificates
+        if gum_confirm "Return to server menu?"; then
+          start_server_menu
+        fi
+        ;;
+      6)
         read -p "Enter new port number: " new_port
         if [[ -n "$new_port" ]]; then
           PORT="$new_port"
           echo -e "${GREEN}Port changed to: $PORT${NC}"
-          echo
-          # Recursively call the menu with the new port
           start_server_menu
         else
           echo -e "${RED}No port specified${NC}"
         fi
         ;;
-      5|"")
+      7|"")
         echo -e "${YELLOW}Server startup cancelled.${NC}"
         ;;
       *)
@@ -1016,6 +1491,7 @@ setup_complete() {
   echo -e "  • Offline capability via service worker"
   echo -e "  • Docker containerization"
   echo -e "  • CI/CD pipeline ready"
+  echo -e "  • SSL/HTTPS support"
   echo
   echo -e "${CYAN}🔗 Quick Commands:${NC}"
   echo -e "  • ${YELLOW}npm start${NC}        - Start development server"
@@ -1023,12 +1499,32 @@ setup_complete() {
   echo -e "  • ${YELLOW}npm run lint${NC}     - Check code quality"
   echo -e "  • ${YELLOW}npm run build${NC}    - Build for production"
   echo -e "  • ${YELLOW}docker-compose up${NC} - Start full production stack"
-  echo -e "  • ${YELLOW}./scripts/validate-setup.sh${NC} - Validate setup"
+  echo -e "  • ${YELLOW}./setup.sh${NC}       - Re-run this setup"
+  echo
+  echo -e "${CYAN}🔒 HTTPS & SSL Commands:${NC}"
+  echo -e "  • ${YELLOW}node https-server.js${NC} - Start HTTPS server"
+  echo -e "  • ${YELLOW}python3 https-server.py${NC} - Alternative HTTPS server"
+  echo -e "  • ${YELLOW}./setup.sh${NC} → SSL Certificate Management"
   echo
   echo -e "${CYAN}📊 Monitoring:${NC}"
   echo -e "  • Health check: ${YELLOW}http://localhost:$PORT/health${NC}"
   echo -e "  • Metrics: ${YELLOW}http://localhost:$PORT/metrics${NC}"
   echo -e "  • Application: ${YELLOW}http://localhost:$PORT${NC}"
+  if check_ssl_certificates; then
+    local https_port=3443
+    echo -e "  • HTTPS Application: ${YELLOW}https://localhost:${https_port}${NC}"
+  fi
+  echo
+  echo -e "${CYAN}🔐 Security Features:${NC}"
+  if check_ssl_certificates; then
+    echo -e "  • ${GREEN}✅ SSL certificates configured${NC}"
+    echo -e "  • ${GREEN}✅ HTTPS encryption available${NC}"
+    echo -e "  • ${GREEN}✅ HTTP to HTTPS redirect${NC}"
+    echo -e "  • ${GREEN}✅ Security headers enabled${NC}"
+  else
+    echo -e "  • ${YELLOW}⚠️  SSL certificates not configured${NC}"
+    echo -e "  • ${CYAN}Run: ./setup.sh → SSL Certificate Management${NC}"
+  fi
   echo
   
   # Ask if user wants to start the server immediately
@@ -1040,6 +1536,13 @@ setup_complete() {
     start_server_menu
   else
     echo -e "${GREEN}Setup completed successfully! Happy coding! 🚀${NC}"
+    echo
+    echo -e "${CYAN}💡 Next Steps:${NC}"
+    echo -e "  1. Run ${YELLOW}./setup.sh${NC} to access server options anytime"
+    echo -e "  2. Set up SSL certificates for HTTPS support"
+    echo -e "  3. Configure your domain and DNS for production"
+    echo -e "  4. Review security settings and update passwords"
+    echo -e "  5. Test the application thoroughly"
   fi
 }
 

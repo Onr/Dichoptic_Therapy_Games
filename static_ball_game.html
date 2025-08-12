@@ -18,7 +18,7 @@
     }
     #message {
       position: absolute;
-      top: 20px;
+      top: 80px;
       right: 20px;
       font: 700 24px 'Segoe UI', sans-serif;
       background: linear-gradient(135deg, rgba(42, 82, 152, 0.95), rgba(30, 60, 114, 0.95));
@@ -27,6 +27,53 @@
       border: 1px solid rgba(255, 255, 255, 0.2);
       backdrop-filter: blur(10px);
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    
+    #colorBar {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 400px;
+      height: 40px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+    }
+    
+    #colorBarFill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, 
+        #ff0000 0%, 
+        #ff8800 20%, 
+        #ffff00 40%, 
+        #88ff00 60%, 
+        #00ff00 80%, 
+        #00ff88 100%);
+      border-radius: 18px;
+      transition: width 0.1s ease-out;
+      box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+      transition: transform 0.1s ease-out;
+    }
+    
+    @keyframes pulse {
+      from { box-shadow: 0 0 30px rgba(0, 255, 0, 0.8); }
+      to { box-shadow: 0 0 50px rgba(0, 255, 0, 1), 0 0 80px rgba(0, 255, 0, 0.5); }
+    }
+    
+    #colorBarLabel {
+      position: absolute;
+      top: -5px;
+      left: 50%;
+      transform: translateX(-50%);
+      font: 600 14px 'Segoe UI', sans-serif;
+      color: #fff;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+      white-space: nowrap;
     }
     #controls {
       position: absolute;
@@ -170,9 +217,159 @@
       transform: translateY(0);
       box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
     }
+
+    /* Completion Modal */
+    #completionModal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      backdrop-filter: blur(10px);
+    }
+
+    .modal-content {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 40px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      max-width: 400px;
+      animation: modalAppear 0.5s ease-out;
+    }
+
+    @keyframes modalAppear {
+      from {
+        transform: scale(0.5) rotate(10deg);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+      }
+    }
+
+    .modal-title {
+      font-size: 32px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      color: #fff;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-time {
+      font-size: 48px;
+      font-weight: bold;
+      color: #00ff88;
+      margin: 20px 0;
+      text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+    }
+
+    .modal-message {
+      font-size: 18px;
+      margin-bottom: 30px;
+      color: #e0e6ff;
+    }
+
+    .modal-button {
+      background: linear-gradient(135deg, #00ff88 0%, #00cc66 100%);
+      color: #000;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 15px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 0 10px;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 20px rgba(0, 255, 136, 0.3);
+    }
+
+    .modal-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(0, 255, 136, 0.5);
+    }
+
+    /* Leaderboard Modal */
+    #leaderboardModal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      backdrop-filter: blur(10px);
+    }
+
+    .leaderboard-content {
+      background: linear-gradient(135deg, rgba(42, 82, 152, 0.95), rgba(30, 60, 114, 0.95));
+      padding: 30px;
+      border-radius: 20px;
+      max-width: 500px;
+      max-height: 80vh;
+      overflow-y: auto;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .leaderboard-title {
+      font-size: 28px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 20px;
+      color: #fff;
+    }
+
+    .leaderboard-entry {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      margin: 10px 0;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      border-left: 4px solid #00ff88;
+    }
+
+    .leaderboard-entry.current {
+      border-left-color: #ffff00;
+      background: rgba(255, 255, 0, 0.1);
+    }
+
+    .leaderboard-rank {
+      font-size: 20px;
+      font-weight: bold;
+      color: #00ff88;
+      min-width: 40px;
+    }
+
+    .leaderboard-time {
+      font-size: 18px;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    .leaderboard-date {
+      font-size: 14px;
+      color: #ccc;
+    }
   </style>
 </head>
 <body>
+  <div id="colorBar">
+    <div id="colorBarFill"></div>
+    <div id="colorBarLabel">מד מהירות</div>
+  </div>
   <div id="message">לחצו על הכדור</div>
   <div id="controls">
     <div class="controls-header" onclick="toggleControls()">
@@ -198,17 +395,54 @@
       <div class="control-group">
         <button id="toggleColor">החלף ירוק ↔ כחול</button>
       </div>
+      <div class="control-group">
+        <button id="showLeaderboard">לוח התוצאות</button>
+      </div>
+      <div class="control-group">
+        <button id="languageToggle">🌐 English</button>
+      </div>
     </div>
   </div>
   <canvas id="gameCanvas"></canvas>
 
+  <!-- Completion Modal -->
+  <div id="completionModal">
+    <div class="modal-content">
+      <div class="modal-title">🎉 מעולה! 🎉</div>
+      <div class="modal-message">מילאת את מד המהירות!</div>
+      <div class="modal-time" id="completionTime">0.00s</div>
+      <div class="modal-message" id="completionRank">מקום חדש בלוח התוצאות!</div>
+      <button class="modal-button" onclick="closeCompletionModal()">המשך</button>
+      <button class="modal-button" onclick="showLeaderboard()">לוח התוצאות</button>
+    </div>
+  </div>
+
+  <!-- Leaderboard Modal -->
+  <div id="leaderboardModal">
+    <div class="leaderboard-content">
+      <div class="leaderboard-title">🏆 לוח התוצאות 🏆</div>
+      <div id="leaderboardList"></div>
+      <button class="modal-button" onclick="closeLeaderboard()" style="width: 100%; margin-top: 20px;">סגור</button>
+    </div>
+  </div>
+
   <script>
     const BALL_RADIUS = 60;
+    const MAX_COLOR_BAR = 200; // Made longer to fill
+    const COLOR_BAR_INCREASE = 8; // Smaller increase per click
+    const COLOR_BAR_DECREASE_RATE = 0.3; // Slower decrease
 
     const canvas = document.getElementById('gameCanvas');
     const ctx    = canvas.getContext('2d');
     const msg    = document.getElementById('message');
+    const colorBarFill = document.getElementById('colorBarFill');
+    const colorBarLabel = document.getElementById('colorBarLabel');
+    
     let currentBall, clickCount = 0;
+    let colorBarValue = 0;
+    let colorBarInterval;
+    let gameStartTime = 0;
+    let isGameActive = false;
 
     const redBrightnessSlider = document.getElementById('redBrightness');
     const redContrastSlider = document.getElementById('redContrast');
@@ -218,6 +452,73 @@
     const rightContrastLabel = document.getElementById('rightContrastLabel');
 
     let rightColor = 'green';
+    let currentLanguage = 'he'; // 'he' for Hebrew, 'en' for English
+
+    // Translation object
+    const translations = {
+      he: {
+        title: 'משחק – לחצו על הכדורים הסטטיים',
+        speedMeter: 'מד מהירות',
+        clickBall: 'לחצו על הכדור',
+        gameSettings: 'הגדרות משחק',
+        restart: 'התחל מחדש',
+        brightnessRed: 'בהירות (אדום)',
+        contrastRed: 'ניגודיות (אדום)',
+        brightnessGreen: 'בהירות (ירוק)',
+        contrastGreen: 'ניגודיות (ירוק)',
+        brightnessBlue: 'בהירות (כחול)',
+        contrastBlue: 'ניגודיות (כחול)',
+        toggleColor: 'החלף ירוק ↔ כחול',
+        toggleColorBlue: 'החלף כחול ↔ ירוק',
+        leaderboard: 'לוח התוצאות',
+        languageButton: '🌐 English',
+        ballsClicked: 'כדורים שנלחצו',
+        completed: '🎉 הושלם! 🎉',
+        excellent: '🎉 מעולה! 🎉',
+        filledSpeedMeter: 'מילאת את מד המהירות!',
+        newRecord: '🥇 שיא חדש! מקום ראשון!',
+        topRank: '🏆 מקום {rank} בלוח התוצאות!',
+        rank: 'מקום {rank} בלוח התוצאות',
+        goodTime: 'זמן טוב! נסה שוב לשיפור',
+        continue: 'המשך',
+        leaderboardTitle: '🏆 לוח התוצאות 🏆',
+        close: 'סגור',
+        noResults: 'אין תוצאות עדיין<br>השלם את מד המהירות כדי להתחיל!',
+        green: 'ירוק',
+        blue: 'כחול'
+      },
+      en: {
+        title: 'Game – Click the Static Balls',
+        speedMeter: 'Speed Meter',
+        clickBall: 'Click the Ball',
+        gameSettings: 'Game Settings',
+        restart: 'Restart',
+        brightnessRed: 'Brightness (Red)',
+        contrastRed: 'Contrast (Red)',
+        brightnessGreen: 'Brightness (Green)',
+        contrastGreen: 'Contrast (Green)',
+        brightnessBlue: 'Brightness (Blue)',
+        contrastBlue: 'Contrast (Blue)',
+        toggleColor: 'Switch Green ↔ Blue',
+        toggleColorBlue: 'Switch Blue ↔ Green',
+        leaderboard: 'Leaderboard',
+        languageButton: '🌐 עברית',
+        ballsClicked: 'Balls Clicked',
+        completed: '🎉 Completed! 🎉',
+        excellent: '🎉 Excellent! 🎉',
+        filledSpeedMeter: 'You filled the speed meter!',
+        newRecord: '🥇 New Record! First Place!',
+        topRank: '🏆 Rank {rank} on leaderboard!',
+        rank: 'Rank {rank} on leaderboard',
+        goodTime: 'Good time! Try again to improve',
+        continue: 'Continue',
+        leaderboardTitle: '🏆 Leaderboard 🏆',
+        close: 'Close',
+        noResults: 'No results yet<br>Complete the speed meter to start!',
+        green: 'Green',
+        blue: 'Blue'
+      }
+    };
 
     function applyColorTransforms(color, brightness, contrast) {
       let r, g, b;
@@ -255,12 +556,156 @@
       };
     }
 
+    function updateColorBar() {
+      if (!isGameActive) return;
+      
+      colorBarValue = Math.max(0, colorBarValue - COLOR_BAR_DECREASE_RATE);
+      const percentage = (colorBarValue / MAX_COLOR_BAR) * 100;
+      colorBarFill.style.width = percentage + '%';
+      
+      // Update label with percentage
+      colorBarLabel.textContent = `${translations[currentLanguage].speedMeter}: ${Math.round(percentage)}%`;
+      
+      // Update glow effect based on bar level
+      if (percentage > 80) {
+        colorBarFill.style.boxShadow = '0 0 30px rgba(0, 255, 0, 0.8)';
+        colorBarLabel.style.color = '#00ff00';
+      } else if (percentage > 50) {
+        colorBarFill.style.boxShadow = '0 0 20px rgba(255, 255, 0, 0.6)';
+        colorBarLabel.style.color = '#ffff00';
+      } else if (percentage > 20) {
+        colorBarFill.style.boxShadow = '0 0 15px rgba(255, 128, 0, 0.4)';
+        colorBarLabel.style.color = '#ff8800';
+      } else {
+        colorBarFill.style.boxShadow = '0 0 10px rgba(255, 0, 0, 0.3)';
+        colorBarLabel.style.color = '#ff0000';
+      }
+      
+      // Add pulsing effect when bar is very high
+      if (percentage > 90) {
+        colorBarFill.style.animation = 'pulse 0.5s infinite alternate';
+      } else {
+        colorBarFill.style.animation = 'none';
+      }
+    }
+
+    function increaseColorBar() {
+      if (!isGameActive) return;
+      
+      colorBarValue = Math.min(MAX_COLOR_BAR, colorBarValue + COLOR_BAR_INCREASE);
+      
+      // Check for completion immediately after increase
+      if (colorBarValue >= MAX_COLOR_BAR) {
+        colorBarValue = MAX_COLOR_BAR; // Ensure it's exactly at max
+        completeColorBar();
+        return;
+      }
+      
+      updateColorBar();
+      
+      // Add visual feedback when clicking
+      colorBarFill.style.transform = 'scaleY(1.2)';
+      setTimeout(() => {
+        colorBarFill.style.transform = 'scaleY(1)';
+      }, 100);
+    }
+
+    function completeColorBar() {
+      isGameActive = false;
+      const completionTime = (Date.now() - gameStartTime) / 1000;
+      
+      // Stop the interval
+      if (colorBarInterval) {
+        clearInterval(colorBarInterval);
+      }
+      
+      // Set bar to 100% and celebration effects
+      colorBarFill.style.width = '100%';
+      colorBarFill.style.animation = 'pulse 0.3s infinite alternate';
+      colorBarFill.style.boxShadow = '0 0 50px rgba(0, 255, 0, 1), 0 0 100px rgba(0, 255, 0, 0.5)';
+      colorBarLabel.textContent = translations[currentLanguage].completed;
+      colorBarLabel.style.color = '#00ff00';
+      
+      // Add screen flash effect
+      document.body.style.background = 'linear-gradient(135deg, #00ff00 0%, #00cc00 100%)';
+      setTimeout(() => {
+        document.body.style.background = 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)';
+      }, 200);
+      
+      // Save time and show modal with slight delay for effect
+      saveCompletionTime(completionTime);
+      setTimeout(() => {
+        showCompletionModal(completionTime);
+      }, 500);
+    }
+
+    function saveCompletionTime(time) {
+      let times = JSON.parse(localStorage.getItem('colorBarTimes') || '[]');
+      const locale = currentLanguage === 'he' ? 'he-IL' : 'en-US';
+      const newEntry = {
+        time: time,
+        date: new Date().toLocaleDateString(locale),
+        timestamp: Date.now()
+      };
+      times.push(newEntry);
+      times.sort((a, b) => a.time - b.time); // Sort by time (fastest first)
+      times = times.slice(0, 10); // Keep only top 10
+      localStorage.setItem('colorBarTimes', JSON.stringify(times));
+    }
+
+    function showCompletionModal(time) {
+      const modal = document.getElementById('completionModal');
+      const timeElement = document.getElementById('completionTime');
+      const rankElement = document.getElementById('completionRank');
+      
+      timeElement.textContent = time.toFixed(2) + 's';
+      
+      // Check rank
+      const times = JSON.parse(localStorage.getItem('colorBarTimes') || '[]');
+      const rank = times.findIndex(entry => entry.time === time) + 1;
+      
+      if (rank === 1) {
+        rankElement.textContent = translations[currentLanguage].newRecord;
+        rankElement.style.color = '#ffd700';
+      } else if (rank <= 3) {
+        rankElement.textContent = translations[currentLanguage].topRank.replace('{rank}', rank);
+        rankElement.style.color = '#00ff88';
+      } else if (rank <= 10) {
+        rankElement.textContent = translations[currentLanguage].rank.replace('{rank}', rank);
+        rankElement.style.color = '#fff';
+      } else {
+        rankElement.textContent = translations[currentLanguage].goodTime;
+        rankElement.style.color = '#ccc';
+      }
+      
+      modal.style.display = 'flex';
+    }
+
+    function closeCompletionModal() {
+      document.getElementById('completionModal').style.display = 'none';
+      initGame(); // Start new game
+    }
+
     function initGame() {
       canvas.width  = window.innerWidth;
       canvas.height = window.innerHeight;
       clickCount = 0;
+      colorBarValue = 0;
+      gameStartTime = Date.now();
+      isGameActive = true;
       
-      msg.textContent = `כדורים שנלחצו: ${clickCount}`;
+      msg.textContent = `${translations[currentLanguage].ballsClicked}: ${clickCount}`;
+      
+      // Reset color bar appearance
+      colorBarFill.style.animation = 'none';
+      colorBarLabel.textContent = `${translations[currentLanguage].speedMeter}: 0%`;
+      colorBarLabel.style.color = '#fff';
+      
+      // Start color bar decrease timer
+      if (colorBarInterval) {
+        clearInterval(colorBarInterval);
+      }
+      colorBarInterval = setInterval(updateColorBar, 50); // Update every 50ms for smooth animation
       
       // Track game start in user counter
       if (window.UserCounter) {
@@ -268,6 +713,7 @@
       }
       
       currentBall = createNewBall();
+      updateColorBar();
       drawGame();
     }
 
@@ -290,8 +736,9 @@
 
     function nextBall() {
       clickCount++;
+      increaseColorBar(); // Increase color bar on each ball click
       currentBall = createNewBall();
-      msg.textContent = `כדורים שנלחצו: ${clickCount}`;
+      msg.textContent = `${translations[currentLanguage].ballsClicked}: ${clickCount}`;
       
       // Track milestone completions (every 10 clicks)
       if (window.UserCounter && clickCount % 10 === 0) {
@@ -306,11 +753,7 @@
 
     function toggleRightColor() {
       rightColor = rightColor === 'green' ? 'blue' : 'green';
-      rightBrightnessLabel.textContent = `בהירות (${rightColor === 'green' ? 'ירוק' : 'כחול'})`;
-      rightContrastLabel.textContent = `ניגודיות (${rightColor === 'green' ? 'ירוק' : 'כחול'})`;
-      document.getElementById('toggleColor').textContent = rightColor === 'green'
-        ? 'החלף ירוק ↔ כחול'
-        : 'החלף כחול ↔ ירוק';
+      updateLanguageTexts();
       
       // Update current ball color if it's not red
       if (currentBall && currentBall.color !== 'red') {
@@ -347,6 +790,36 @@
     canvas.addEventListener('touchstart', handlePointerDown, { passive: false }); // Added touch support
 
     
+    function showLeaderboard() {
+      const modal = document.getElementById('leaderboardModal');
+      const listElement = document.getElementById('leaderboardList');
+      const times = JSON.parse(localStorage.getItem('colorBarTimes') || '[]');
+      
+      if (times.length === 0) {
+        listElement.innerHTML = `<div style="text-align: center; color: #ccc; padding: 20px;">${translations[currentLanguage].noResults}</div>`;
+      } else {
+        listElement.innerHTML = times.map((entry, index) => {
+          const medals = ['🥇', '🥈', '🥉'];
+          const medal = index < 3 ? medals[index] : `${index + 1}.`;
+          return `
+            <div class="leaderboard-entry">
+              <div class="leaderboard-rank">${medal}</div>
+              <div>
+                <div class="leaderboard-time">${entry.time.toFixed(2)}s</div>
+                <div class="leaderboard-date">${entry.date}</div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+      
+      modal.style.display = 'flex';
+    }
+
+    function closeLeaderboard() {
+      document.getElementById('leaderboardModal').style.display = 'none';
+    }
+
     ['input', 'change'].forEach(eventName => {
         redBrightnessSlider.addEventListener(eventName, drawGame);
         redContrastSlider.addEventListener(eventName, drawGame);
@@ -354,10 +827,84 @@
         rightContrastSlider.addEventListener(eventName, drawGame);
     });
 
+    function updateLanguageTexts() {
+      // Update document title and lang attribute
+      document.title = translations[currentLanguage].title;
+      document.documentElement.lang = currentLanguage;
+      
+      // Update UI elements
+      document.querySelector('.controls-header span').textContent = translations[currentLanguage].gameSettings;
+      document.querySelector('button[onclick="initGame()"]').textContent = translations[currentLanguage].restart;
+      document.querySelector('label[for="redBrightness"]').textContent = translations[currentLanguage].brightnessRed + ':';
+      document.querySelector('label[for="redContrast"]').textContent = translations[currentLanguage].contrastRed + ':';
+      
+      // Update right color labels based on current color
+      const colorName = rightColor === 'green' ? translations[currentLanguage].green : translations[currentLanguage].blue;
+      rightBrightnessLabel.textContent = `${translations[currentLanguage][rightColor === 'green' ? 'brightnessGreen' : 'brightnessBlue']}:`;
+      rightContrastLabel.textContent = `${translations[currentLanguage][rightColor === 'green' ? 'contrastGreen' : 'contrastBlue']}:`;
+      
+      // Update toggle color button
+      document.getElementById('toggleColor').textContent = rightColor === 'green' 
+        ? translations[currentLanguage].toggleColor 
+        : translations[currentLanguage].toggleColorBlue;
+      
+      // Update other buttons
+      document.getElementById('showLeaderboard').textContent = translations[currentLanguage].leaderboard;
+      document.getElementById('languageToggle').textContent = translations[currentLanguage].languageButton;
+      
+      // Update message
+      msg.textContent = `${translations[currentLanguage].ballsClicked}: ${clickCount}`;
+      
+      // Update color bar label
+      const percentage = (colorBarValue / MAX_COLOR_BAR) * 100;
+      colorBarLabel.textContent = `${translations[currentLanguage].speedMeter}: ${Math.round(percentage)}%`;
+      
+      // Update modal content
+      document.querySelector('.modal-title').textContent = translations[currentLanguage].excellent;
+      document.querySelector('.modal-message').textContent = translations[currentLanguage].filledSpeedMeter;
+      document.querySelector('button[onclick="closeCompletionModal()"]').textContent = translations[currentLanguage].continue;
+      document.querySelector('button[onclick="showLeaderboard()"]').textContent = translations[currentLanguage].leaderboard;
+      
+      // Update leaderboard modal
+      document.querySelector('.leaderboard-title').textContent = translations[currentLanguage].leaderboardTitle;
+      document.querySelector('button[onclick="closeLeaderboard()"]').textContent = translations[currentLanguage].close;
+      
+      // Update text direction for RTL/LTR
+      document.body.style.direction = currentLanguage === 'he' ? 'rtl' : 'ltr';
+      
+      // Update message position for RTL/LTR
+      if (currentLanguage === 'he') {
+        msg.style.right = '20px';
+        msg.style.left = 'auto';
+      } else {
+        msg.style.left = '20px';
+        msg.style.right = 'auto';
+      }
+    }
+
+    function toggleLanguage() {
+      currentLanguage = currentLanguage === 'he' ? 'en' : 'he';
+      localStorage.setItem('gameLanguage', currentLanguage);
+      updateLanguageTexts();
+    }
+
+    // Load saved language preference
+    function loadLanguagePreference() {
+      const savedLanguage = localStorage.getItem('gameLanguage');
+      if (savedLanguage && (savedLanguage === 'he' || savedLanguage === 'en')) {
+        currentLanguage = savedLanguage;
+      }
+      updateLanguageTexts();
+    }
+
     document.getElementById('toggleColor').addEventListener('click', toggleRightColor);
+    document.getElementById('showLeaderboard').addEventListener('click', showLeaderboard);
+    document.getElementById('languageToggle').addEventListener('click', toggleLanguage);
 
     window.addEventListener('resize', initGame);
 
+    // Initialize language and game
+    loadLanguagePreference();
     initGame();
   </script>
   
