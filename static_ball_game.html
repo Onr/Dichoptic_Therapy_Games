@@ -780,9 +780,20 @@
         const dx = mx - currentBall.x;
         const dy = my - currentBall.y;
         if (dx * dx + dy * dy <= BALL_RADIUS * BALL_RADIUS) {
-          // Ball clicked
+          // Ball clicked - auto-collapse settings when user starts playing
+          autoCollapseSettings();
           nextBall();
         }
+      }
+    }
+
+    function autoCollapseSettings() {
+      const header = document.querySelector('.controls-header');
+      const content = document.getElementById('controls-content');
+      
+      if (!header.classList.contains('collapsed')) {
+        header.classList.add('collapsed');
+        content.classList.add('collapsed');
       }
     }
 

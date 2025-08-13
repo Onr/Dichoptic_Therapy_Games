@@ -396,6 +396,9 @@
           const dx = mx - ball.x;
           const dy = my - ball.y;
           if (dx * dx + dy * dy <= BALL_RADIUS * BALL_RADIUS) {
+            // Auto-collapse settings when user starts playing
+            autoCollapseSettings();
+            
             if (ball.num === nextNumber) {
               ball.clicked = true;
               nextNumber++;
@@ -410,6 +413,16 @@
         }
       }
     };
+
+    function autoCollapseSettings() {
+      const header = document.querySelector('.controls-header');
+      const content = document.getElementById('controls-content');
+      
+      if (!header.classList.contains('collapsed')) {
+        header.classList.add('collapsed');
+        content.classList.add('collapsed');
+      }
+    }
 
     canvas.addEventListener('mousedown', handlePointerDown);
     canvas.addEventListener('touchstart', handlePointerDown, { passive: false }); // Added touch support

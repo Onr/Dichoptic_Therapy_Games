@@ -262,10 +262,29 @@ if (typeof document !== 'undefined') {
     }
 
     /**
+   * Auto-collapses the settings panel when user starts playing
+   */
+    function autoCollapseSettings() {
+      const header = document.querySelector('.controls-header');
+      const content = document.getElementById('controls-content');
+      
+      if (!header.classList.contains('collapsed')) {
+        header.classList.add('collapsed');
+        content.classList.add('collapsed');
+      }
+    }
+
+    /**
    * Flips a card.
    */
     function flipCard() {
       if (game.lockBoard || this === game.firstCard || this.classList.contains('flipped')) {return;}
+      
+      // Auto-collapse settings when user starts playing (first card flip)
+      if (!game.firstCard && game.moves === 0) {
+        autoCollapseSettings();
+      }
+      
       this.classList.add('flipped');
       this.setAttribute('aria-label', `${translations[game.currentLanguage].cardFlipped}: ${this.querySelector('.face-layer').textContent}`);
       if (!game.firstCard) {
