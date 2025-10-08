@@ -381,6 +381,9 @@
             ballCount: numBalls,
             completed: true
           });
+          if (typeof window.UserCounter.updateProgress === 'function') {
+            window.UserCounter.updateProgress();
+          }
         }
       }
     }
