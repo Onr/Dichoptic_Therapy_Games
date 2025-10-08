@@ -746,6 +746,9 @@
           clicks: clickCount,
           milestone: `${clickCount} clicks`
         });
+        if (typeof window.UserCounter.updateProgress === 'function') {
+          window.UserCounter.updateProgress();
+        }
       }
       
       drawGame();

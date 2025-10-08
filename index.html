@@ -11,27 +11,41 @@
     body {
       font-family: 'Poppins', sans-serif;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+      min-height: 100vh;
       margin: 0;
       color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 2rem 1rem;
+      box-sizing: border-box;
+      overflow-y: auto;
     }
     .container {
       text-align: center;
       background: rgba(255, 255, 255, 0.1);
-      padding: 3rem 4rem;
+      padding: 2.5rem 3rem;
       border-radius: 20px;
       box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
       border: 1px solid rgba(255, 255, 255, 0.18);
-      animation: fadeIn 1s ease-in-out;
+      animation: fadeIn 0.8s ease-in-out;
+      width: 100%;
+      max-width: 1100px;
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+      align-items: stretch;
     }
     @keyframes fadeIn {
       from { opacity: 0; transform: scale(0.95); }
       to { opacity: 1; transform: scale(1); }
+    }
+    .hub-header {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
     }
     h1 {
       font-weight: 600;
@@ -43,10 +57,10 @@
         opacity: 0.9;
     }
     .game-selection {
-        display: flex;
-        gap: 1.5rem;
-        justify-content: center;
-        flex-wrap: wrap;
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
     }
     .game-card {
       background: rgba(255, 255, 255, 0.25);
@@ -55,7 +69,7 @@
       text-decoration: none;
       color: white;
       transition: background 0.3s, transform 0.3s;
-      width: 200px;
+      width: 220px;
     }
     .game-card:hover {
       background: rgba(255, 255, 255, 0.4);
@@ -87,12 +101,275 @@
     [dir="rtl"] .game-card {
         text-align: right;
     }
+    .progress-dashboard {
+      text-align: left;
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 16px;
+      padding: 2rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    [dir="rtl"] .progress-dashboard {
+      text-align: right;
+    }
+    .progress-header {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      text-align: left;
+    }
+    .progress-header h2 {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+    .progress-header p {
+      margin: 0;
+      opacity: 0.85;
+      font-size: 0.95rem;
+    }
+    .progress-overview {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1rem;
+    }
+    .stat-card {
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      align-items: flex-start;
+      min-height: 110px;
+    }
+    .stat-label {
+      font-size: 0.85rem;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      opacity: 0.8;
+    }
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 600;
+      display: flex;
+      align-items: baseline;
+      gap: 0.3rem;
+    }
+    .stat-unit {
+      font-size: 0.9rem;
+      opacity: 0.75;
+    }
+    .progress-bars {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+    .progress-card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 14px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      min-height: 180px;
+    }
+    .progress-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .progress-card-title {
+      font-size: 1.1rem;
+      margin: 0;
+    }
+    .progress-card-meta {
+      font-size: 0.85rem;
+      opacity: 0.8;
+    }
+    .progress-percentage {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    .progress-bar {
+      width: 100%;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #70f6ff, #f8a0ff);
+      border-radius: 999px;
+      transition: width 0.4s ease;
+    }
+    .progress-card-stats {
+      font-size: 0.85rem;
+      opacity: 0.85;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .badge-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+    .badge-card {
+      display: flex;
+      gap: 0.8rem;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 0.9rem;
+      align-items: center;
+    }
+    .badge-icon {
+      font-size: 1.8rem;
+    }
+    .badge-info {
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    [dir="rtl"] .badge-info {
+      text-align: right;
+    }
+    .badge-info strong {
+      font-size: 1rem;
+    }
+    .badge-info small {
+      font-size: 0.8rem;
+      opacity: 0.8;
+    }
+    .suggestion-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 0.75rem;
+    }
+    .suggestion-list li {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 0.9rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.95rem;
+    }
+    .suggestion-icon {
+      font-size: 1.4rem;
+    }
+    .empty-state {
+      opacity: 0.75;
+      font-size: 0.95rem;
+    }
+    .share-section {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+    }
+    .share-button {
+      background: rgba(255, 255, 255, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      color: #fff;
+      padding: 0.55rem 1.2rem;
+      border-radius: 999px;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+    .share-button:hover:not([disabled]) {
+      background: rgba(255, 255, 255, 0.35);
+      transform: translateY(-2px);
+    }
+    .share-button[disabled] {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .share-button.secondary {
+      background: rgba(0, 0, 0, 0.35);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .share-status {
+      font-size: 0.85rem;
+      opacity: 0.85;
+      min-height: 1.2rem;
+    }
+    @media (max-width: 768px) {
+      .container {
+        padding: 2rem 1.5rem;
+      }
+      .progress-dashboard {
+        padding: 1.5rem;
+      }
+      .progress-overview {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      }
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1 data-i18n="title">Practice Hub</h1>
-    <p data-i18n="subtitle">Choose your challenge and start playing!</p>
+    <header class="hub-header">
+      <h1 data-i18n="title">Practice Hub</h1>
+      <p data-i18n="subtitle">Choose your challenge and start playing!</p>
+    </header>
+
+    <section class="progress-dashboard" id="progress-dashboard">
+      <div class="progress-header">
+        <h2 class="progress-title" data-i18n="progress.title">Your Therapy Journey</h2>
+        <p data-i18n="progress.subtitle">Track your achievements and stay motivated.</p>
+      </div>
+
+      <div class="progress-overview">
+        <div class="stat-card">
+          <span class="stat-label" data-i18n="progress.totalCompletionsLabel">Total completions</span>
+          <div class="stat-value">
+            <span id="total-completions">0</span>
+            <span class="stat-unit" data-i18n="progress.completionUnit">sessions</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label" data-i18n="progress.currentStreakLabel">Current streak</span>
+          <div class="stat-value">
+            <span id="current-streak">0</span>
+            <span class="stat-unit" data-i18n="progress.daysSuffix">days</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label" data-i18n="progress.longestStreakLabel">Longest streak</span>
+          <div class="stat-value">
+            <span id="longest-streak">0</span>
+            <span class="stat-unit" data-i18n="progress.daysSuffix">days</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="progress-bars" id="game-progress-bars"></div>
+
+      <div class="achievement-section">
+        <h3 data-i18n="progress.badgesTitle">Unlocked badges</h3>
+        <div id="badge-list" class="badge-list"></div>
+      </div>
+
+      <div class="suggestions-section">
+        <h3 data-i18n="progress.suggestionsTitle">Suggested next challenges</h3>
+        <ul id="suggestion-list" class="suggestion-list"></ul>
+      </div>
+
+      <div class="share-section">
+        <button id="share-achievement" class="share-button" type="button" data-i18n="progress.shareAchievement">Share achievement</button>
+        <button id="challenge-friend" class="share-button secondary" type="button" data-i18n="progress.challengeFriend">Challenge a friend</button>
+        <p id="share-status" class="share-status" aria-live="polite"></p>
+      </div>
+    </section>
+
     <div class="game-selection">
       <a href="memory_game.html" class="game-card">
         <h2 data-i18n="memoryGameTitle">Scanning</h2>
@@ -122,6 +399,7 @@
   <script>
     const translations = {
       en: {
+        pageTitle: 'Practice Hub - Choose Your Challenge',
         title: 'Game Hub',
         subtitle: 'Choose your challenge and start playing!',
         memoryGameTitle: 'Scanning',
@@ -132,9 +410,43 @@
         staticBallGameDesc: 'Click numbered balls that appear one at a time in random locations.',
         languageButton: 'עברית',
         creditText: 'Built by Tal Bar Nizan & Ori Nizan • ',
-        contactLink: 'Contact Us'
+        contactLink: 'Contact Us',
+        progress: {
+          title: 'Your Therapy Journey',
+          subtitle: 'Track your achievements and stay motivated.',
+          totalCompletionsLabel: 'Total completions',
+          currentStreakLabel: 'Current streak',
+          longestStreakLabel: 'Longest streak',
+          daysSuffix: 'days',
+          completionUnit: 'sessions',
+          completionCount: '{count} completions',
+          bestScore: 'Best score: {score}',
+          averageScore: 'Average score: {score}',
+          bestTime: 'Best time: {time}s',
+          averageTime: 'Average time: {time}s',
+          noGamesYet: 'Play a game to start tracking progress.',
+          badgesTitle: 'Unlocked badges',
+          noBadges: 'Keep playing to unlock your first badge!',
+          suggestionsTitle: 'Suggested next challenges',
+          suggestionTotalCompletions: 'Complete {remaining} more sessions to earn the {badge}.',
+          suggestionStreak: 'Play {remaining} more days in a row to earn the {badge}.',
+          suggestionGameCompletions: 'Play {game} {remaining} more times to earn the {badge}.',
+          suggestionScoreAtLeast: 'Reach {threshold} points in {game} to earn the {badge}.',
+          suggestionScoreAtMost: 'Finish {game} in {threshold} seconds to earn the {badge}.',
+          allCaughtUp: 'You have unlocked all available achievements!',
+          shareAchievement: 'Share achievement',
+          challengeFriend: 'Challenge a friend',
+          shareMessage: 'I just unlocked the {badge} badge in the Dichoptic Therapy Games!',
+          challengeMessage: 'Can you beat my {badge} badge? Play the Dichoptic Therapy Games with me:',
+          shareStatusShared: 'Shared successfully! 🎉',
+          shareStatusCopied: 'Link copied! Share it with friends.',
+          shareStatusNoBadge: 'Unlock a badge to share your progress.',
+          shareStatusUnavailable: 'Sharing is not supported on this device.',
+          shareDefaultTitle: 'Therapy Progress'
+        }
       },
       he: {
+        pageTitle: 'מרכז האימונים - בחרו את האתגר שלכם',
         title: 'מרכז משחקים',
         subtitle: 'בחר את האתגר שלך והתחל לשחק!',
         memoryGameTitle: 'סריקה',
@@ -145,30 +457,415 @@
         staticBallGameDesc: 'לחצו על כדורים ממוספרים המופיעים אחד אחד במקומות אקראיים.',
         languageButton: 'English',
         creditText: 'נבנה על ידי טל בר ניצן ואורי ניצן • ',
-        contactLink: 'צרו קשר'
+        contactLink: 'צרו קשר',
+        progress: {
+          title: 'מסע ההתקדמות שלך',
+          subtitle: 'עקבו אחר ההישגים שלכם והישארו במוטיבציה.',
+          totalCompletionsLabel: 'סה"כ השלמות',
+          currentStreakLabel: 'רצף נוכחי',
+          longestStreakLabel: 'הרצף הארוך ביותר',
+          daysSuffix: 'ימים',
+          completionUnit: 'מפגשים',
+          completionCount: '{count} השלמות',
+          bestScore: 'ציון שיא: {score}',
+          averageScore: 'ציון ממוצע: {score}',
+          bestTime: 'זמן שיא: {time} שניות',
+          averageTime: 'זמן ממוצע: {time} שניות',
+          noGamesYet: 'שחקו במשחק כדי להתחיל לעקוב אחר ההתקדמות.',
+          badgesTitle: 'תגים שנפתחו',
+          noBadges: 'המשיכו לשחק כדי לפתוח את התג הראשון שלכם!',
+          suggestionsTitle: 'אתגרים מומלצים הבאים',
+          suggestionTotalCompletions: 'השלימו עוד {remaining} מפגשים כדי להרוויח את {badge}.',
+          suggestionStreak: 'שחקו עוד {remaining} ימים ברצף כדי להרוויח את {badge}.',
+          suggestionGameCompletions: 'שחקו ב{game} עוד {remaining} פעמים כדי להרוויח את {badge}.',
+          suggestionScoreAtLeast: 'הגיעו ל-{threshold} נקודות ב{game} כדי להרוויח את {badge}.',
+          suggestionScoreAtMost: 'סיימו את {game} תוך {threshold} שניות כדי להרוויח את {badge}.',
+          allCaughtUp: 'פתחתם את כל ההישגים הזמינים!',
+          shareAchievement: 'שיתוף הישג',
+          challengeFriend: 'אתגרו חבר',
+          shareMessage: 'פתחתי את התג {badge} במשחקי הטיפול הדיכופטיים!',
+          challengeMessage: 'יכולים לעקוף את התג {badge} שלי? הצטרפו למשחקי הטיפול הדיכופטיים:',
+          shareStatusShared: 'השיתוף הצליח! 🎉',
+          shareStatusCopied: 'הקישור הועתק! שתפו עם חברים.',
+          shareStatusNoBadge: 'פתחו תג כדי שתוכלו לשתף את ההתקדמות.',
+          shareStatusUnavailable: 'השיתוף אינו נתמך במכשיר זה.',
+          shareDefaultTitle: 'התקדמות טיפולית'
+        }
       }
     };
 
-    let currentLang = 'en';
+    const totalCompletionsEl = document.getElementById('total-completions');
+    const currentStreakEl = document.getElementById('current-streak');
+    const longestStreakEl = document.getElementById('longest-streak');
+    const progressBarsEl = document.getElementById('game-progress-bars');
+    const badgeListEl = document.getElementById('badge-list');
+    const suggestionListEl = document.getElementById('suggestion-list');
+    const shareStatusEl = document.getElementById('share-status');
+    const shareButton = document.getElementById('share-achievement');
+    const challengeButton = document.getElementById('challenge-friend');
+    const languageToggle = document.getElementById('toggle-language');
 
-    function switchLanguage(lang) {
-      currentLang = lang;
-      document.documentElement.lang = lang;
-      document.documentElement.dir = lang === 'he' ? 'rtl' : 'ltr';
+    const gameNameMap = {
+      'Memory Game (Scanning)': { en: translations.en.memoryGameTitle, he: translations.he.memoryGameTitle },
+      'Ball Game (Tracking)': { en: translations.en.ballGameTitle, he: translations.he.ballGameTitle },
+      'Static Ball Game (Saccades)': { en: translations.en.staticBallGameTitle, he: translations.he.staticBallGameTitle }
+    };
 
-      document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        if (translations[lang][key]) {
-          el.textContent = translations[lang][key];
+    let storedLang = null;
+    try {
+      storedLang = localStorage.getItem('language');
+    } catch (error) {
+      storedLang = null;
+    }
+
+    let currentLang = storedLang || (navigator.language && navigator.language.startsWith('he') ? 'he' : 'en');
+    let latestProgress = null;
+
+    function resolveTranslation(lang, key) {
+      const bundle = translations[lang] || translations.en;
+      const segments = key.split('.');
+      let value = bundle;
+      for (const segment of segments) {
+        if (value && typeof value === 'object' && segment in value) {
+          value = value[segment];
+        } else {
+          value = null;
+          break;
         }
+      }
+      if (value === null && lang !== 'en') {
+        return resolveTranslation('en', key);
+      }
+      return value;
+    }
+
+    function formatTranslation(lang, key, replacements = {}) {
+      const template = resolveTranslation(lang, key);
+      if (typeof template !== 'string') {
+        return '';
+      }
+      return template.replace(/\{(\w+)\}/g, (match, token) => {
+        if (Object.prototype.hasOwnProperty.call(replacements, token)) {
+          return replacements[token];
+        }
+        return match;
       });
     }
 
-    document.getElementById('toggle-language').addEventListener('click', () => {
-      const newLang = currentLang === 'en' ? 'he' : 'en';
-      switchLanguage(newLang);
-    });
+    function getLocalizedGameName(gameName, lang) {
+      return gameNameMap[gameName]?.[lang] || gameName;
+    }
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      try {
+        localStorage.setItem('language', lang);
+      } catch (error) {
+        // Ignore storage errors
+      }
+      document.documentElement.lang = lang;
+      document.documentElement.dir = lang === 'he' ? 'rtl' : 'ltr';
+
+      const pageTitle = resolveTranslation(lang, 'pageTitle') || 'Practice Hub';
+      document.title = pageTitle;
+
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        const translation = resolveTranslation(lang, key);
+        if (typeof translation === 'string') {
+          el.textContent = translation;
+        }
+      });
+
+      if (languageToggle) {
+        languageToggle.textContent = resolveTranslation(lang, 'languageButton');
+      }
+
+      renderProgress(lang);
+    }
+
+    function formatTimeValue(value) {
+      if (value === null || value === undefined) {
+        return null;
+      }
+      const number = Number(value);
+      if (!Number.isFinite(number) || number <= 0) {
+        return null;
+      }
+      return number % 1 === 0 ? number : Number(number.toFixed(1));
+    }
+
+    function getSuggestionText(challenge, lang) {
+      const badgeName = `${challenge.badge.icon ? `${challenge.badge.icon} ` : ''}${challenge.badge.name?.[lang] || challenge.badge.name?.en || challenge.badge.badgeKey}`;
+      const remaining = Math.max(1, Math.ceil(challenge.remaining || 0));
+      if (challenge.type === 'total_completions') {
+        return formatTranslation(lang, 'progress.suggestionTotalCompletions', { remaining, badge: badgeName });
+      }
+      if (challenge.type === 'streak') {
+        return formatTranslation(lang, 'progress.suggestionStreak', { remaining, badge: badgeName });
+      }
+      if (challenge.type === 'game_completions') {
+        return formatTranslation(lang, 'progress.suggestionGameCompletions', {
+          game: getLocalizedGameName(challenge.gameName, lang),
+          remaining,
+          badge: badgeName
+        });
+      }
+      if (challenge.type === 'score') {
+        if (challenge.direction === 'atMost') {
+          return formatTranslation(lang, 'progress.suggestionScoreAtMost', {
+            game: getLocalizedGameName(challenge.gameName, lang),
+            threshold: challenge.badge.threshold,
+            badge: badgeName
+          });
+        }
+        return formatTranslation(lang, 'progress.suggestionScoreAtLeast', {
+          game: getLocalizedGameName(challenge.gameName, lang),
+          threshold: challenge.badge.threshold,
+          badge: badgeName
+        });
+      }
+      return '';
+    }
+
+    function renderProgress(lang) {
+      if (!window.UserCounter || typeof window.UserCounter.getCachedProgress !== 'function') {
+        return;
+      }
+      const summary = window.UserCounter.getCachedProgress();
+      if (!summary) {
+        return;
+      }
+      latestProgress = summary;
+
+      const aggregated = summary.aggregated;
+      const achievements = summary.achievements;
+
+      totalCompletionsEl.textContent = aggregated.totalCompletions || 0;
+      currentStreakEl.textContent = aggregated.streaks.current || 0;
+      longestStreakEl.textContent = aggregated.streaks.longest || 0;
+
+      progressBarsEl.innerHTML = '';
+      if (!aggregated.games.length) {
+        const emptyState = document.createElement('div');
+        emptyState.className = 'empty-state';
+        emptyState.textContent = formatTranslation(lang, 'progress.noGamesYet');
+        progressBarsEl.appendChild(emptyState);
+      } else {
+        aggregated.games.forEach(game => {
+          const card = document.createElement('article');
+          card.className = 'progress-card';
+
+          const header = document.createElement('div');
+          header.className = 'progress-card-header';
+
+          const titleWrap = document.createElement('div');
+          const title = document.createElement('h4');
+          title.className = 'progress-card-title';
+          title.textContent = getLocalizedGameName(game.name, lang);
+          const meta = document.createElement('span');
+          meta.className = 'progress-card-meta';
+          meta.textContent = formatTranslation(lang, 'progress.completionCount', {
+            count: game.completions || 0
+          });
+          titleWrap.appendChild(title);
+          titleWrap.appendChild(meta);
+
+          const percentage = document.createElement('span');
+          percentage.className = 'progress-percentage';
+          percentage.textContent = `${game.completionProgress.percent}%`;
+
+          header.appendChild(titleWrap);
+          header.appendChild(percentage);
+
+          const bar = document.createElement('div');
+          bar.className = 'progress-bar';
+          bar.setAttribute('role', 'progressbar');
+          bar.setAttribute('aria-valuemin', '0');
+          bar.setAttribute('aria-valuemax', '100');
+          bar.setAttribute('aria-valuenow', String(game.completionProgress.percent));
+
+          const fill = document.createElement('div');
+          fill.className = 'progress-bar-fill';
+          fill.style.width = `${game.completionProgress.percent}%`;
+          bar.appendChild(fill);
+
+          card.appendChild(header);
+          card.appendChild(bar);
+
+          const stats = [];
+          if (typeof game.bestScore === 'number' && !Number.isNaN(game.bestScore)) {
+            stats.push(formatTranslation(lang, 'progress.bestScore', { score: game.bestScore }));
+          }
+          if (typeof game.averageScore === 'number' && !Number.isNaN(game.averageScore)) {
+            stats.push(formatTranslation(lang, 'progress.averageScore', { score: game.averageScore }));
+          }
+          const bestTime = formatTimeValue(game.bestTime);
+          if (bestTime !== null) {
+            stats.push(formatTranslation(lang, 'progress.bestTime', { time: bestTime }));
+          }
+          const averageTime = formatTimeValue(game.averageTime);
+          if (averageTime !== null) {
+            stats.push(formatTranslation(lang, 'progress.averageTime', { time: averageTime }));
+          }
+
+          if (stats.length) {
+            const statsContainer = document.createElement('div');
+            statsContainer.className = 'progress-card-stats';
+            stats.forEach(text => {
+              const span = document.createElement('span');
+              span.textContent = text;
+              statsContainer.appendChild(span);
+            });
+            card.appendChild(statsContainer);
+          }
+
+          progressBarsEl.appendChild(card);
+        });
+      }
+
+      badgeListEl.innerHTML = '';
+      if (!achievements.unlockedBadges.length) {
+        const empty = document.createElement('div');
+        empty.className = 'empty-state';
+        empty.textContent = formatTranslation(lang, 'progress.noBadges');
+        badgeListEl.appendChild(empty);
+      } else {
+        achievements.unlockedBadges.slice(0, 6).forEach(badge => {
+          const badgeCard = document.createElement('div');
+          badgeCard.className = 'badge-card';
+
+          const icon = document.createElement('span');
+          icon.className = 'badge-icon';
+          icon.textContent = badge.icon || '🏅';
+
+          const info = document.createElement('div');
+          info.className = 'badge-info';
+
+          const name = document.createElement('strong');
+          name.textContent = badge.name?.[lang] || badge.name?.en || badge.badgeKey;
+
+          const description = document.createElement('small');
+          description.textContent = badge.description?.[lang] || badge.description?.en || '';
+
+          info.appendChild(name);
+          info.appendChild(description);
+
+          badgeCard.appendChild(icon);
+          badgeCard.appendChild(info);
+
+          badgeListEl.appendChild(badgeCard);
+        });
+      }
+
+      suggestionListEl.innerHTML = '';
+      const suggestions = achievements.nextChallenges.slice(0, 4);
+      if (!suggestions.length) {
+        const li = document.createElement('li');
+        li.className = 'empty-state';
+        li.textContent = formatTranslation(lang, 'progress.allCaughtUp');
+        suggestionListEl.appendChild(li);
+      } else {
+        suggestions.forEach(challenge => {
+          const li = document.createElement('li');
+          const icon = document.createElement('span');
+          icon.className = 'suggestion-icon';
+          icon.textContent = challenge.badge.icon || '⭐️';
+
+          const text = document.createElement('span');
+          text.textContent = getSuggestionText(challenge, lang);
+
+          li.appendChild(icon);
+          li.appendChild(text);
+          suggestionListEl.appendChild(li);
+        });
+      }
+
+      const highlight = achievements.highlightBadge;
+      const hasBadge = Boolean(highlight);
+      if (shareButton) {
+        shareButton.disabled = !hasBadge;
+      }
+      if (challengeButton) {
+        challengeButton.disabled = !hasBadge;
+      }
+      shareStatusEl.textContent = hasBadge ? '' : formatTranslation(lang, 'progress.shareStatusNoBadge');
+    }
+
+    function handleShare(mode) {
+      if (!latestProgress || !latestProgress.achievements || !latestProgress.achievements.highlightBadge) {
+        shareStatusEl.textContent = formatTranslation(currentLang, 'progress.shareStatusNoBadge');
+        return;
+      }
+
+      const highlight = latestProgress.achievements.highlightBadge;
+      const badgeLabel = `${highlight.icon ? `${highlight.icon} ` : ''}${highlight.name?.[currentLang] || highlight.name?.en || highlight.badgeKey}`;
+      const messageKey = mode === 'challenge' ? 'progress.challengeMessage' : 'progress.shareMessage';
+      const shareText = formatTranslation(currentLang, messageKey, { badge: badgeLabel });
+      const shareTitle = formatTranslation(currentLang, 'progress.shareDefaultTitle') || resolveTranslation(currentLang, 'title') || 'Therapy Progress';
+      const shareUrl = window.location.href;
+
+      const fallbackShare = () => {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(`${shareText} ${shareUrl}`)
+            .then(() => {
+              shareStatusEl.textContent = formatTranslation(currentLang, 'progress.shareStatusCopied');
+            })
+            .catch(() => {
+              shareStatusEl.textContent = formatTranslation(currentLang, 'progress.shareStatusUnavailable');
+            });
+        } else {
+          shareStatusEl.textContent = formatTranslation(currentLang, 'progress.shareStatusUnavailable');
+        }
+      };
+
+      if (navigator.share) {
+        navigator.share({ title: shareTitle, text: shareText, url: shareUrl })
+          .then(() => {
+            shareStatusEl.textContent = formatTranslation(currentLang, 'progress.shareStatusShared');
+          })
+          .catch(error => {
+            if (error && error.name === 'AbortError') {
+              return;
+            }
+            fallbackShare();
+          });
+      } else {
+        fallbackShare();
+      }
+    }
+
+    function initProgress() {
+      if (!window.UserCounter || typeof window.UserCounter.getCachedProgress !== 'function') {
+        setTimeout(initProgress, 400);
+        return;
+      }
+      if (typeof window.UserCounter.updateProgress === 'function') {
+        window.UserCounter.updateProgress();
+      }
+      renderProgress(currentLang);
+    }
+
+    if (languageToggle) {
+      languageToggle.addEventListener('click', () => {
+        const newLang = currentLang === 'en' ? 'he' : 'en';
+        setLanguage(newLang);
+      });
+    }
+
+    if (shareButton) {
+      shareButton.addEventListener('click', () => handleShare('share'));
+    }
+    if (challengeButton) {
+      challengeButton.addEventListener('click', () => handleShare('challenge'));
+    }
+
+    window.addEventListener('userProgressUpdated', () => renderProgress(currentLang));
+    window.addEventListener('load', initProgress);
+
+    setLanguage(currentLang);
   </script>
+
 
   <!-- User Counter -->
   <script src="src/utils/userCounter.js"></script>

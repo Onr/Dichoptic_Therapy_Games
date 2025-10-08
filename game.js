@@ -267,7 +267,7 @@ if (typeof document !== 'undefined') {
     function autoCollapseSettings() {
       const header = document.querySelector('.controls-header');
       const content = document.getElementById('controls-content');
-      
+
       if (!header.classList.contains('collapsed')) {
         header.classList.add('collapsed');
         content.classList.add('collapsed');
@@ -279,12 +279,12 @@ if (typeof document !== 'undefined') {
    */
     function flipCard() {
       if (game.lockBoard || this === game.firstCard || this.classList.contains('flipped')) {return;}
-      
+
       // Auto-collapse settings when user starts playing (first card flip)
       if (!game.firstCard && game.moves === 0) {
         autoCollapseSettings();
       }
-      
+
       this.classList.add('flipped');
       this.setAttribute('aria-label', `${translations[game.currentLanguage].cardFlipped}: ${this.querySelector('.face-layer').textContent}`);
       if (!game.firstCard) {
@@ -460,6 +460,9 @@ if (typeof document !== 'undefined') {
           score: game.score,
           difficulty: game.difficulty
         });
+        if (typeof window.UserCounter.updateProgress === 'function') {
+          window.UserCounter.updateProgress();
+        }
       }
 
       // Update leaderboard first
