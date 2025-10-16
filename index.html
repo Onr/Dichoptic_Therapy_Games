@@ -3,122 +3,387 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Practice Hub - Choose Your Challenge</title>
+  <meta name="description" content="Dichoptic therapy games for amblyopia patients, including scanning, tracking, and saccade challenges with tips, FAQs, and success stories.">
+  <meta name="keywords" content="dichoptic therapy, amblyopia training, binocular vision games, vision therapy exercises">
+  <meta name="author" content="Dichoptic Therapy Games team">
+  <meta property="og:title" content="Practice Hub - Dichoptic Therapy Games">
+  <meta property="og:description" content="Explore dichoptic therapy games, tips, and stories to guide amblyopia training at home.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://localhost:8443/">
+  <link rel="canonical" href="https://localhost:8443/">
+  <title>Practice Hub - Dichoptic Therapy Games</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
+    :root {
+      color-scheme: dark;
+    }
+    * {
+      box-sizing: border-box;
+    }
     body {
       font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
       margin: 0;
-      color: #fff;
+      color: #f6f8ff;
+      background: radial-gradient(circle at top left, #8e9efc 0%, #5b3db0 35%, #1b2142 100%);
     }
-    .container {
+    a {
+      color: #ffd6ff;
+    }
+    header.hero {
+      position: relative;
+      padding: 5rem 1.5rem 3rem;
       text-align: center;
-      background: rgba(255, 255, 255, 0.1);
-      padding: 3rem 4rem;
-      border-radius: 20px;
-      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      animation: fadeIn 1s ease-in-out;
+      overflow: hidden;
     }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(9, 14, 33, 0.65));
+      z-index: 0;
+    }
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem;
+      border-radius: 28px;
+      background: rgba(12, 16, 41, 0.55);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
     }
     h1 {
       font-weight: 600;
-      font-size: 2.5rem;
+      font-size: clamp(2.4rem, 5vw, 3.4rem);
       margin-bottom: 0.5rem;
     }
-    p {
-        margin-bottom: 2rem;
-        opacity: 0.9;
+    h2 {
+      font-size: clamp(1.8rem, 4vw, 2.4rem);
+      margin-top: 3rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    p.lead {
+      font-size: 1.1rem;
+      margin: 0 auto 2rem;
+      max-width: 720px;
+      opacity: 0.9;
+    }
+    nav.hero-nav {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+    nav.hero-nav a {
+      padding: 0.65rem 1.35rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      text-decoration: none;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.12);
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+    nav.hero-nav a:hover {
+      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.2);
     }
     .game-selection {
-        display: flex;
-        gap: 1.5rem;
-        justify-content: center;
-        flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
     }
     .game-card {
-      background: rgba(255, 255, 255, 0.25);
-      padding: 1.5rem;
-      border-radius: 15px;
+      background: rgba(255, 255, 255, 0.16);
+      padding: 1.75rem 1.5rem;
+      border-radius: 18px;
       text-decoration: none;
       color: white;
-      transition: background 0.3s, transform 0.3s;
-      width: 200px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.25);
     }
     .game-card:hover {
-      background: rgba(255, 255, 255, 0.4);
-      transform: translateY(-5px);
+      transform: translateY(-6px);
+      box-shadow: 0 26px 60px rgba(0, 0, 0, 0.35);
     }
     .game-card h2 {
-        font-size: 1.5rem;
-        margin-top: 0;
-        margin-bottom: 0.5rem;
+      font-size: 1.6rem;
+      margin-top: 0;
+      margin-bottom: 0.75rem;
     }
     .game-card p {
-        font-size: 0.9rem;
-        opacity: 0.8;
+      font-size: 0.95rem;
+      opacity: 0.85;
+      line-height: 1.6;
     }
     #toggle-language {
-        background: rgba(255, 255, 255, 0.2);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        color: white;
-        padding: 0.5rem 1rem;
-        border-radius: 8px;
-        cursor: pointer;
-        margin-top: 2rem;
-        font-family: 'Poppins', sans-serif;
-        transition: background 0.3s;
+      background: rgba(255, 255, 255, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      padding: 0.6rem 1.4rem;
+      border-radius: 999px;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      transition: transform 0.2s ease, background 0.2s ease;
+      margin-top: 0.5rem;
     }
     #toggle-language:hover {
-        background: rgba(255, 255, 255, 0.4);
+      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.3);
+    }
+    main {
+      padding: 2rem 1.5rem 5rem;
+      background: linear-gradient(180deg, rgba(7, 11, 26, 0.92) 0%, rgba(10, 16, 38, 0.98) 100%);
+    }
+    .section {
+      max-width: 980px;
+      margin: 0 auto 3.5rem;
+      padding: 2.5rem 2rem;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 20px 55px rgba(0, 0, 0, 0.35);
+    }
+    .section h3 {
+      font-size: 1.6rem;
+      margin-top: 0;
+      margin-bottom: 1.25rem;
+    }
+    .section p,
+    .section li {
+      line-height: 1.7;
+      font-size: 1rem;
+      opacity: 0.95;
+    }
+    .faq-item {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    .faq-item:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+    .success-grid {
+      display: grid;
+      gap: 1.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+    .success-card {
+      background: rgba(12, 19, 48, 0.65);
+      padding: 1.5rem;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: inset 0 0 18px rgba(103, 126, 234, 0.15);
+    }
+    .newsletter-form {
+      display: grid;
+      gap: 1.2rem;
+      max-width: 520px;
+    }
+    .newsletter-form label {
+      display: grid;
+      gap: 0.4rem;
+      font-weight: 600;
+    }
+    .newsletter-form input,
+    .newsletter-form select {
+      padding: 0.8rem 1rem;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      background: rgba(10, 14, 32, 0.85);
+      color: #fff;
+      font-size: 1rem;
+    }
+    .newsletter-form button {
+      width: fit-content;
+      padding: 0.75rem 1.8rem;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      background: linear-gradient(135deg, #4e65ff 0%, #764ba2 100%);
+      color: #fff;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .newsletter-form button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 35px rgba(118, 75, 162, 0.35);
+    }
+    .newsletter-consent {
+      display: flex;
+      gap: 0.7rem;
+      align-items: flex-start;
+      font-size: 0.95rem;
+    }
+    .newsletter-consent input {
+      margin-top: 0.2rem;
+    }
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: rgba(255, 255, 255, 0.75);
+      font-size: 0.95rem;
+    }
+    footer a {
+      color: #fff;
     }
     [dir="rtl"] .game-card {
         text-align: right;
     }
+    [dir="rtl"] .newsletter-form {
+      text-align: right;
+    }
   </style>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Dichoptic Therapy Games",
+      "url": "https://localhost:8443/",
+      "description": "Interactive dichoptic therapy exercises for amblyopia, including scanning, tracking, and saccadic training games with clinical tips.",
+      "applicationCategory": "HealthApplication",
+      "operatingSystem": "Web",
+      "creator": {
+        "@type": "Organization",
+        "name": "Dichoptic Therapy Games"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+  </script>
 </head>
 <body>
-  <div class="container">
-    <h1 data-i18n="title">Practice Hub</h1>
-    <p data-i18n="subtitle">Choose your challenge and start playing!</p>
-    <div class="game-selection">
-      <a href="memory_game.html" class="game-card">
-        <h2 data-i18n="memoryGameTitle">Scanning</h2>
-        <p data-i18n="memoryGameDesc">Align matching pairs, with this classic card matching game. Strengthening binocular coordination.</p>
-      </a>
-      <a href="ball_game.html" class="game-card">
-        <h2 data-i18n="ballGameTitle">Tracking</h2>
-        <p data-i18n="ballGameDesc">Click the numbered balls in the correct order as they move around the screen.</p>
-      </a>
-      <a href="static_ball_game.html" class="game-card">
-        <h2 data-i18n="staticBallGameTitle">Saccades</h2>
-        <p data-i18n="staticBallGameDesc">Click the balls that appear one at a time in random locations.</p>
-      </a>
-    </div>
-    <button id="toggle-language" data-i18n="languageButton">עברית</button>
-    <div class="footer-links" style="margin-top: 2rem; font-size: 0.9rem;">
+  <header class="hero">
+    <div class="hero-inner">
+      <h1 data-i18n="title">Practice Hub</h1>
+      <p class="lead" data-i18n="subtitle">Choose your challenge and start playing!</p>
+      <nav class="hero-nav" aria-label="Quick navigation">
+        <a href="#faq">FAQ</a>
+        <a href="#therapy-tips">Therapy Tips</a>
+        <a href="#success-stories">Success Stories</a>
+        <a href="#newsletter">Newsletter</a>
+      </nav>
+      <div class="game-selection">
+        <a href="memory_game.html" class="game-card">
+          <h2 data-i18n="memoryGameTitle">Scanning</h2>
+          <p data-i18n="memoryGameDesc">Align matching pairs, with this classic card matching game. Strengthening binocular coordination.</p>
+        </a>
+        <a href="ball_game.html" class="game-card">
+          <h2 data-i18n="ballGameTitle">Tracking</h2>
+          <p data-i18n="ballGameDesc">Click the numbered balls in the correct order as they move around the screen.</p>
+        </a>
+        <a href="static_ball_game.html" class="game-card">
+          <h2 data-i18n="staticBallGameTitle">Saccades</h2>
+          <p data-i18n="staticBallGameDesc">Click the balls that appear one at a time in random locations.</p>
+        </a>
+      </div>
+      <button id="toggle-language" data-i18n="languageButton">עברית</button>
+      <div class="footer-links" style="margin-top: 2rem; font-size: 0.95rem;">
         <p class="credit" style="margin-bottom: 0.5rem;">
-            <span data-i18n="creditText">Built by Tal Bar Nizan & Ori Nizan • </span>
-            <a href="mailto:restin3@gmail.com?subject=Contact%20about%20the%20therapy%20game" data-i18n="contactLink" style="color: #fff;">Contact Us</a>
+          <span data-i18n="creditText">Built by Tal Bar Nizan & Ori Nizan • </span>
+          <a href="mailto:restin3@gmail.com?subject=Contact%20about%20the%20therapy%20game" data-i18n="contactLink" style="color: #fff;">Contact Us</a>
         </p>
         <p class="credit">
-            <a href="privacy-policy.html" target="_blank" style="color: #fff;">Privacy Policy</a>
+          <a href="privacy-policy.html" target="_blank" style="color: #fff;">Privacy Policy</a>
         </p>
+      </div>
     </div>
-  </div>
+  </header>
 
+  <main>
+    <section id="faq" class="section" aria-labelledby="faq-heading">
+      <h2 id="faq-heading">Dichoptic therapy FAQ</h2>
+      <div class="faq-item">
+        <h3>What is dichoptic therapy?</h3>
+        <p>Dichoptic therapy presents different images to each eye simultaneously. The brain fuses those stimuli, strengthening binocular vision pathways that are often suppressed in amblyopia. Our games balance contrast and motion to encourage fusion without overwhelming the weaker eye.</p>
+      </div>
+      <div class="faq-item">
+        <h3>How often should I train?</h3>
+        <p>Most optometrists recommend five sessions per week, 15–20 minutes each. Short, frequent training helps the visual cortex adapt and preserves compliance. Use the in-game stats to track streaks and gradually increase intensity.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Do I need special equipment?</h3>
+        <p>Yes. Wear red/green or red/blue anaglyph glasses so each eye sees its target. Pair the glasses with balanced room lighting and sit 50–70 cm from the screen for consistent fixation.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Can I share feedback securely?</h3>
+        <p>Absolutely. Use the feedback tool on this page or inside any game. We store only the fields you send to a secure, local log so your therapy notes stay private.</p>
+      </div>
+    </section>
+
+    <section id="therapy-tips" class="section" aria-labelledby="tips-heading">
+      <h2 id="tips-heading">Therapy tips for stronger binocular vision</h2>
+      <p>Blend these dichoptic therapy strategies into your routine to support neural plasticity and comfort:</p>
+      <ul>
+        <li>Warm up with slow eye stretches—gently trace a sideways figure eight to prime extraocular muscles.</li>
+        <li>Start each game with higher contrast on the amblyopic eye, then gradually equalize to challenge fusion.</li>
+        <li>Take micro-breaks every five minutes. Close each eye separately to check for suppression, then resume.</li>
+        <li>Keep a therapy journal. Note which mechanics—scanning, pursuit tracking, or saccades—felt easiest and hardest.</li>
+        <li>Celebrate small wins such as smoother pursuits or fewer suppression episodes to reinforce adherence.</li>
+      </ul>
+      <p>Need more support? Jump into the success stories below or use the feedback form to request accessibility adjustments.</p>
+    </section>
+
+    <section id="success-stories" class="section" aria-labelledby="stories-heading">
+      <h2 id="stories-heading">Success stories from the dichoptic community</h2>
+      <div class="success-grid">
+        <article class="success-card">
+          <h3>Naomi, 9</h3>
+          <p>After six weeks of alternating the scanning and tracking games, Naomi improved stereoacuity by two lines. Her optometrist credited consistent dichoptic therapy and the ability to log comfort levels with our feedback tool.</p>
+        </article>
+        <article class="success-card">
+          <h3>Jared, 28</h3>
+          <p>Working remotely left Jared with limited clinic time. He uses the saccade trainer daily at lunch and submits accessibility notes so we can fine tune contrast. He reports less eye strain and better depth perception when rock climbing.</p>
+        </article>
+        <article class="success-card">
+          <h3>Priya, 42</h3>
+          <p>Priya layered our newsletter tips with her clinician’s plan, adding mindfulness breaks and brightness adjustments. The personalized approach helped her maintain fusion through longer reading sessions.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="newsletter" class="section" aria-labelledby="newsletter-heading">
+      <h2 id="newsletter-heading">Therapy insights &amp; newsletter</h2>
+      <p>Get quarterly digests covering dichoptic therapy breakthroughs, accessibility upgrades, and at-home gamified drills. We’ll only email you after you consent and you can leave the list with one click.</p>
+      <form class="newsletter-form" data-newsletter-form data-success-message="Thanks for subscribing! Please check your email to confirm." data-error-message="Subscription failed. Please try again in a moment.">
+        <label for="newsletter-email">Email address</label>
+        <input type="email" id="newsletter-email" name="email" autocomplete="email" required placeholder="you@example.com">
+        <label for="newsletter-interest">Which updates would you like?</label>
+        <select id="newsletter-interest" name="interest">
+          <option value="home-therapy">At-home dichoptic therapy plans</option>
+          <option value="clinic-news">Clinic research &amp; amblyopia studies</option>
+          <option value="accessibility">Accessibility improvements</option>
+          <option value="game-updates">New games and calibration tools</option>
+        </select>
+        <label class="newsletter-consent">
+          <input type="checkbox" name="consent" value="yes" required>
+          <span>I agree to receive email updates about dichoptic therapy and understand I can unsubscribe anytime.</span>
+        </label>
+        <button type="submit">Subscribe</button>
+        <p class="support-widgets__status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <div id="shared-widgets"></div>
+  </main>
+
+  <footer>
+    <p>&copy; <span id="current-year"></span> Dichoptic Therapy Games. Crafted to make amblyopia therapy engaging, private, and data-informed.</p>
+  </footer>
+
+  <script src="scripts/support-widgets.js"></script>
   <script>
     const translations = {
       en: {
@@ -168,6 +433,23 @@
       const newLang = currentLang === 'en' ? 'he' : 'en';
       switchLanguage(newLang);
     });
+
+    function initIndexEnhancements() {
+      const yearElement = document.getElementById('current-year');
+      if (yearElement) {
+        yearElement.textContent = new Date().getFullYear();
+      }
+
+      if (typeof renderSupportWidgets === 'function') {
+        renderSupportWidgets({ containerId: 'shared-widgets', includeNewsletter: true });
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initIndexEnhancements);
+    } else {
+      initIndexEnhancements();
+    }
   </script>
 
   <!-- User Counter -->

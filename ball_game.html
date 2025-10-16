@@ -165,10 +165,27 @@
       box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
       background: linear-gradient(135deg, #5a6fd8 0%, #6b42a6 100%);
     }
-    
+
     button:active {
       transform: translateY(0);
       box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    #ball-support-widgets {
+      position: absolute;
+      bottom: 2rem;
+      right: 2rem;
+      left: 2rem;
+      max-height: 40vh;
+      overflow-y: auto;
+      z-index: 1000;
+    }
+
+    @media (max-width: 900px) {
+      #ball-support-widgets {
+        position: static;
+        margin: 2rem auto;
+      }
     }
   </style>
 </head>
@@ -194,8 +211,8 @@
         <button onclick="initGame()">התחל מחדש</button>
       </div>
       <div class="control-group">
-          <label for="fontSize">גודל גופן:</label>
-          <input type="range" id="fontSize" min="10" max="50" value="26">
+        <label for="fontSize">גודל גופן:</label>
+        <input type="range" id="fontSize" min="10" max="50" value="26">
       </div>
       <div class="control-group">
         <label for="redBrightness">בהירות (אדום):</label>
@@ -214,6 +231,7 @@
       </div>
     </div>
   </div>
+  <div id="ball-support-widgets"></div>
   <canvas id="gameCanvas"></canvas>
 
   <script>
@@ -445,8 +463,22 @@
 
     initGame();
   </script>
-  
+
   <!-- User Tracking -->
   <script src="src/utils/userCounter.js"></script>
+  <script src="scripts/support-widgets.js"></script>
+  <script>
+    function initBallSupportWidgets() {
+      if (typeof renderSupportWidgets === 'function') {
+        renderSupportWidgets({ containerId: 'ball-support-widgets', includeNewsletter: true });
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initBallSupportWidgets);
+    } else {
+      initBallSupportWidgets();
+    }
+  </script>
 </body>
 </html>

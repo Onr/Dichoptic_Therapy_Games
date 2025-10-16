@@ -218,6 +218,23 @@
       box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
     }
 
+    #static-support-widgets {
+      position: absolute;
+      bottom: 2rem;
+      right: 2rem;
+      left: 2rem;
+      max-height: 40vh;
+      overflow-y: auto;
+      z-index: 1000;
+    }
+
+    @media (max-width: 900px) {
+      #static-support-widgets {
+        position: static;
+        margin: 2rem auto;
+      }
+    }
+
     /* Completion Modal */
     #completionModal {
       position: fixed;
@@ -403,6 +420,7 @@
       </div>
     </div>
   </div>
+  <div id="static-support-widgets"></div>
   <canvas id="gameCanvas"></canvas>
 
   <!-- Completion Modal -->
@@ -918,8 +936,22 @@
     loadLanguagePreference();
     initGame();
   </script>
-  
+
   <!-- User Tracking -->
   <script src="src/utils/userCounter.js"></script>
+  <script src="scripts/support-widgets.js"></script>
+  <script>
+    function initStaticSupportWidgets() {
+      if (typeof renderSupportWidgets === 'function') {
+        renderSupportWidgets({ containerId: 'static-support-widgets', includeNewsletter: true });
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initStaticSupportWidgets);
+    } else {
+      initStaticSupportWidgets();
+    }
+  </script>
 </body>
 </html>

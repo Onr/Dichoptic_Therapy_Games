@@ -186,6 +186,8 @@
       </p>
     </footer>
 
+  <div id="memory-support-widgets"></div>
+
   <!-- Production Systems -->
   <script src="src/utils/environment.js"></script>
   <script src="src/utils/logger.js"></script>
@@ -201,9 +203,23 @@
     function toggleControls() {
       const header = document.querySelector('.controls-header');
       const content = document.getElementById('controls-content');
-      
+
       header.classList.toggle('collapsed');
       content.classList.toggle('collapsed');
+    }
+  </script>
+  <script src="scripts/support-widgets.js"></script>
+  <script>
+    function initMemorySupportWidgets() {
+      if (typeof renderSupportWidgets === 'function') {
+        renderSupportWidgets({ containerId: 'memory-support-widgets', includeNewsletter: true });
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initMemorySupportWidgets);
+    } else {
+      initMemorySupportWidgets();
     }
   </script>
   <script src="game.js"></script>
