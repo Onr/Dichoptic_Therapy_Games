@@ -3,147 +3,541 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Practice Hub - Choose Your Challenge</title>
+  <title>Diplopia Vision Therapy Practice Hub</title>
+  <meta id="meta-description" name="description" content="Learn about diplopia (double vision) and explore guided binocular vision therapy exercises with interactive practice games.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      color-scheme: light;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
       margin: 0;
-      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #eef2ff 0%, #cfd9ff 50%, #f0f4ff 100%);
+      color: #1b1b2f;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
-    .container {
-      text-align: center;
-      background: rgba(255, 255, 255, 0.1);
-      padding: 3rem 4rem;
-      border-radius: 20px;
-      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      animation: fadeIn 1s ease-in-out;
+
+    header {
+      backdrop-filter: blur(10px);
+      background: rgba(255, 255, 255, 0.75);
+      border-bottom: 1px solid rgba(103, 114, 229, 0.15);
     }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
+
+    .page-wrapper {
+      width: min(1120px, 100%);
+      margin: 0 auto;
+      padding: 1.5rem 1.5rem 3rem;
     }
-    h1 {
+
+    .site-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.5rem 0 1rem;
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .brand span:first-child {
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #5b5fc7;
       font-weight: 600;
-      font-size: 2.5rem;
-      margin-bottom: 0.5rem;
     }
-    p {
-        margin-bottom: 2rem;
-        opacity: 0.9;
+
+    .brand span:last-child {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #22224c;
     }
-    .game-selection {
-        display: flex;
-        gap: 1.5rem;
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-    .game-card {
-      background: rgba(255, 255, 255, 0.25);
-      padding: 1.5rem;
-      border-radius: 15px;
-      text-decoration: none;
-      color: white;
-      transition: background 0.3s, transform 0.3s;
-      width: 200px;
-    }
-    .game-card:hover {
-      background: rgba(255, 255, 255, 0.4);
-      transform: translateY(-5px);
-    }
-    .game-card h2 {
-        font-size: 1.5rem;
-        margin-top: 0;
-        margin-bottom: 0.5rem;
-    }
-    .game-card p {
-        font-size: 0.9rem;
-        opacity: 0.8;
-    }
+
     #toggle-language {
-        background: rgba(255, 255, 255, 0.2);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        color: white;
-        padding: 0.5rem 1rem;
-        border-radius: 8px;
-        cursor: pointer;
-        margin-top: 2rem;
-        font-family: 'Poppins', sans-serif;
-        transition: background 0.3s;
+      background: #5b5fc7;
+      border: none;
+      color: #fff;
+      padding: 0.65rem 1.25rem;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 600;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      font-family: 'Poppins', sans-serif;
     }
-    #toggle-language:hover {
-        background: rgba(255, 255, 255, 0.4);
+
+    #toggle-language:hover,
+    #toggle-language:focus-visible {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 25px rgba(91, 95, 199, 0.25);
+      outline: none;
     }
-    [dir="rtl"] .game-card {
-        text-align: right;
+
+    main {
+      flex: 1;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, rgba(103, 114, 229, 0.12) 0%, rgba(179, 184, 255, 0.32) 100%);
+      border-radius: 28px;
+      padding: 3rem clamp(1.25rem, 4vw, 4rem);
+      margin: 1rem 0 2.5rem;
+      box-shadow: 0 18px 40px rgba(103, 114, 229, 0.16);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.65), transparent 45%);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 620px;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.1rem, 4vw, 2.9rem);
+      margin: 0 0 1rem;
+      color: #1a1a3c;
+    }
+
+    .hero p {
+      font-size: clamp(1rem, 2.4vw, 1.2rem);
+      margin: 0 0 1.75rem;
+      line-height: 1.65;
+      color: #3d3d68;
+    }
+
+    .cta-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .cta-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.85rem 1.35rem;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .cta-button.primary {
+      background: #5b5fc7;
+      color: #fff;
+      box-shadow: 0 12px 30px rgba(91, 95, 199, 0.35);
+    }
+
+    .cta-button.primary:hover,
+    .cta-button.primary:focus-visible {
+      transform: translateY(-1px);
+      box-shadow: 0 18px 40px rgba(91, 95, 199, 0.4);
+      outline: none;
+    }
+
+    .cta-button.secondary {
+      background: rgba(91, 95, 199, 0.08);
+      color: #393c7f;
+      border-color: rgba(91, 95, 199, 0.2);
+    }
+
+    .cta-button.secondary:hover,
+    .cta-button.secondary:focus-visible {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 28px rgba(91, 95, 199, 0.2);
+      outline: none;
+    }
+
+    .games-section {
+      margin-bottom: 2.5rem;
+    }
+
+    .section-header {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .section-header h2 {
+      margin: 0;
+      font-size: clamp(1.6rem, 3vw, 2.1rem);
+      color: #1c1c3e;
+    }
+
+    .section-header p {
+      margin: 0;
+      color: #4e4f87;
+      max-width: 600px;
+      line-height: 1.6;
+    }
+
+    .game-grid {
+      display: grid;
+      gap: 1.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+
+    .game-card {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      padding: 1.75rem;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.95);
+      text-decoration: none;
+      color: inherit;
+      box-shadow: 0 20px 35px rgba(103, 114, 229, 0.12);
+      border: 1px solid rgba(91, 95, 199, 0.14);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .game-card:hover,
+    .game-card:focus-visible {
+      transform: translateY(-6px);
+      box-shadow: 0 22px 45px rgba(103, 114, 229, 0.22);
+      outline: none;
+    }
+
+    .game-card h3 {
+      margin: 0;
+      font-size: 1.25rem;
+      color: #262656;
+    }
+
+    .game-card p {
+      margin: 0;
+      color: #50538c;
+      line-height: 1.55;
+      font-size: 0.98rem;
+    }
+
+    .insight {
+      font-size: 0.9rem;
+      color: #5f61a4;
+    }
+
+    .articles {
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 26px;
+      padding: clamp(1.5rem, 3vw, 2.75rem);
+      box-shadow: 0 18px 38px rgba(103, 114, 229, 0.18);
+      border: 1px solid rgba(91, 95, 199, 0.12);
+    }
+
+    article + article {
+      margin-top: 2.5rem;
+      padding-top: 2.5rem;
+      border-top: 1px solid rgba(91, 95, 199, 0.12);
+    }
+
+    article h2,
+    article h3 {
+      color: #21214a;
+    }
+
+    article h2 {
+      font-size: clamp(1.45rem, 3vw, 1.95rem);
+      margin-top: 0;
+    }
+
+    article h3 {
+      font-size: 1.15rem;
+      margin-top: 1.75rem;
+    }
+
+    article p {
+      margin: 0.75rem 0;
+      line-height: 1.7;
+      color: #34346c;
+    }
+
+    article ul,
+    article ol {
+      margin: 0.75rem 0 1.5rem;
+      padding-left: 1.1rem;
+      color: #34346c;
+      line-height: 1.7;
+    }
+
+    article li + li {
+      margin-top: 0.4rem;
+    }
+
+    article a {
+      color: #5b5fc7;
+      font-weight: 600;
+    }
+
+    .lang-section[hidden] {
+      display: none;
+    }
+
+    footer {
+      margin-top: 3rem;
+      text-align: center;
+      color: #4e4f87;
+      font-size: 0.9rem;
+    }
+
+    footer a {
+      color: #5b5fc7;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    footer a:hover,
+    footer a:focus-visible {
+      text-decoration: underline;
+      outline: none;
+    }
+
+    @media (max-width: 720px) {
+      .site-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .cta-buttons {
+        width: 100%;
+      }
+
+      .cta-button {
+        justify-content: center;
+        width: 100%;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1 data-i18n="title">Practice Hub</h1>
-    <p data-i18n="subtitle">Choose your challenge and start playing!</p>
-    <div class="game-selection">
-      <a href="memory_game.html" class="game-card">
-        <h2 data-i18n="memoryGameTitle">Scanning</h2>
-        <p data-i18n="memoryGameDesc">Align matching pairs, with this classic card matching game. Strengthening binocular coordination.</p>
-      </a>
-      <a href="ball_game.html" class="game-card">
-        <h2 data-i18n="ballGameTitle">Tracking</h2>
-        <p data-i18n="ballGameDesc">Click the numbered balls in the correct order as they move around the screen.</p>
-      </a>
-      <a href="static_ball_game.html" class="game-card">
-        <h2 data-i18n="staticBallGameTitle">Saccades</h2>
-        <p data-i18n="staticBallGameDesc">Click the balls that appear one at a time in random locations.</p>
-      </a>
+  <header>
+    <div class="page-wrapper">
+      <div class="site-header">
+        <div class="brand">
+          <span data-i18n="brandTagline">Vision Therapy Toolkit</span>
+          <span data-i18n="brandTitle">Diplopia Practice Hub</span>
+        </div>
+        <button id="toggle-language" type="button" aria-label="Switch language" data-i18n="languageButton">עברית</button>
+      </div>
     </div>
-    <button id="toggle-language" data-i18n="languageButton">עברית</button>
-    <div class="footer-links" style="margin-top: 2rem; font-size: 0.9rem;">
-        <p class="credit" style="margin-bottom: 0.5rem;">
-            <span data-i18n="creditText">Built by Tal Bar Nizan & Ori Nizan • </span>
-            <a href="mailto:restin3@gmail.com?subject=Contact%20about%20the%20therapy%20game" data-i18n="contactLink" style="color: #fff;">Contact Us</a>
-        </p>
-        <p class="credit">
-            <a href="privacy-policy.html" target="_blank" style="color: #fff;">Privacy Policy</a>
-        </p>
-    </div>
-  </div>
+  </header>
+
+  <main class="page-wrapper">
+    <section class="hero" aria-labelledby="hero-heading">
+      <div class="hero-content">
+        <h1 id="hero-heading" data-i18n="heroHeading">Therapist-guided practice for binocular diplopia</h1>
+        <p data-i18n="heroLead">Understand double vision, follow evidence-based guidance, and reinforce your rehabilitation with short, engaging games.</p>
+        <div class="cta-buttons">
+          <a class="cta-button primary" href="#games" data-i18n="primaryCta">Start practicing</a>
+          <a class="cta-button secondary" href="#therapy-exercises" data-anchor-target="therapy-exercises" data-i18n="secondaryCta">Learn about the exercises</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="games" class="games-section" aria-labelledby="games-heading">
+      <div class="section-header">
+        <h2 id="games-heading" data-i18n="gamesHeading">Choose your training game</h2>
+        <p data-i18n="gamesIntro">Blend clinical guidance with playful repetitions. Short daily sessions help coordinate eye movements and reduce double vision.</p>
+      </div>
+      <div class="game-grid">
+        <a href="memory_game.html" class="game-card">
+          <h3 data-i18n="memoryGameTitle">Scanning</h3>
+          <p data-i18n="memoryGameDesc">Match the pairs in this classic memory challenge to boost sustained attention and binocular coordination.</p>
+          <span class="insight" data-i18n="memoryGameInsight">Best for building tracking accuracy across the visual field.</span>
+        </a>
+        <a href="ball_game.html" class="game-card">
+          <h3 data-i18n="ballGameTitle">Tracking</h3>
+          <p data-i18n="ballGameDesc">Follow and click the numbered balls in sequence as they glide around the screen.</p>
+          <span class="insight" data-i18n="ballGameInsight">Supports smooth pursuit control and timing.</span>
+        </a>
+        <a href="static_ball_game.html" class="game-card">
+          <h3 data-i18n="staticBallGameTitle">Saccades</h3>
+          <p data-i18n="staticBallGameDesc">React to balls that appear one at a time in different locations to sharpen quick eye movements.</p>
+          <span class="insight" data-i18n="staticBallGameInsight">Ideal for practicing rapid refixations and visual scanning.</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="articles">
+      <div class="lang-section" data-lang="en" lang="en" aria-labelledby="about-diplopia">
+        <article id="about-diplopia">
+          <h2>What is diplopia (double vision)?</h2>
+          <p>Diplopia means seeing two images of a single object. The images may appear side by side, one above the other, or diagonally separated. It can affect one eye (monocular diplopia) or both eyes together (binocular diplopia). In binocular diplopia the double vision disappears when either eye is covered.</p>
+          <p>For comfortable single vision, both eyes need to be aligned and move together, and the brain must correctly “merge” the two images into one. Diplopia usually occurs when something in this system is disrupted, for example:</p>
+          <ul>
+            <li>Eye misalignment (strabismus) due to weakness or restriction of the eye muscles, or problems with the nerves that control them (for example after stroke, head trauma, diabetes, or nerve palsy).</li>
+            <li>Optical problems in one eye, such as irregular cornea, cataract, or uncorrected refractive error, which can cause ghosting or doubling even when the other eye is covered (monocular diplopia).</li>
+          </ul>
+          <p>Because diplopia may range from benign to a sign of a serious neurological or systemic disease, a careful eye and neurological examination is essential. After a medical evaluation rules out urgent causes and clarifies the diagnosis, vision rehabilitation can help reduce double vision, improve comfort, and support daily activities.</p>
+          <h3>References</h3>
+          <ol>
+            <li>Jain S. Diplopia: Diagnosis and management. Clinical Medicine. 2022;22(2):104–108. (PMC)</li>
+            <li>Glisson CC. Approach to diplopia. Continuum (Minneap Minn). 2019;25(5):1362–1383. (continuum.aan.com)</li>
+          </ol>
+        </article>
+
+        <article id="therapy-exercises">
+          <h2>Suggested practice for diplopia (double vision)</h2>
+          <p>Because new onset double vision can sometimes be a sign of a serious neurological or systemic condition, the first and most important step is to consult a doctor or eye specialist promptly.</p>
+          <h3>Who is this practice for?</h3>
+          <p>The exercises on this website are intended for binocular diplopia, double vision that is present when both eyes are open and disappears when either eye is covered. This type of diplopia is usually caused by a misalignment between the eyes (a binocular vision/strabismus problem). <a href="#about-diplopia">Read the overview on diplopia.</a></p>
+          <p>Exercises should be started only after a full assessment by an eye doctor and orthoptist, and with the guidance of the occupational therapist who is treating you as part of your vision rehabilitation. The exercises described on this site are not a substitute for medical evaluation.</p>
+          <h3>Do exercises really help with double vision?</h3>
+          <p>Research shows that structured eye exercises (vision therapy and orthoptic exercises) can really help reduce symptoms.</p>
+          <h3>What does the research say?</h3>
+          <ul>
+            <li>The best results often come from a combination of short daily exercises at home, and regular supervised sessions in clinic.</li>
+            <li>Practice about 10–15 minutes a day, split into several short sessions.</li>
+            <li>Improvement usually appears after a few weeks, and treatment often continues for a few months.</li>
+            <li>In longer-term follow up, improvement is usually maintained, with only limited need for retreatment.</li>
+          </ul>
+          <h3>What does this mean for you?</h3>
+          <ul>
+            <li>Short, regular practice at home, not long, exhausting sessions.</li>
+            <li>You will have check-ups every few weeks so the occupational therapist who specializes in vision rehabilitation can monitor your progress and adjust your program.</li>
+            <li>The program should be carried out under the guidance of your eye doctor, and the occupational therapist who is treating you in vision rehabilitation, so that the exercises are safe and fit your daily life.</li>
+          </ul>
+          <p>The goal is to help your eyes work together better, reduce double vision, and make reading and everyday activities more comfortable.</p>
+          <h3>References</h3>
+          <ol>
+            <li>Mohamed Z, Alrasheed SH. A Systematic Review and Meta-analysis of Convergence Insufficiency Prevalence and Management Options. Open Ophthalmol J. 2023 Aug 3;17(1):e187436412306231.</li>
+            <li>Westman M, Liinamaa MJ. Relief of asthenopic symptoms with orthoptic exercises in convergence insufficiency is achieved in both adults and children. J Optom. 2012 Apr;5(2):62–7.</li>
+          </ol>
+        </article>
+      </div>
+
+      <div class="lang-section" data-lang="he" lang="he" dir="rtl" aria-labelledby="about-diplopia-he" hidden>
+        <article id="about-diplopia-he">
+          <h2>מהי דיפלופיה (כפל ראייה)?</h2>
+          <p>דיפלופיה פירושה ראייה של שתי תמונות של אותו אובייקט. התמונות יכולות להופיע זו לצד זו, אחת מעל השנייה או באלכסון זו ביחס לזו. היא יכולה להופיע בעין אחת בלבד (דיפלופיה מונוקולרית) או בשתי העיניים יחד (דיפלופיה בינוקולרית). בדיפלופיה בינוקולרית כפל הראייה נעלם כאשר מכסים אחת מן העיניים.</p>
+          <p>כדי לראות תמונה אחת חדה ונוחה, שתי העיניים צריכות להיות מיושרות, לנוע יחד, והמח צריך "לאחד" נכון את שתי התמונות לתמונה אחת. דיפלופיה נוצרת בדרך כלל כאשר משהו במערכת הזו מופרע, לדוגמה:</p>
+          <ul>
+            <li>פזילה או חוסר יישור של העיניים (strabismus) בעקבות חולשה או הגבלה של שרירי העיניים, או בעיה בעצבים שמפעילים אותם, למשל לאחר שבץ מוחי, חבלת ראש, סוכרת או שיתוק של אחד העצבים.</li>
+            <li>בעיה אופטית בעין אחת, כמו קרנית לא סדירה, קטרקט או בעיית ראייה שלא תוקנה בעזרת משקפיים או עדשות מגע, שעלולים לגרום לכפל גם כאשר העין השנייה מכוסה (דיפלופיה מונוקולרית).</li>
+          </ul>
+          <p>מכיוון שדיפלופיה יכולה לנוע ממצב פשוט יחסית ועד סימן אפשרי למחלה נוירולוגית או מערכתית משמעותית, חשוב מאוד לעבור בדיקה של רופא עיניים ולעיתים גם בדיקה נוירולוגית. לאחר שההערכה הרפואית שוללת מצבים דחופים ומבהירה את הסיבה לכפל הראייה, שיקום ראייה יכול לסייע בהפחתת הכפל, בשיפור הנוחות ובהקלת ההתנהלות בפעילויות היומיום.</p>
+          <h3>מקורות</h3>
+          <ol>
+            <li>Jain S. Diplopia: Diagnosis and management. Clinical Medicine. 2022;22(2):104–108. (PMC)</li>
+            <li>Glisson CC. Approach to diplopia. Continuum (Minneap Minn). 2019;25(5):1362–1383. (continuum.aan.com)</li>
+          </ol>
+        </article>
+
+        <article id="therapy-exercises-he">
+          <h2>הנחיות מומלצות לתרגול בדיפלופיה (כפל ראייה)</h2>
+          <p>כפל ראייה חדש יכול להיות לעיתים סימן לבעיה נוירולוגית או מערכתית משמעותית. לכן הצעד הראשון והחשוב ביותר הוא לפנות בהקדם לרופא עיניים או לרופא מומחה אחר.</p>
+          <h3>למי מיועדות ההנחיות האלה?</h3>
+          <p>התרגילים באתר זה מיועדים לדיפלופיה בינוקולרית, כלומר כפל ראייה שמופיע כאשר שתי העיניים פתוחות ונעלם כאשר מכסים אחת העיניים. סוג זה של דיפלופיה נגרם בדרך כלל מחוסר יישור בין העיניים (בעיית ראייה בינוקולרית / פזילה). <a href="#about-diplopia-he">עברו למאמר ההסבר על דיפלופיה.</a></p>
+          <p>ניתן להתחיל לתרגל רק לאחר בדיקה על ידי רופא עיניים ואורתופטיסט, ובליווי המרפא בעיסוק שמטפל בך במסגרת שיקום הראייה. התרגילים המתוארים באתר אינם תחליף לבדיקה רפואית.</p>
+          <h3>האם תרגילים באמת עוזרים לכפל ראייה?</h3>
+          <p>מחקרים מראים שתרגול תפקודי ראייה ועיניים יכול לעזור להפחית סימפטומים של כפל ראייה.</p>
+          <h3>מה אומרים המחקרים?</h3>
+          <ul>
+            <li>התוצאות הטובות ביותר מתקבלות לרוב משילוב של תרגול יומי קצר בבית יחד עם מפגשי תרגול מודרכים במרפאה.</li>
+            <li>מומלץ לתרגל כ־10–15 דקות ביום, מחולקות למספר מקטעים קצרים.</li>
+            <li>לרוב השיפור מתחיל להופיע אחרי כמה שבועות, והטיפול נמשך בדרך כלל במשך מספר חודשים.</li>
+            <li>במעקב ארוך טווח, השיפור בדרך כלל נשמר, ויש צורך מוגבל בלבד בחזרה על תרגול נוסף.</li>
+          </ul>
+          <h3>מה זה אומר עבורך?</h3>
+          <ul>
+            <li>חשוב לבצע תרגול קצר וסדיר בבית, ולא תרגולים ארוכים ומתישים.</li>
+            <li>חשוב להגיע לביקורות אחת לכמה שבועות, כדי שהמרפאה בעיסוק המתמחה בשיקום ראייה תוכל לעקוב אחר ההתקדמות ולהתאים את התוכנית.</li>
+            <li>התוכנית כולה צריכה להיעשות תחת הנחיה של רופא העיניים ושל המרפאה בעיסוק המטפלת בך בשיקום הראייה, כדי להבטיח שהתרגילים יהיו בטוחים ומתאימים לשגרת החיים שלך.</li>
+          </ul>
+          <p>המטרה היא לעזור לעיניים לעבוד טוב יותר יחד, להפחית את כפל הראייה, ולהקל על הקריאה ועל פעילויות היומיום.</p>
+          <h3>מקורות</h3>
+          <ol>
+            <li>Mohamed Z, Alrasheed SH. A Systematic Review and Meta-analysis of Convergence Insufficiency Prevalence and Management Options. Open Ophthalmol J. 2023 Aug 3;17(1):e187436412306231.</li>
+            <li>Westman M, Liinamaa MJ. Relief of asthenopic symptoms with orthoptic exercises in convergence insufficiency is achieved in both adults and children. J Optom. 2012 Apr;5(2):62–7.</li>
+          </ol>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="page-wrapper">
+    <p>
+      <span data-i18n="creditText">Built by Tal Bar Nizan &amp; Ori Nizan • </span>
+      <a href="mailto:restin3@gmail.com?subject=Contact%20about%20the%20therapy%20game" data-i18n="contactLink">Contact Us</a>
+    </p>
+    <p>
+      <a href="privacy-policy.html" target="_blank" rel="noopener">Privacy Policy</a>
+    </p>
+  </footer>
 
   <script>
     const translations = {
       en: {
-        title: 'Game Hub',
-        subtitle: 'Choose your challenge and start playing!',
-        memoryGameTitle: 'Scanning',
-        memoryGameDesc: 'Align matching pairs, with this classic card matching game. Strengthening binocular coordination.',
-        ballGameTitle: 'Ball Tracking',
-        ballGameDesc: 'Click the numbered balls in the correct order as they move around the screen.',
-        staticBallGameTitle: 'Saccade',
-        staticBallGameDesc: 'Click numbered balls that appear one at a time in random locations.',
+        documentTitle: 'Diplopia Vision Therapy Practice Hub',
+        metaDescription: 'Learn about diplopia (double vision) and explore guided binocular vision therapy exercises with interactive practice games.',
+        brandTagline: 'Vision Therapy Toolkit',
+        brandTitle: 'Diplopia Practice Hub',
         languageButton: 'עברית',
+        languageButtonLabel: 'Switch to Hebrew',
+        heroHeading: 'Therapist-guided practice for binocular diplopia',
+        heroLead: 'Understand double vision, follow evidence-based guidance, and reinforce your rehabilitation with short, engaging games.',
+        primaryCta: 'Start practicing',
+        secondaryCta: 'Learn about the exercises',
+        gamesHeading: 'Choose your training game',
+        gamesIntro: 'Blend clinical guidance with playful repetitions. Short daily sessions help coordinate eye movements and reduce double vision.',
+        memoryGameTitle: 'Scanning',
+        memoryGameDesc: 'Match the pairs in this classic memory challenge to boost sustained attention and binocular coordination.',
+        memoryGameInsight: 'Best for building tracking accuracy across the visual field.',
+        ballGameTitle: 'Tracking',
+        ballGameDesc: 'Follow and click the numbered balls in sequence as they glide around the screen.',
+        ballGameInsight: 'Supports smooth pursuit control and timing.',
+        staticBallGameTitle: 'Saccades',
+        staticBallGameDesc: 'React to balls that appear one at a time in different locations to sharpen quick eye movements.',
+        staticBallGameInsight: 'Ideal for practicing rapid refixations and visual scanning.',
         creditText: 'Built by Tal Bar Nizan & Ori Nizan • ',
         contactLink: 'Contact Us'
       },
       he: {
-        title: 'מרכז משחקים',
-        subtitle: 'בחר את האתגר שלך והתחל לשחק!',
-        memoryGameTitle: 'סריקה',
-        memoryGameDesc: 'התאם זוגות תואמים במשחק קלפים קלאסי זה. מחזק תיאום בינוקולרי.',
-        ballGameTitle: 'מעקב',
-        ballGameDesc: 'לחצו על הכדורים הממוספרים בסדר הנכון בזמן שהם נעים על המסך.',
-        staticBallGameTitle: 'סקדות',
-        staticBallGameDesc: 'לחצו על כדורים ממוספרים המופיעים אחד אחד במקומות אקראיים.',
+        documentTitle: 'מרכז תרגול לדיפלופיה',
+        metaDescription: 'גלו מהי דיפלופיה (כפל ראייה) וקבלו הנחיות לתרגול קצר ומודרך עם משחקים אינטראקטיביים לשיקום ראייה.',
+        brandTagline: 'ערכת תרגול לשיקום ראייה',
+        brandTitle: 'מרכז תרגול דיפלופיה',
         languageButton: 'English',
+        languageButtonLabel: 'החלפה לאנגלית',
+        heroHeading: 'תרגול מודרך לדיפלופיה בינוקולרית',
+        heroLead: 'הכירו את כפל הראייה, קבלו הנחיות מבוססות מחקר, וחזקו את השיקום בעזרת משחקים קצרים ומהנים.',
+        primaryCta: 'התחילו לתרגל',
+        secondaryCta: 'קראו על התרגילים',
+        gamesHeading: 'בחרו את משחק התרגול שלכם',
+        gamesIntro: 'שלבו הנחיות קליניות עם משחקיות נעימה. תרגול יומי קצר מסייע לתאם את תנועות העיניים ולהפחית כפל ראייה.',
+        memoryGameTitle: 'סריקה',
+        memoryGameDesc: 'התאימו זוגות זהים במשחק זיכרון קלאסי כדי לחזק קשב ממושך ותיאום בין העיניים.',
+        memoryGameInsight: 'מתאים במיוחד לשיפור דיוק המעקב ברחבי שדה הראייה.',
+        ballGameTitle: 'מעקב',
+        ballGameDesc: 'עקבו ולחצו על הכדורים הממוספרים לפי הסדר כשהם נעים על המסך.',
+        ballGameInsight: 'תומך בשליטה על תנועות מעקב ובתזמון.',
+        staticBallGameTitle: 'סקדות',
+        staticBallGameDesc: 'הגיבו לכדורים שמופיעים אחד אחד במיקומים שונים כדי לחדד תנועות עיניים מהירות.',
+        staticBallGameInsight: 'מעולה לתרגול קפיצות מבט מהירות וסריקה חזותית.',
         creditText: 'נבנה על ידי טל בר ניצן ואורי ניצן • ',
         contactLink: 'צרו קשר'
       }
@@ -151,10 +545,18 @@
 
     let currentLang = 'en';
 
+    const metaDescriptionTag = document.getElementById('meta-description');
+    const secondaryCtaLink = document.querySelector('[data-anchor-target="therapy-exercises"]');
+    const toggleLanguageButton = document.getElementById('toggle-language');
+
     function switchLanguage(lang) {
       currentLang = lang;
       document.documentElement.lang = lang;
       document.documentElement.dir = lang === 'he' ? 'rtl' : 'ltr';
+      document.title = translations[lang].documentTitle;
+      if (metaDescriptionTag) {
+        metaDescriptionTag.setAttribute('content', translations[lang].metaDescription);
+      }
 
       document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
@@ -162,15 +564,32 @@
           el.textContent = translations[lang][key];
         }
       });
+
+      if (toggleLanguageButton) {
+        toggleLanguageButton.setAttribute('aria-label', translations[lang].languageButtonLabel);
+        toggleLanguageButton.setAttribute('aria-pressed', lang === 'he');
+      }
+
+      if (secondaryCtaLink) {
+        const anchorId = lang === 'he' ? 'therapy-exercises-he' : 'therapy-exercises';
+        secondaryCtaLink.setAttribute('href', `#${anchorId}`);
+      }
+
+      document.querySelectorAll('.lang-section').forEach(section => {
+        section.hidden = section.getAttribute('data-lang') !== lang;
+      });
     }
 
-    document.getElementById('toggle-language').addEventListener('click', () => {
-      const newLang = currentLang === 'en' ? 'he' : 'en';
-      switchLanguage(newLang);
-    });
+    if (toggleLanguageButton) {
+      toggleLanguageButton.addEventListener('click', () => {
+        const newLang = currentLang === 'en' ? 'he' : 'en';
+        switchLanguage(newLang);
+      });
+    }
+
+    switchLanguage('en');
   </script>
 
-  <!-- User Counter -->
   <script src="src/utils/userCounter.js"></script>
   <script src="src/utils/adminPanel.js"></script>
 </body>
