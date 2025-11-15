@@ -20,17 +20,19 @@
     body {
       margin: 0;
       font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #eef2ff 0%, #cfd9ff 50%, #f0f4ff 100%);
-      color: #1b1b2f;
+      font-size: 1.1rem;
+      background: radial-gradient(circle at top, rgba(66, 135, 245, 0.25), transparent 45%), linear-gradient(135deg, #050910 0%, #071325 40%, #0b1f3c 100%);
+      color: #e2e8ff;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
     }
 
     header {
-      backdrop-filter: blur(10px);
-      background: rgba(255, 255, 255, 0.75);
-      border-bottom: 1px solid rgba(103, 114, 229, 0.15);
+      backdrop-filter: blur(18px);
+      background: rgba(8, 15, 30, 0.8);
+      border-bottom: 1px solid rgba(102, 126, 234, 0.35);
+      box-shadow: 0 10px 40px rgba(5, 10, 20, 0.6);
     }
 
     .page-wrapper {
@@ -57,18 +59,18 @@
       font-size: 1.1rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      color: #5b5fc7;
+      color: #73d8ff;
       font-weight: 600;
     }
 
     .brand span:last-child {
       font-size: 1.5rem;
       font-weight: 700;
-      color: #22224c;
+      color: #f6f7ff;
     }
 
     #toggle-language {
-      background: #5b5fc7;
+      background: linear-gradient(135deg, #1ccad8, #5f5bd7);
       border: none;
       color: #fff;
       padding: 0.65rem 1.25rem;
@@ -92,20 +94,21 @@
     }
 
     .hero {
-      background: linear-gradient(135deg, rgba(103, 114, 229, 0.12) 0%, rgba(179, 184, 255, 0.32) 100%);
+      background: linear-gradient(150deg, rgba(16, 30, 55, 0.9), rgba(44, 89, 154, 0.65));
       border-radius: 28px;
       padding: 3rem clamp(1.25rem, 4vw, 4rem);
       margin: 1rem 0 2.5rem;
-      box-shadow: 0 18px 40px rgba(103, 114, 229, 0.16);
+      box-shadow: 0 25px 60px rgba(6, 12, 24, 0.85);
       position: relative;
       overflow: hidden;
+      border: 1px solid rgba(115, 216, 255, 0.25);
     }
 
     .hero::after {
       content: "";
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.65), transparent 45%);
+      background: radial-gradient(circle at top right, rgba(92, 202, 255, 0.3), transparent 50%);
       pointer-events: none;
     }
 
@@ -118,14 +121,14 @@
     .hero h1 {
       font-size: clamp(2.1rem, 4vw, 2.9rem);
       margin: 0 0 1rem;
-      color: #1a1a3c;
+      color: #f5f7ff;
     }
 
     .hero p {
       font-size: clamp(1rem, 2.4vw, 1.2rem);
       margin: 0 0 1.75rem;
       line-height: 1.65;
-      color: #3d3d68;
+      color: #c5d6ff;
     }
 
     .cta-buttons {
@@ -147,9 +150,9 @@
     }
 
     .cta-button.primary {
-      background: #5b5fc7;
+      background: linear-gradient(135deg, #1ccad8, #605ff5);
       color: #fff;
-      box-shadow: 0 12px 30px rgba(91, 95, 199, 0.35);
+      box-shadow: 0 15px 40px rgba(39, 145, 255, 0.4);
     }
 
     .cta-button.primary:hover,
@@ -160,15 +163,15 @@
     }
 
     .cta-button.secondary {
-      background: rgba(91, 95, 199, 0.08);
-      color: #393c7f;
-      border-color: rgba(91, 95, 199, 0.2);
+      background: rgba(255, 255, 255, 0.05);
+      color: #9adfff;
+      border-color: rgba(114, 216, 255, 0.4);
     }
 
     .cta-button.secondary:hover,
     .cta-button.secondary:focus-visible {
       transform: translateY(-1px);
-      box-shadow: 0 12px 28px rgba(91, 95, 199, 0.2);
+      box-shadow: 0 12px 28px rgba(113, 216, 255, 0.35);
       outline: none;
     }
 
@@ -186,12 +189,12 @@
     .section-header h2 {
       margin: 0;
       font-size: clamp(1.6rem, 3vw, 2.1rem);
-      color: #1c1c3e;
+      color: #f1f4ff;
     }
 
     .section-header p {
       margin: 0;
-      color: #4e4f87;
+      color: #9eb6ff;
       max-width: 600px;
       line-height: 1.6;
     }
@@ -208,56 +211,56 @@
       gap: 0.75rem;
       padding: 1.75rem;
       border-radius: 20px;
-      background: rgba(255, 255, 255, 0.95);
+      background: linear-gradient(160deg, rgba(20, 32, 61, 0.95), rgba(11, 22, 43, 0.9));
       text-decoration: none;
       color: inherit;
-      box-shadow: 0 20px 35px rgba(103, 114, 229, 0.12);
-      border: 1px solid rgba(91, 95, 199, 0.14);
+      box-shadow: 0 18px 45px rgba(5, 10, 20, 0.75);
+      border: 1px solid rgba(111, 213, 255, 0.12);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
     .game-card:hover,
     .game-card:focus-visible {
       transform: translateY(-6px);
-      box-shadow: 0 22px 45px rgba(103, 114, 229, 0.22);
+      box-shadow: 0 22px 55px rgba(7, 20, 41, 0.9);
       outline: none;
     }
 
     .game-card h3 {
       margin: 0;
       font-size: 1.25rem;
-      color: #262656;
+      color: #f7f7ff;
     }
 
     .game-card p {
       margin: 0;
-      color: #50538c;
+      color: #c9d9ff;
       line-height: 1.55;
       font-size: 0.98rem;
     }
 
     .insight {
       font-size: 0.9rem;
-      color: #5f61a4;
+      color: #8ff7d4;
     }
 
     .articles {
-      background: rgba(255, 255, 255, 0.92);
+      background: linear-gradient(165deg, rgba(10, 20, 38, 0.95), rgba(16, 38, 68, 0.92));
       border-radius: 26px;
       padding: clamp(1.5rem, 3vw, 2.75rem);
-      box-shadow: 0 18px 38px rgba(103, 114, 229, 0.18);
-      border: 1px solid rgba(91, 95, 199, 0.12);
+      box-shadow: 0 30px 70px rgba(5, 8, 15, 0.9);
+      border: 1px solid rgba(113, 216, 255, 0.12);
     }
 
     article + article {
       margin-top: 2.5rem;
       padding-top: 2.5rem;
-      border-top: 1px solid rgba(91, 95, 199, 0.12);
+      border-top: 1px solid rgba(113, 216, 255, 0.15);
     }
 
     article h2,
     article h3 {
-      color: #21214a;
+      color: #f4f6ff;
     }
 
     article h2 {
@@ -273,14 +276,14 @@
     article p {
       margin: 0.75rem 0;
       line-height: 1.7;
-      color: #34346c;
+      color: #c4d2ff;
     }
 
     article ul,
     article ol {
       margin: 0.75rem 0 1.5rem;
       padding-left: 1.1rem;
-      color: #34346c;
+      color: #c4d2ff;
       line-height: 1.7;
     }
 
@@ -289,7 +292,7 @@
     }
 
     article a {
-      color: #5b5fc7;
+      color: #71f4ff;
       font-weight: 600;
     }
 
@@ -300,12 +303,12 @@
     footer {
       margin-top: 3rem;
       text-align: center;
-      color: #4e4f87;
+      color: #8aa7ff;
       font-size: 0.9rem;
     }
 
     footer a {
-      color: #5b5fc7;
+      color: #71f4ff;
       text-decoration: none;
       font-weight: 600;
     }
