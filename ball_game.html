@@ -170,37 +170,142 @@
       transform: translateY(0);
       box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
     }
+
+	    #languageToggle {
+	      position: absolute;
+	      top: 90px;
+	      right: 20px;
+	      z-index: 2;
+	      padding: 10px 20px;
+	    }
+
+	    #navButtons {
+	      position: absolute;
+	      inset-block-end: 20px;
+	      inset-inline-start: 20px;
+	      z-index: 3;
+	      display: flex;
+	      gap: 10px;
+	    }
+
+	    #navButtons button {
+	      margin: 0;
+	    }
+
+	    #celebration {
+	      position: fixed;
+	      top: 50%;
+	      left: 50%;
+	      transform: translate(-50%, -50%) scale(0.3);
+      opacity: 0;
+      width: 180px;
+      height: 180px;
+      pointer-events: none;
+      filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.45));
+    }
+
+    #celebration.visible {
+      animation: celebrationPop 1.8s ease forwards;
+    }
+
+    #celebration svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    #celebration text {
+      font-size: 20px;
+      font-family: 'Segoe UI', sans-serif;
+      font-weight: bold;
+      fill: #fff;
+    }
+
+    @keyframes celebrationPop {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.3);
+      }
+      40% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+      80% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(0.95);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.3);
+      }
+    }
   </style>
 </head>
-<body>
-  <div id="message">לחצו על הכדורים בסדר עולה</div>
+	<body>
+	  <div id="message">לחצו על הכדורים בסדר עולה</div>
+	  <button id="languageToggle" onclick="toggleLanguage()">English</button>
+	  <div id="navButtons">
+	    <button id="backButton" type="button" onclick="goBack()"></button>
+	    <button id="quickRestartButton" type="button" onclick="initGame()"></button>
+	  </div>
+	  <div id="celebration" aria-hidden="true">
+	    <svg viewBox="0 0 160 160">
+	      <defs>
+	        <radialGradient id="celebrationGradient" cx="50%" cy="50%" r="75%">
+          <stop offset="0%" stop-color="#ffe29f" />
+          <stop offset="100%" stop-color="#ffa99f" />
+        </radialGradient>
+      </defs>
+      <circle cx="80" cy="80" r="70" fill="url(#celebrationGradient)" opacity="0.7">
+        <animate attributeName="r" values="50;70;55" dur="1.5s" repeatCount="indefinite" />
+        <animate attributeName="opacity" values="0.4;0.8;0.4" dur="1.5s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="80" cy="80" r="48" stroke="#fff" stroke-width="3" fill="none" stroke-dasharray="10 8">
+        <animateTransform attributeName="transform" attributeType="XML" type="rotate" from="0 80 80" to="360 80 80" dur="2s" repeatCount="indefinite" />
+      </circle>
+      <text id="celebrationText" x="80" y="88" text-anchor="middle">!כל הכבוד</text>
+      <g fill="#ffd166">
+        <circle cx="20" cy="30" r="4">
+          <animateTransform attributeName="transform" type="translate" values="0 0;4 -6;0 0" dur="1s" repeatCount="indefinite" />
+        </circle>
+        <circle cx="140" cy="35" r="3">
+          <animateTransform attributeName="transform" type="translate" values="0 0;-5 -4;0 0" dur="1s" repeatCount="indefinite" />
+        </circle>
+        <circle cx="35" cy="130" r="3">
+          <animateTransform attributeName="transform" type="translate" values="0 0;3 5;0 0" dur="1s" repeatCount="indefinite" />
+        </circle>
+        <circle cx="130" cy="120" r="4">
+          <animateTransform attributeName="transform" type="translate" values="0 0;-4 4;0 0" dur="1s" repeatCount="indefinite" />
+        </circle>
+      </g>
+    </svg>
+  </div>
   <div id="controls">
     <div class="controls-header" onclick="toggleControls()">
-      <span>הגדרות משחק</span>
+      <span id="controlsHeaderText">הגדרות משחק</span>
       <span class="controls-toggle">▼</span>
     </div>
     <div class="controls-content" id="controls-content">
       <div class="control-group">
-        <label>קושי:</label>
-        <button onclick="setDifficulty(0)">ללא תנועה</button>
-        <button onclick="setDifficulty(1.5)">איטי</button>
-        <button onclick="setDifficulty(4)">מהיר</button>
+        <label id="difficultyLabel">קושי:</label>
+        <button id="difficultyStill" onclick="setDifficulty(0)">ללא תנועה</button>
+        <button id="difficultySlow" onclick="setDifficulty(1.5)">איטי</button>
+        <button id="difficultyFast" onclick="setDifficulty(4)">מהיר</button>
       </div>
       <div class="control-group">
-        <label for="ballsSlider">מספר כדורים: <span id="ballsLabel">7</span></label>
+        <label for="ballsSlider"><span id="ballsSliderText">מספר כדורים</span>: <span id="ballsLabel">7</span></label>
         <input type="range" id="ballsSlider" min="0" max="3" step="1" value="0">
       </div>
       <div class="control-group">
-        <button onclick="initGame()">התחל מחדש</button>
+        <button id="restartButton" onclick="initGame()">התחל מחדש</button>
       </div>
       <div class="control-group">
-          <label for="fontSize">גודל גופן:</label>
+          <label id="fontSizeLabel" for="fontSize">גודל גופן:</label>
           <input type="range" id="fontSize" min="10" max="50" value="26">
       </div>
       <div class="control-group">
-        <label for="redBrightness">בהירות (אדום):</label>
+        <label id="redBrightnessLabel" for="redBrightness">בהירות (אדום):</label>
         <input type="range" id="redBrightness" min="0" max="200" value="100">
-        <label for="redContrast">ניגודיות (אדום):</label>
+        <label id="redContrastLabel" for="redContrast">ניגודיות (אדום):</label>
         <input type="range" id="redContrast" min="0" max="200" value="100">
       </div>
       <div class="control-group">
@@ -222,21 +327,81 @@
     let SPEED         = 2.5;
     let FONT_SIZE     = 56;
 
+    const translations = {
+      he: {
+        title: 'משחק – לחצו על הכדורים לפי המספרים',
+        dir: 'rtl',
+        instructionsRange: total => `לחצו על הכדורים בסדר: 1 - ${total}`,
+        nextNumber: next => `נכון! עכשיו לחצו על: ${next}`,
+        wrongOrder: (clicked, expected) => `לחצתם על ${clicked}, אבל הסדר הנכון הוא ${expected}.`,
+        completed: 'כל הכבוד! סיימת את המשחק 🎉',
+        controlsHeader: 'הגדרות משחק',
+        difficultyLabel: 'קושי:',
+        difficulties: {
+          still: 'ללא תנועה',
+          slow: 'איטי',
+          fast: 'מהיר'
+	        },
+	        ballsSliderLabel: 'מספר כדורים',
+	        back: 'חזרה',
+	        restart: 'התחל מחדש',
+	        fontSizeLabel: 'גודל גופן:',
+	        brightness: 'בהירות',
+	        contrast: 'ניגודיות',
+        toggleColor: {
+          green: 'החלף ירוק ↔ כחול',
+          blue: 'החלף כחול ↔ ירוק'
+        },
+        colors: {
+          red: 'אדום',
+          green: 'ירוק',
+          blue: 'כחול'
+        },
+        languageToggle: 'English',
+        celebrationText: 'כל הכבוד!'
+      },
+      en: {
+        title: 'Game – Click the Balls in Order',
+        dir: 'ltr',
+        instructionsRange: total => `Press the balls in order: 1 - ${total}`,
+        nextNumber: next => `Correct! Now click: ${next}`,
+        wrongOrder: (clicked, expected) => `You clicked ${clicked}, but the correct next number is ${expected}.`,
+        completed: 'Great job! You finished the game 🎉',
+        controlsHeader: 'Game Settings',
+        difficultyLabel: 'Difficulty:',
+        difficulties: {
+          still: 'Static',
+          slow: 'Slow',
+          fast: 'Fast'
+	        },
+	        ballsSliderLabel: 'Number of balls',
+	        back: 'Back',
+	        restart: 'Restart',
+	        fontSizeLabel: 'Font size:',
+	        brightness: 'Brightness',
+	        contrast: 'Contrast',
+        toggleColor: {
+          green: 'Switch Green ↔ Blue',
+          blue: 'Switch Blue ↔ Green'
+        },
+        colors: {
+          red: 'Red',
+          green: 'Green',
+          blue: 'Blue'
+        },
+        languageToggle: 'עברית',
+        celebrationText: 'Great job!'
+      }
+    };
+
+    let currentLang = 'he';
+
     const canvas = document.getElementById('gameCanvas');
     const ctx    = canvas.getContext('2d');
     const msg    = document.getElementById('message');
     const ballsSlider = document.getElementById('ballsSlider');
     const ballsLabel  = document.getElementById('ballsLabel');
-    let balls, nextNumber, numBalls = BALL_COUNTS[ballsSlider.value];
-    ballsLabel.textContent = numBalls;
-
-    ballsSlider.addEventListener('input', () => {
-      numBalls = BALL_COUNTS[ballsSlider.value];
-      ballsLabel.textContent = numBalls;
-    });
-
-    ballsSlider.addEventListener('change', initGame);
-
+    const celebrationEl = document.getElementById('celebration');
     const redBrightnessSlider = document.getElementById('redBrightness');
     const redContrastSlider = document.getElementById('redContrast');
     const rightBrightnessSlider = document.getElementById('rightBrightness');
@@ -244,8 +409,87 @@
     const rightBrightnessLabel = document.getElementById('rightBrightnessLabel');
     const rightContrastLabel = document.getElementById('rightContrastLabel');
     const fontSizeSlider = document.getElementById('fontSize');
+    const controlsHeaderText = document.getElementById('controlsHeaderText');
+    const difficultyLabel = document.getElementById('difficultyLabel');
+    const difficultyStillBtn = document.getElementById('difficultyStill');
+    const difficultySlowBtn = document.getElementById('difficultySlow');
+    const difficultyFastBtn = document.getElementById('difficultyFast');
+    const ballsSliderText = document.getElementById('ballsSliderText');
+    const restartButton = document.getElementById('restartButton');
+    const fontSizeLabel = document.getElementById('fontSizeLabel');
+    const redBrightnessLabel = document.getElementById('redBrightnessLabel');
+    const redContrastLabel = document.getElementById('redContrastLabel');
+	    const toggleColorBtn = document.getElementById('toggleColor');
+	    const languageToggleBtn = document.getElementById('languageToggle');
+	    const celebrationText = document.getElementById('celebrationText');
+	    const backButton = document.getElementById('backButton');
+	    const quickRestartButton = document.getElementById('quickRestartButton');
 
+    let balls, nextNumber, numBalls = BALL_COUNTS[ballsSlider.value];
+    ballsLabel.textContent = numBalls;
     let rightColor = 'green';
+    let celebrationTimeout;
+
+    ballsSlider.addEventListener('input', () => {
+      numBalls = BALL_COUNTS[ballsSlider.value];
+      ballsLabel.textContent = numBalls;
+      msg.textContent = translations[currentLang].instructionsRange(numBalls);
+    });
+
+    ballsSlider.addEventListener('change', initGame);
+
+	    function applyLanguage() {
+	      const t = translations[currentLang];
+	      document.documentElement.lang = currentLang;
+	      document.documentElement.dir = t.dir;
+	      document.body.dir = t.dir;
+	      document.title = t.title;
+      controlsHeaderText.textContent = t.controlsHeader;
+      difficultyLabel.textContent = t.difficultyLabel;
+      difficultyStillBtn.textContent = t.difficulties.still;
+      difficultySlowBtn.textContent = t.difficulties.slow;
+      difficultyFastBtn.textContent = t.difficulties.fast;
+	      ballsSliderText.textContent = t.ballsSliderLabel;
+	      restartButton.textContent = t.restart;
+	      backButton.textContent = t.back;
+	      quickRestartButton.textContent = t.restart;
+	      fontSizeLabel.textContent = t.fontSizeLabel;
+	      languageToggleBtn.textContent = t.languageToggle;
+	      celebrationText.textContent = t.celebrationText;
+	      updateColorLabels();
+	      msg.textContent = t.instructionsRange(numBalls);
+	    }
+
+	    function goBack() {
+	      try {
+	        const hasReferrer = Boolean(document.referrer);
+	        const sameOrigin = hasReferrer
+	          && new URL(document.referrer).origin === window.location.origin;
+	        if (sameOrigin) {
+	          window.history.back();
+	          return;
+	        }
+	      } catch (_) {
+	        // Fall back to index navigation.
+	      }
+	      window.location.href = 'index.html';
+	    }
+
+	    function toggleLanguage() {
+	      currentLang = currentLang === 'he' ? 'en' : 'he';
+	      applyLanguage();
+	      initGame();
+	    }
+
+    function updateColorLabels() {
+      const t = translations[currentLang];
+      redBrightnessLabel.textContent = `${t.brightness} (${t.colors.red})`;
+      redContrastLabel.textContent = `${t.contrast} (${t.colors.red})`;
+      const currentColorLabel = t.colors[rightColor];
+      rightBrightnessLabel.textContent = `${t.brightness} (${currentColorLabel})`;
+      rightContrastLabel.textContent = `${t.contrast} (${currentColorLabel})`;
+      toggleColorBtn.textContent = t.toggleColor[rightColor];
+    }
 
     function applyColorTransforms(color, brightness, contrast) {
       let r, g, b;
@@ -253,16 +497,14 @@
         r = 255; g = 0; b = 0;
       } else if (color === 'blue') {
         r = 0; g = 0; b = 255;
-    } else {
+      } else {
         r = 0; g = 128; b = 0;
       }
 
-      // Apply brightness
       r = r * (brightness / 100);
       g = g * (brightness / 100);
       b = b * (brightness / 100);
 
-      // Apply contrast
       const factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
       r = factor * (r - 128) + 128;
       g = factor * (g - 128) + 128;
@@ -275,35 +517,38 @@
       return `rgb(${r},${g},${b})`;
     }
 
-
     function setDifficulty(newSpeed) {
       SPEED = newSpeed;
       initGame();
     }
 
     function initGame() {
+      if (celebrationTimeout) {
+        clearTimeout(celebrationTimeout);
+        celebrationTimeout = null;
+      }
+      celebrationEl.classList.remove('visible');
       canvas.width  = window.innerWidth;
       canvas.height = window.innerHeight;
       numBalls = BALL_COUNTS[ballsSlider.value];
       ballsLabel.textContent = numBalls;
       nextNumber = 1;
-      msg.textContent = `לחצו על הכדורים בסדר: 1 - ${numBalls}`;
+      msg.textContent = translations[currentLang].instructionsRange(numBalls);
 
-      // Track game start in user counter
       if (window.UserCounter) {
         window.UserCounter.recordGameStart('Ball Game (Tracking)', `${numBalls} balls`);
       }
 
-      const numbers = Array.from({length:numBalls}, (_,i)=>i+1);
+      const numbers = Array.from({ length: numBalls }, (_, i) => i + 1);
       shuffle(numbers);
 
       balls = numbers.map(n => ({
         num:   n,
         color: Math.random() < 0.5 ? 'red' : 'green',
-        x:     Math.random() * (canvas.width  - 2*BALL_RADIUS) + BALL_RADIUS,
-        y:     Math.random() * (canvas.height - 2*BALL_RADIUS) + BALL_RADIUS,
-        vx:    (Math.random()*2-1) * SPEED,
-        vy:    (Math.random()*2-1) * SPEED,
+        x:     Math.random() * (canvas.width  - 2 * BALL_RADIUS) + BALL_RADIUS,
+        y:     Math.random() * (canvas.height - 2 * BALL_RADIUS) + BALL_RADIUS,
+        vx:    (Math.random() * 2 - 1) * SPEED,
+        vy:    (Math.random() * 2 - 1) * SPEED,
         clicked: false
       }));
 
@@ -313,19 +558,15 @@
     }
 
     function shuffle(arr) {
-      for (let i = arr.length-1; i>0; i--) {
-        const j = Math.floor(Math.random() * (i+1));
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
         [arr[i], arr[j]] = [arr[j], arr[i]];
       }
     }
 
     function toggleRightColor() {
       rightColor = rightColor === 'green' ? 'blue' : 'green';
-      rightBrightnessLabel.textContent = `בהירות (${rightColor === 'green' ? 'ירוק' : 'כחול'})`;
-      rightContrastLabel.textContent = `ניגודיות (${rightColor === 'green' ? 'ירוק' : 'כחול'})`;
-      document.getElementById('toggleColor').textContent = rightColor === 'green'
-        ? 'החלף ירוק ↔ כחול'
-        : 'החלף כחול ↔ ירוק';
+      updateColorLabels();
       if (!animationFrameId) loop();
     }
 
@@ -339,7 +580,7 @@
 
     let animationFrameId;
     function loop() {
-      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       let allClicked = true;
       for (let ball of balls) {
@@ -352,7 +593,7 @@
           if (ball.y - BALL_RADIUS < 0 || ball.y + BALL_RADIUS > canvas.height) ball.vy *= -1;
 
           ctx.beginPath();
-          ctx.arc(ball.x, ball.y, BALL_RADIUS, 0, Math.PI*2);
+          ctx.arc(ball.x, ball.y, BALL_RADIUS, 0, Math.PI * 2);
           if (ball.color === 'red') {
             ctx.fillStyle = applyColorTransforms('red', redBrightnessSlider.value, redContrastSlider.value);
           } else {
@@ -372,10 +613,10 @@
       if (!allClicked) {
         animationFrameId = requestAnimationFrame(loop);
       } else {
-        msg.textContent = 'כל הכבוד! סיימת את המשחק 🎉';
+        msg.textContent = translations[currentLang].completed;
+        triggerCelebration();
         animationFrameId = null;
         
-        // Track game completion in user counter
         if (window.UserCounter) {
           window.UserCounter.recordGameCompletion('Ball Game (Tracking)', {
             ballCount: numBalls,
@@ -385,8 +626,21 @@
       }
     }
 
+    function triggerCelebration() {
+      celebrationEl.classList.remove('visible');
+      void celebrationEl.offsetWidth;
+      celebrationEl.classList.add('visible');
+      if (celebrationTimeout) {
+        clearTimeout(celebrationTimeout);
+      }
+      celebrationTimeout = setTimeout(() => {
+        celebrationEl.classList.remove('visible');
+        initGame();
+      }, 2000);
+    }
+
     function handlePointerDown(e) {
-      e.preventDefault(); // Prevent default touch behavior
+      e.preventDefault();
       const rect = canvas.getBoundingClientRect();
       const mx = (e.clientX || e.touches[0].clientX) - rect.left;
       const my = (e.clientY || e.touches[0].clientY) - rect.top;
@@ -396,17 +650,16 @@
           const dx = mx - ball.x;
           const dy = my - ball.y;
           if (dx * dx + dy * dy <= BALL_RADIUS * BALL_RADIUS) {
-            // Auto-collapse settings when user starts playing
             autoCollapseSettings();
             
             if (ball.num === nextNumber) {
               ball.clicked = true;
               nextNumber++;
               if (nextNumber <= numBalls) {
-                msg.textContent = `נכון! עכשיו לחצו על: ${nextNumber}`;
+                msg.textContent = translations[currentLang].nextNumber(nextNumber);
               }
             } else {
-              alert(`לחצתם על ${ball.num}, אבל הסדר הנכון הוא ${nextNumber}.`);
+              alert(translations[currentLang].wrongOrder(ball.num, nextNumber));
             }
             break;
           }
@@ -425,24 +678,23 @@
     }
 
     canvas.addEventListener('mousedown', handlePointerDown);
-    canvas.addEventListener('touchstart', handlePointerDown, { passive: false }); // Added touch support
+    canvas.addEventListener('touchstart', handlePointerDown, { passive: false });
 
-    
     ['input', 'change'].forEach(eventName => {
-        redBrightnessSlider.addEventListener(eventName, () => !animationFrameId && loop());
-        redContrastSlider.addEventListener(eventName, () => !animationFrameId && loop());
-        rightBrightnessSlider.addEventListener(eventName, () => !animationFrameId && loop());
-        rightContrastSlider.addEventListener(eventName, () => !animationFrameId && loop());
-        fontSizeSlider.addEventListener(eventName, () => {
-            FONT_SIZE = fontSizeSlider.value;
-            if (!animationFrameId) loop();
-        });
+      redBrightnessSlider.addEventListener(eventName, () => !animationFrameId && loop());
+      redContrastSlider.addEventListener(eventName, () => !animationFrameId && loop());
+      rightBrightnessSlider.addEventListener(eventName, () => !animationFrameId && loop());
+      rightContrastSlider.addEventListener(eventName, () => !animationFrameId && loop());
+      fontSizeSlider.addEventListener(eventName, () => {
+        FONT_SIZE = fontSizeSlider.value;
+        if (!animationFrameId) loop();
+      });
     });
 
-    document.getElementById('toggleColor').addEventListener('click', toggleRightColor);
-
+    toggleColorBtn.addEventListener('click', toggleRightColor);
     window.addEventListener('resize', initGame);
 
+    applyLanguage();
     initGame();
   </script>
   

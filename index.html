@@ -21,18 +21,18 @@
       margin: 0;
       font-family: 'Poppins', sans-serif;
       font-size: 1.1rem;
-      background: radial-gradient(circle at top, rgba(66, 135, 245, 0.25), transparent 45%), linear-gradient(135deg, #050910 0%, #071325 40%, #0b1f3c 100%);
-      color: #e2e8ff;
+      background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+      color: #102a43;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
     }
 
     header {
-      backdrop-filter: blur(18px);
-      background: rgba(8, 15, 30, 0.8);
-      border-bottom: 1px solid rgba(102, 126, 234, 0.35);
-      box-shadow: 0 10px 40px rgba(5, 10, 20, 0.6);
+      backdrop-filter: blur(12px);
+      background: rgba(255, 255, 255, 0.85);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
     }
 
     .page-wrapper {
@@ -59,18 +59,18 @@
       font-size: 1.1rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      color: #73d8ff;
+      color: #0077cc;
       font-weight: 600;
     }
 
     .brand span:last-child {
       font-size: 1.5rem;
       font-weight: 700;
-      color: #f6f7ff;
+      color: #102a43;
     }
 
     #toggle-language {
-      background: linear-gradient(135deg, #1ccad8, #5f5bd7);
+      background: linear-gradient(135deg, #3b82f6, #0ea5e9);
       border: none;
       color: #fff;
       padding: 0.65rem 1.25rem;
@@ -94,21 +94,21 @@
     }
 
     .hero {
-      background: linear-gradient(150deg, rgba(16, 30, 55, 0.9), rgba(44, 89, 154, 0.65));
+      background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
       border-radius: 28px;
       padding: 3rem clamp(1.25rem, 4vw, 4rem);
       margin: 1rem 0 2.5rem;
-      box-shadow: 0 25px 60px rgba(6, 12, 24, 0.85);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.01);
       position: relative;
       overflow: hidden;
-      border: 1px solid rgba(115, 216, 255, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.6);
     }
 
     .hero::after {
       content: "";
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at top right, rgba(92, 202, 255, 0.3), transparent 50%);
+      background: radial-gradient(circle at top right, rgba(14, 165, 233, 0.1), transparent 60%);
       pointer-events: none;
     }
 
@@ -121,14 +121,14 @@
     .hero h1 {
       font-size: clamp(2.1rem, 4vw, 2.9rem);
       margin: 0 0 1rem;
-      color: #f5f7ff;
+      color: #0c4a6e;
     }
 
     .hero p {
       font-size: clamp(1rem, 2.4vw, 1.2rem);
       margin: 0 0 1.75rem;
       line-height: 1.65;
-      color: #c5d6ff;
+      color: #334155;
     }
 
     .cta-buttons {
@@ -150,150 +150,262 @@
     }
 
     .cta-button.primary {
-      background: linear-gradient(135deg, #1ccad8, #605ff5);
+      background: linear-gradient(135deg, #0284c7, #0369a1);
       color: #fff;
-      box-shadow: 0 15px 40px rgba(39, 145, 255, 0.4);
+      box-shadow: 0 10px 20px rgba(2, 132, 199, 0.3);
     }
 
     .cta-button.primary:hover,
     .cta-button.primary:focus-visible {
       transform: translateY(-1px);
-      box-shadow: 0 18px 40px rgba(91, 95, 199, 0.4);
+      box-shadow: 0 14px 25px rgba(2, 132, 199, 0.4);
       outline: none;
     }
 
     .cta-button.secondary {
-      background: rgba(255, 255, 255, 0.05);
-      color: #9adfff;
-      border-color: rgba(114, 216, 255, 0.4);
+      background: rgba(255, 255, 255, 0.5);
+      color: #0369a1;
+      border-color: rgba(3, 105, 161, 0.3);
     }
 
     .cta-button.secondary:hover,
     .cta-button.secondary:focus-visible {
       transform: translateY(-1px);
-      box-shadow: 0 12px 28px rgba(113, 216, 255, 0.35);
+      box-shadow: 0 8px 20px rgba(3, 105, 161, 0.15);
       outline: none;
+      background: rgba(255, 255, 255, 0.8);
     }
 
     .games-section {
-      margin-bottom: 2.5rem;
+      margin: 3rem 0;
+      padding: 2.5rem;
+      background: linear-gradient(to bottom, #f8fafc, #f1f5f9);
+      border-radius: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.05);
     }
 
     .section-header {
       display: flex;
       flex-direction: column;
       gap: 0.65rem;
-      margin-bottom: 1.75rem;
+      margin-bottom: 2.5rem;
+      text-align: center;
+      align-items: center;
     }
 
     .section-header h2 {
       margin: 0;
-      font-size: clamp(1.6rem, 3vw, 2.1rem);
-      color: #f1f4ff;
+      font-size: clamp(2rem, 5vw, 2.5rem);
+      color: #0f172a;
+      text-shadow: none;
     }
 
     .section-header p {
       margin: 0;
-      color: #9eb6ff;
-      max-width: 600px;
+      color: #475569;
+      max-width: 700px;
       line-height: 1.6;
+      font-size: 1.1rem;
     }
 
     .game-grid {
       display: grid;
-      gap: 1.5rem;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 2rem;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     }
 
     .game-card {
       display: flex;
       flex-direction: column;
-      gap: 0.75rem;
-      padding: 1.75rem;
-      border-radius: 20px;
-      background: linear-gradient(160deg, rgba(20, 32, 61, 0.95), rgba(11, 22, 43, 0.9));
+      gap: 1rem;
+      padding: 2rem;
+      border-radius: 24px;
+      background: #ffffff;
       text-decoration: none;
       color: inherit;
-      box-shadow: 0 18px 45px rgba(5, 10, 20, 0.75);
-      border: 1px solid rgba(111, 213, 255, 0.12);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      border-top: 4px solid #0ea5e9;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .game-card::after {
+      content: "Play Now →";
+      display: inline-block;
+      margin-top: auto;
+      font-weight: 700;
+      color: #0ea5e9;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      letter-spacing: 0.05em;
+      transition: transform 0.3s ease;
     }
 
     .game-card:hover,
     .game-card:focus-visible {
-      transform: translateY(-6px);
-      box-shadow: 0 22px 55px rgba(7, 20, 41, 0.9);
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
       outline: none;
+      border-color: rgba(14, 165, 233, 0.3);
+    }
+
+    .game-card:hover::after {
+      transform: translateX(5px);
     }
 
     .game-card h3 {
       margin: 0;
-      font-size: 1.25rem;
-      color: #f7f7ff;
+      font-size: 1.5rem;
+      color: #1e293b;
+      font-weight: 700;
     }
 
     .game-card p {
       margin: 0;
-      color: #c9d9ff;
-      line-height: 1.55;
-      font-size: 0.98rem;
+      color: #64748b;
+      line-height: 1.6;
+      font-size: 1.05rem;
     }
 
     .insight {
       font-size: 0.9rem;
-      color: #8ff7d4;
+      color: #0284c7;
+      font-style: italic;
+      padding-top: 0.5rem;
+      border-top: 1px solid #e2e8f0;
     }
 
-    .articles {
-      background: linear-gradient(165deg, rgba(10, 20, 38, 0.95), rgba(16, 38, 68, 0.92));
-      border-radius: 26px;
-      padding: clamp(1.5rem, 3vw, 2.75rem);
-      box-shadow: 0 30px 70px rgba(5, 8, 15, 0.9);
-      border: 1px solid rgba(113, 216, 255, 0.12);
+        .articles {
+          background: #ffffff;
+          border-radius: 26px;
+          padding: clamp(1.5rem, 3vw, 2.75rem);
+          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.01);
+          border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        article + article {
+          margin-top: 2.5rem;
+          padding-top: 2.5rem;
+          border-top: 1px solid #e2e8f0;
+        }
+
+        article h2,
+        article h3 {
+          color: #1e293b;
+        }
+
+        article h2 {
+          font-size: clamp(1.45rem, 3vw, 1.95rem);
+          margin-top: 0;
+        }
+
+        article h3 {
+          font-size: 1.15rem;
+          margin-top: 1.75rem;
+        }
+
+        article p {
+          margin: 0.75rem 0;
+          line-height: 1.7;
+          color: #475569;
+        }
+
+        article ul,
+        article ol {
+          margin: 0.75rem 0 1.5rem;
+          padding-left: 1.1rem;
+          color: #475569;
+          line-height: 1.7;
+        }
+
+        article li + li {
+          margin-top: 0.4rem;
+        }
+
+        article a {
+          color: #0284c7;
+          font-weight: 600;
+        }
+
+        .faq-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          gap: 2rem;
+          margin-top: 2rem;
+        }
+
+        .faq-card {
+          background: #f8fafc;
+          border-radius: 18px;
+          padding: 1.75rem;
+          border: 1px solid #e2e8f0;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+        }
+
+        .faq-card h3 {
+          margin: 0;
+          font-size: 1.1rem;
+          color: #0f172a;
+          margin-bottom: 0.5rem;
+        }
+
+        .faq-card p {
+          margin-top: 0.5rem;
+          color: #64748b;
+          font-size: 0.95rem;
+          line-height: 1.7;
+        }
+	    .equipment-example {
+	      margin-top: 0.85rem;
+	      display: inline-flex;
+	      align-items: center;
+	      gap: 0.6rem;
+	      font-size: 0.9rem;
+	      color: #64748b;
+	    }
+
+	    .equipment-example a {
+	      display: inline-flex;
+	      border-radius: 12px;
+	      text-decoration: none;
+	      outline: none;
+	      transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+	    }
+
+	    .equipment-example a:hover {
+	      transform: translateY(-1px);
+	    }
+
+	    .equipment-example a:focus-visible {
+	      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+	    }
+
+	    .equipment-example img {
+	      width: 64px;
+	      height: 64px;
+	      border-radius: 10px;
+	      object-fit: cover;
+	      border: 1px solid #cbd5e1;
+	      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+	    }
+
+    .therapy-tips {
+      margin-top: 2rem;
     }
 
-    article + article {
-      margin-top: 2.5rem;
-      padding-top: 2.5rem;
-      border-top: 1px solid rgba(113, 216, 255, 0.15);
-    }
-
-    article h2,
-    article h3 {
-      color: #f4f6ff;
-    }
-
-    article h2 {
-      font-size: clamp(1.45rem, 3vw, 1.95rem);
-      margin-top: 0;
-    }
-
-    article h3 {
-      font-size: 1.15rem;
-      margin-top: 1.75rem;
-    }
-
-    article p {
-      margin: 0.75rem 0;
+    .therapy-tips .tips-list {
+      margin: 1.1rem 0 1.25rem;
+      padding-left: 1.3rem;
+      list-style: disc;
+      color: #475569;
       line-height: 1.7;
-      color: #c4d2ff;
     }
 
-    article ul,
-    article ol {
-      margin: 0.75rem 0 1.5rem;
-      padding-left: 1.1rem;
-      color: #c4d2ff;
-      line-height: 1.7;
-    }
-
-    article li + li {
-      margin-top: 0.4rem;
-    }
-
-    article a {
-      color: #71f4ff;
-      font-weight: 600;
+    .therapy-tips .tips-list li + li {
+      margin-top: 0.75rem;
     }
 
     .lang-section[hidden] {
@@ -303,12 +415,12 @@
     footer {
       margin-top: 3rem;
       text-align: center;
-      color: #8aa7ff;
+      color: #64748b;
       font-size: 0.9rem;
     }
 
     footer a {
-      color: #71f4ff;
+      color: #0284c7;
       text-decoration: none;
       font-weight: 600;
     }
@@ -389,94 +501,123 @@
       <div class="lang-section" data-lang="en" lang="en" aria-labelledby="about-diplopia">
         <article id="about-diplopia">
           <h2>What is diplopia (double vision)?</h2>
-          <p>Diplopia means seeing two images of a single object. The images may appear side by side, one above the other, or diagonally separated. It can affect one eye (monocular diplopia) or both eyes together (binocular diplopia). In binocular diplopia the double vision disappears when either eye is covered.</p>
-          <p>For comfortable single vision, both eyes need to be aligned and move together, and the brain must correctly “merge” the two images into one. Diplopia usually occurs when something in this system is disrupted, for example:</p>
-          <ul>
-            <li>Eye misalignment (strabismus) due to weakness or restriction of the eye muscles, or problems with the nerves that control them (for example after stroke, head trauma, diabetes, or nerve palsy).</li>
-            <li>Optical problems in one eye, such as irregular cornea, cataract, or uncorrected refractive error, which can cause ghosting or doubling even when the other eye is covered (monocular diplopia).</li>
-          </ul>
-          <p>Because diplopia may range from benign to a sign of a serious neurological or systemic disease, a careful eye and neurological examination is essential. After a medical evaluation rules out urgent causes and clarifies the diagnosis, vision rehabilitation can help reduce double vision, improve comfort, and support daily activities.</p>
-          <h3>References</h3>
-          <ol>
-            <li>Jain S. Diplopia: Diagnosis and management. Clinical Medicine. 2022;22(2):104–108. (PMC)</li>
-            <li>Glisson CC. Approach to diplopia. Continuum (Minneap Minn). 2019;25(5):1362–1383. (continuum.aan.com)</li>
-          </ol>
+          <p>Diplopia means seeing two images of a single object. The images can be side by side, one above the other, or diagonally separated. <a href="diplopia-explained.html">Read the full explanation →</a></p>
         </article>
 
-        <article id="therapy-exercises">
-          <h2>Suggested practice for diplopia (double vision)</h2>
-          <p>Because new onset double vision can sometimes be a sign of a serious neurological or systemic condition, the first and most important step is to consult a doctor or eye specialist promptly.</p>
-          <h3>Who is this practice for?</h3>
-          <p>The exercises on this website are intended for binocular diplopia, double vision that is present when both eyes are open and disappears when either eye is covered. This type of diplopia is usually caused by a misalignment between the eyes (a binocular vision/strabismus problem). <a href="#about-diplopia">Read the overview on diplopia.</a></p>
-          <p>Exercises should be started only after a full assessment by an eye doctor and orthoptist, and with the guidance of the occupational therapist who is treating you as part of your vision rehabilitation. The exercises described on this site are not a substitute for medical evaluation.</p>
-          <h3>Do exercises really help with double vision?</h3>
-          <p>Research shows that structured eye exercises (vision therapy and orthoptic exercises) can really help reduce symptoms.</p>
-          <h3>What does the research say?</h3>
-          <ul>
-            <li>The best results often come from a combination of short daily exercises at home, and regular supervised sessions in clinic.</li>
-            <li>Practice about 10–15 minutes a day, split into several short sessions.</li>
-            <li>Improvement usually appears after a few weeks, and treatment often continues for a few months.</li>
-            <li>In longer-term follow up, improvement is usually maintained, with only limited need for retreatment.</li>
+        <article class="faq-section" aria-labelledby="faq-heading">
+          <h2 id="faq-heading">Dichoptic therapy FAQ</h2>
+          <div class="faq-grid">
+            <div class="faq-card">
+              <h3>What is dichoptic therapy?</h3>
+              <p>Dichoptic therapy presents different images to each eye simultaneously. The brain fuses those stimuli, strengthening binocular pathways that are often suppressed in amblyopia. Our games balance contrast and motion to encourage fusion without overpowering the weaker eye.</p>
+            </div>
+            <div class="faq-card">
+              <h3>Do I need special equipment?</h3>
+              <p>Yes. Wear red/green or red/blue anaglyph glasses so each eye sees its target. Pair the glasses with balanced room lighting and sit 50–70 cm from the screen for consistent fixation.</p>
+	              <div class="equipment-example">
+	                <a href="https://s.click.aliexpress.com/e/_c3URKnU1" target="_blank" rel="noopener noreferrer" aria-label="Example red/green anaglyph glasses">
+	                  <img src="https://ae01.alicdn.com/kf/Sbd54e312417e42d89d553f31414da093P.jpg_80x80.jpg" alt="">
+	                </a>
+	                <span>Example red/green anaglyph glasses</span>
+	              </div>
+            </div>
+            <div class="faq-card">
+              <h3>When can vision rehabilitation help?</h3>
+              <p>It is very important to first have a full medical evaluation by an eye doctor. After urgent causes are ruled out and the diagnosis is clear, vision rehabilitation can help reduce double vision, improve comfort, and support daily activities.</p>
+            </div>
+            <div class="faq-card">
+              <h3>Are these exercises a substitute for medical evaluation?</h3>
+              <p>No. The exercises described on this site are not a substitute for medical evaluation and should always be part of a plan led by your eye doctor and vision rehabilitation specialist.</p>
+            </div>
+            <div class="faq-card">
+              <h3>Do eye exercises really help with double vision?</h3>
+              <p>Yes. Research shows that structured eye exercises can really help reduce symptoms of double vision.</p>
+            </div>
+            <div class="faq-card">
+              <h3>How often should I practice?</h3>
+              <p>The recommendation is about 10–15 minutes per day, split into several short sessions.</p>
+            </div>
+            <div class="faq-card">
+              <h3>How long does it usually take to see improvement?</h3>
+              <p>Usually people start to notice improvement after a few weeks, but the exact timing is different for each patient and depends on the type of diplopia and the severity of the condition. Your eye doctor and vision rehabilitation specialist will review your progress in follow up evaluations and adjust the plan for you.</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="therapy-tips" aria-labelledby="therapy-tips-heading">
+          <h2 id="therapy-tips-heading">Therapy tips</h2>
+          <p>Blend these strategies into your daily practice routine:</p>
+          <ul class="tips-list">
+            <li>Warm up with slow eye stretches—gently trace a sideways figure eight to prime extraocular muscles.</li>
+            <li>Start each game with higher contrast on the amblyopic eye, then gradually equalize to challenge fusion.</li>
+            <li>Take micro-breaks every five minutes. Close each eye separately to check for suppression, then resume.</li>
+            <li>Keep a therapy journal. Note which mechanics—scanning, pursuit tracking, or saccades—felt easiest and hardest.</li>
+            <li>Celebrate small wins such as smoother pursuits or fewer suppression episodes to reinforce adherence.</li>
           </ul>
-          <h3>What does this mean for you?</h3>
-          <ul>
-            <li>Short, regular practice at home, not long, exhausting sessions.</li>
-            <li>You will have check-ups every few weeks so the occupational therapist who specializes in vision rehabilitation can monitor your progress and adjust your program.</li>
-            <li>The program should be carried out under the guidance of your eye doctor, and the occupational therapist who is treating you in vision rehabilitation, so that the exercises are safe and fit your daily life.</li>
-          </ul>
-          <p>The goal is to help your eyes work together better, reduce double vision, and make reading and everyday activities more comfortable.</p>
-          <h3>References</h3>
-          <ol>
-            <li>Mohamed Z, Alrasheed SH. A Systematic Review and Meta-analysis of Convergence Insufficiency Prevalence and Management Options. Open Ophthalmol J. 2023 Aug 3;17(1):e187436412306231.</li>
-            <li>Westman M, Liinamaa MJ. Relief of asthenopic symptoms with orthoptic exercises in convergence insufficiency is achieved in both adults and children. J Optom. 2012 Apr;5(2):62–7.</li>
-          </ol>
         </article>
       </div>
 
       <div class="lang-section" data-lang="he" lang="he" dir="rtl" aria-labelledby="about-diplopia-he" hidden>
         <article id="about-diplopia-he">
           <h2>מהי דיפלופיה (כפל ראייה)?</h2>
-          <p>דיפלופיה פירושה ראייה של שתי תמונות של אותו אובייקט. התמונות יכולות להופיע זו לצד זו, אחת מעל השנייה או באלכסון זו ביחס לזו. היא יכולה להופיע בעין אחת בלבד (דיפלופיה מונוקולרית) או בשתי העיניים יחד (דיפלופיה בינוקולרית). בדיפלופיה בינוקולרית כפל הראייה נעלם כאשר מכסים אחת מן העיניים.</p>
-          <p>כדי לראות תמונה אחת חדה ונוחה, שתי העיניים צריכות להיות מיושרות, לנוע יחד, והמח צריך "לאחד" נכון את שתי התמונות לתמונה אחת. דיפלופיה נוצרת בדרך כלל כאשר משהו במערכת הזו מופרע, לדוגמה:</p>
-          <ul>
-            <li>פזילה או חוסר יישור של העיניים (strabismus) בעקבות חולשה או הגבלה של שרירי העיניים, או בעיה בעצבים שמפעילים אותם, למשל לאחר שבץ מוחי, חבלת ראש, סוכרת או שיתוק של אחד העצבים.</li>
-            <li>בעיה אופטית בעין אחת, כמו קרנית לא סדירה, קטרקט או בעיית ראייה שלא תוקנה בעזרת משקפיים או עדשות מגע, שעלולים לגרום לכפל גם כאשר העין השנייה מכוסה (דיפלופיה מונוקולרית).</li>
-          </ul>
-          <p>מכיוון שדיפלופיה יכולה לנוע ממצב פשוט יחסית ועד סימן אפשרי למחלה נוירולוגית או מערכתית משמעותית, חשוב מאוד לעבור בדיקה של רופא עיניים ולעיתים גם בדיקה נוירולוגית. לאחר שההערכה הרפואית שוללת מצבים דחופים ומבהירה את הסיבה לכפל הראייה, שיקום ראייה יכול לסייע בהפחתת הכפל, בשיפור הנוחות ובהקלת ההתנהלות בפעילויות היומיום.</p>
-          <h3>מקורות</h3>
-          <ol>
-            <li>Jain S. Diplopia: Diagnosis and management. Clinical Medicine. 2022;22(2):104–108. (PMC)</li>
-            <li>Glisson CC. Approach to diplopia. Continuum (Minneap Minn). 2019;25(5):1362–1383. (continuum.aan.com)</li>
-          </ol>
+          <p>דיפלופיה פירושה ראייה של שתי תמונות של אותו אובייקט. התמונות יכולות להופיע זו לצד זו, אחת מעל השנייה או באלכסון זו ביחס לזו. <a href="diplopia-explained-he.html">להרחבה ←</a></p>
         </article>
 
-        <article id="therapy-exercises-he">
-          <h2>הנחיות מומלצות לתרגול בדיפלופיה (כפל ראייה)</h2>
-          <p>כפל ראייה חדש יכול להיות לעיתים סימן לבעיה נוירולוגית או מערכתית משמעותית. לכן הצעד הראשון והחשוב ביותר הוא לפנות בהקדם לרופא עיניים או לרופא מומחה אחר.</p>
-          <h3>למי מיועדות ההנחיות האלה?</h3>
-          <p>התרגילים באתר זה מיועדים לדיפלופיה בינוקולרית, כלומר כפל ראייה שמופיע כאשר שתי העיניים פתוחות ונעלם כאשר מכסים אחת העיניים. סוג זה של דיפלופיה נגרם בדרך כלל מחוסר יישור בין העיניים (בעיית ראייה בינוקולרית / פזילה). <a href="#about-diplopia-he">עברו למאמר ההסבר על דיפלופיה.</a></p>
-          <p>ניתן להתחיל לתרגל רק לאחר בדיקה על ידי רופא עיניים ואורתופטיסט, ובליווי המרפא בעיסוק שמטפל בך במסגרת שיקום הראייה. התרגילים המתוארים באתר אינם תחליף לבדיקה רפואית.</p>
-          <h3>האם תרגילים באמת עוזרים לכפל ראייה?</h3>
-          <p>מחקרים מראים שתרגול תפקודי ראייה ועיניים יכול לעזור להפחית סימפטומים של כפל ראייה.</p>
-          <h3>מה אומרים המחקרים?</h3>
-          <ul>
-            <li>התוצאות הטובות ביותר מתקבלות לרוב משילוב של תרגול יומי קצר בבית יחד עם מפגשי תרגול מודרכים במרפאה.</li>
-            <li>מומלץ לתרגל כ־10–15 דקות ביום, מחולקות למספר מקטעים קצרים.</li>
-            <li>לרוב השיפור מתחיל להופיע אחרי כמה שבועות, והטיפול נמשך בדרך כלל במשך מספר חודשים.</li>
-            <li>במעקב ארוך טווח, השיפור בדרך כלל נשמר, ויש צורך מוגבל בלבד בחזרה על תרגול נוסף.</li>
+        <article class="faq-section" aria-labelledby="faq-heading-he">
+          <h2 id="faq-heading-he">שאלות נפוצות על טיפול לשיקום תפקודי ראייה</h2>
+          <div class="faq-grid">
+            <div class="faq-card">
+              <h3>מהו טיפול דיכופטי?</h3>
+              <p>טיפול דיכופטי מציג תמונות שונות לכל עין בו זמנית. המוח מאחד את הגירויים האלה, מחזק מסלולי ראייה בינוקולרית שלעיתים מדוכאים באמלופיה. המשחקים שלנו מאזנים ניגודיות ותנועה כדי לעודד מיזוג בלי להכריע את העין החלשה.</p>
+            </div>
+            <div class="faq-card">
+              <h3>האם צריך ציוד מיוחד?</h3>
+              <p>כן. חבשו משקפי אנגליפ אדום/ירוק או אדום/כחול כדי שכל עין תראה את המטרה שלה. שלבו את המשקפיים עם תאורה מאוזנת בחדר והתיישבו 50–70 ס\"מ מהמסך כדי לשמור על קיבוע קבוע.</p>
+	              <div class="equipment-example">
+	                <a href="https://s.click.aliexpress.com/e/_c3URKnU1" target="_blank" rel="noopener noreferrer" aria-label="דוגמה למשקפי אנגליפ אדום/ירוק">
+	                  <img src="https://ae01.alicdn.com/kf/Sbd54e312417e42d89d553f31414da093P.jpg_80x80.jpg" alt="">
+	                </a>
+	                <span>דוגמה למשקפי אנגליפ אדום/ירוק שניתן לרכוש</span>
+	              </div>
+            </div>
+            <div class="faq-card">
+              <h3>מתי שיקום ראייה יכול לעזור?</h3>
+              <p>חשוב לעבור הערכה רפואית על ידי רופא עיניים. לאחר שמוחרגים מצבים דחופים והאבחנה ברורה, שיקום ראייה יכול לעזור להפחית כפל ראייה, לשפר נוחות, ולתמוך בתפקוד בפעילויות היומיום.</p>
+            </div>
+            <div class="faq-card">
+              <h3>האם התרגילים מחליפים בדיקה רפואית?</h3>
+              <p>לא. התרגילים המתוארים באתר אינם תחליף להערכה רפואית, והם צריכים להיות חלק מתכנית טיפול שמובלת על ידי רופא העיניים ומומחה לשיקום תפקודי ראייה.</p>
+            </div>
+            <div class="faq-card">
+              <h3>האם תרגילי עיניים באמת עוזרים בכפל ראייה?</h3>
+              <p>כן. מחקרים מראים שתרגילי עיניים מובנים יכולים לעזור להפחית סימפטומים של כפל ראייה.</p>
+            </div>
+            <div class="faq-card">
+              <h3>כל כמה זמן כדאי לתרגל?</h3>
+              <p>ההמלצה היא לתרגל כ־10–15 דקות ביום, מחולקות למספר מקטעים קצרים.</p>
+            </div>
+            <div class="faq-card">
+              <h3>תוך כמה זמן בדרך כלל רואים שיפור?</h3>
+              <p>בדרך כלל אנשים מתחילים להרגיש שיפור אחרי מספר שבועות, אך משך הזמן משתנה מאדם לאדם ותלוי בסוג הדיפלופיה ובחומרת המצב. רופא העיניים והמומחה לשיקום תפקודי ראייה יעקבו אחר ההתקדמות בביקורות תקופתיות ויתאימו את התכנית לפי הצורך.</p>
+            </div>
+            <div class="faq-card">
+              <h3>מי מלווה אותי בתהליך שיקום תפקודי הראייה?</h3>
+              <p>תכנית השיקום צריכה להתבצע בהנחיה וליווי של מומחה לשיקום תפקודי הראייה.</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="therapy-tips" aria-labelledby="therapy-tips-heading-he">
+          <h2 id="therapy-tips-heading-he">טיפים לתרגול</h2>
+
+          <p>שלבו אסטרטגיות אלה כדי לתמוך בתרגול היומי:</p>
+          <ul class="tips-list">
+            <li>התחילו בחימום בעיניים במתיחות איטיות, ציירו בעדינות שמונה אופקי כדי להכין את שרירי העיניים.</li>
+            <li>התחילו כל משחק עם ניגודיות גבוהה יותר בעין החלשה ואז השוו בהדרגה כדי לאתגר מיזוג.</li>
+            <li>קחו הפסקות קצרות כל חמש דקות. סגרו כל עין בנפרד כדי לבדוק דיכוי, ואז המשיכו.</li>
+            <li>תעדו יומן טיפול. ציינו אילו מנגנונים, סריקה, מעקב חלק או סקדות, הרגישו קלים או קשים.</li>
+            <li>חגגו נצחונות קטנים כמו מעקבים חלקים יותר או פחות אפיזודות של דיכוי כדי לחזק את המחויבות.</li>
           </ul>
-          <h3>מה זה אומר עבורך?</h3>
-          <ul>
-            <li>חשוב לבצע תרגול קצר וסדיר בבית, ולא תרגולים ארוכים ומתישים.</li>
-            <li>חשוב להגיע לביקורות אחת לכמה שבועות, כדי שהמרפאה בעיסוק המתמחה בשיקום ראייה תוכל לעקוב אחר ההתקדמות ולהתאים את התוכנית.</li>
-            <li>התוכנית כולה צריכה להיעשות תחת הנחיה של רופא העיניים ושל המרפאה בעיסוק המטפלת בך בשיקום הראייה, כדי להבטיח שהתרגילים יהיו בטוחים ומתאימים לשגרת החיים שלך.</li>
-          </ul>
-          <p>המטרה היא לעזור לעיניים לעבוד טוב יותר יחד, להפחית את כפל הראייה, ולהקל על הקריאה ועל פעילויות היומיום.</p>
-          <h3>מקורות</h3>
-          <ol>
-            <li>Mohamed Z, Alrasheed SH. A Systematic Review and Meta-analysis of Convergence Insufficiency Prevalence and Management Options. Open Ophthalmol J. 2023 Aug 3;17(1):e187436412306231.</li>
-            <li>Westman M, Liinamaa MJ. Relief of asthenopic symptoms with orthoptic exercises in convergence insufficiency is achieved in both adults and children. J Optom. 2012 Apr;5(2):62–7.</li>
-          </ol>
         </article>
       </div>
     </section>
@@ -574,7 +715,7 @@
       }
 
       if (secondaryCtaLink) {
-        const anchorId = lang === 'he' ? 'therapy-exercises-he' : 'therapy-exercises';
+        const anchorId = lang === 'he' ? 'faq-heading-he' : 'faq-heading';
         secondaryCtaLink.setAttribute('href', `#${anchorId}`);
       }
 

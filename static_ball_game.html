@@ -213,16 +213,28 @@
       background: linear-gradient(135deg, #5a6fd8 0%, #6b42a6 100%);
     }
     
-    button:active {
-      transform: translateY(0);
-      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-    }
+	    button:active {
+	      transform: translateY(0);
+	      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+	    }
 
-    /* Completion Modal */
-    #completionModal {
-      position: fixed;
-      top: 0;
-      left: 0;
+	    #navButtons {
+	      position: absolute;
+	      inset-block-end: 20px;
+	      inset-inline-start: 20px;
+	      z-index: 3;
+	    }
+
+	    #navButtons button {
+	      width: auto;
+	      margin: 0;
+	    }
+
+	    /* Completion Modal */
+	    #completionModal {
+	      position: fixed;
+	      top: 0;
+	      left: 0;
       width: 100%;
       height: 100%;
       background: rgba(0, 0, 0, 0.8);
@@ -365,11 +377,14 @@
     }
   </style>
 </head>
-<body>
-  <div id="colorBar">
-    <div id="colorBarFill"></div>
-    <div id="colorBarLabel">מד מהירות</div>
-  </div>
+	<body>
+	  <div id="navButtons">
+	    <button id="backButton" type="button" onclick="goBack()"></button>
+	  </div>
+	  <div id="colorBar">
+	    <div id="colorBarFill"></div>
+	    <div id="colorBarLabel">מד מהירות</div>
+	  </div>
   <div id="message">לחצו על הכדור</div>
   <div id="controls">
     <div class="controls-header" onclick="toggleControls()">
@@ -460,11 +475,12 @@
         title: 'משחק – לחצו על הכדורים הסטטיים',
         speedMeter: 'מד מהירות',
         clickBall: 'לחצו על הכדור',
-        gameSettings: 'הגדרות משחק',
-        restart: 'התחל מחדש',
-        brightnessRed: 'בהירות (אדום)',
-        contrastRed: 'ניגודיות (אדום)',
-        brightnessGreen: 'בהירות (ירוק)',
+	        gameSettings: 'הגדרות משחק',
+	        back: 'חזרה',
+	        restart: 'התחל מחדש',
+	        brightnessRed: 'בהירות (אדום)',
+	        contrastRed: 'ניגודיות (אדום)',
+	        brightnessGreen: 'בהירות (ירוק)',
         contrastGreen: 'ניגודיות (ירוק)',
         brightnessBlue: 'בהירות (כחול)',
         contrastBlue: 'ניגודיות (כחול)',
@@ -490,12 +506,13 @@
       en: {
         title: 'Game – Click the Static Balls',
         speedMeter: 'Speed Meter',
-        clickBall: 'Click the Ball',
-        gameSettings: 'Game Settings',
-        restart: 'Restart',
-        brightnessRed: 'Brightness (Red)',
-        contrastRed: 'Contrast (Red)',
-        brightnessGreen: 'Brightness (Green)',
+	        clickBall: 'Click the Ball',
+	        gameSettings: 'Game Settings',
+	        back: 'Back',
+	        restart: 'Restart',
+	        brightnessRed: 'Brightness (Red)',
+	        contrastRed: 'Contrast (Red)',
+	        brightnessGreen: 'Brightness (Green)',
         contrastGreen: 'Contrast (Green)',
         brightnessBlue: 'Brightness (Blue)',
         contrastBlue: 'Contrast (Blue)',
@@ -838,7 +855,7 @@
         rightContrastSlider.addEventListener(eventName, drawGame);
     });
 
-    function updateLanguageTexts() {
+	    function updateLanguageTexts() {
       // Update document title and lang attribute
       document.title = translations[currentLanguage].title;
       document.documentElement.lang = currentLanguage;
@@ -859,9 +876,10 @@
         ? translations[currentLanguage].toggleColor 
         : translations[currentLanguage].toggleColorBlue;
       
-      // Update other buttons
-      document.getElementById('showLeaderboard').textContent = translations[currentLanguage].leaderboard;
-      document.getElementById('languageToggle').textContent = translations[currentLanguage].languageButton;
+	      // Update other buttons
+	      document.getElementById('showLeaderboard').textContent = translations[currentLanguage].leaderboard;
+	      document.getElementById('languageToggle').textContent = translations[currentLanguage].languageButton;
+	      document.getElementById('backButton').textContent = translations[currentLanguage].back;
       
       // Update message
       msg.textContent = `${translations[currentLanguage].ballsClicked}: ${clickCount}`;
@@ -893,11 +911,26 @@
       }
     }
 
-    function toggleLanguage() {
-      currentLanguage = currentLanguage === 'he' ? 'en' : 'he';
-      localStorage.setItem('gameLanguage', currentLanguage);
-      updateLanguageTexts();
-    }
+	    function toggleLanguage() {
+	      currentLanguage = currentLanguage === 'he' ? 'en' : 'he';
+	      localStorage.setItem('gameLanguage', currentLanguage);
+	      updateLanguageTexts();
+	    }
+
+	    function goBack() {
+	      try {
+	        const hasReferrer = Boolean(document.referrer);
+	        const sameOrigin = hasReferrer
+	          && new URL(document.referrer).origin === window.location.origin;
+	        if (sameOrigin) {
+	          window.history.back();
+	          return;
+	        }
+	      } catch (_) {
+	        // Fall back to index navigation.
+	      }
+	      window.location.href = 'index.html';
+	    }
 
     // Load saved language preference
     function loadLanguagePreference() {

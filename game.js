@@ -25,19 +25,20 @@ if (typeof document !== 'undefined') {
         pageTitle: 'Therapy Memory Card Game',
         title: 'Scanning Practice',
         description: 'Play using red–green anaglyph glasses (or red–blue – click the button at the bottom to switch between modes). Each pair contains one symbol visible only to one eye (red) and another visible only to the other eye (green or blue). Use both eyes together to find matching pairs and improve binocular vision.',
-        controls: {
-          difficultyLegend: 'Difficulty',
-          selectDifficulty: 'Select difficulty:',
-          easy: 'Easy (4×4)',
-          medium: 'Medium (8×8)',
-          hard: 'Hard (12×12)',
-          leftEyeLegend: 'Left Eye (Red) Settings',
-          rightEyeLegend: 'Right Eye (Green) Settings',
-          rightEyeLegendBlue: 'Right Eye (Blue) Settings',
-          brightness: 'Brightness',
-          contrast: 'Contrast',
-          restart: 'Restart'
-        },
+	        controls: {
+	          difficultyLegend: 'Difficulty',
+	          selectDifficulty: 'Select difficulty:',
+	          easy: 'Easy (4×4)',
+	          medium: 'Medium (8×8)',
+	          hard: 'Hard (12×12)',
+	          leftEyeLegend: 'Left Eye (Red) Settings',
+	          rightEyeLegend: 'Right Eye (Green) Settings',
+	          rightEyeLegendBlue: 'Right Eye (Blue) Settings',
+	          brightness: 'Brightness',
+	          contrast: 'Contrast',
+	          back: 'Back',
+	          restart: 'Restart'
+	        },
         stats: {
           timeLabel: 'Time',
           movesLabel: 'Moves',
@@ -74,19 +75,20 @@ if (typeof document !== 'undefined') {
         pageTitle: 'משחק הזיכרון הטיפולי',
         title: 'אימון סריקה',
         description: 'שחקו באמצעות משקפי אנגליף אדום–ירוק (או אדום–כחול – לחצו על הכפתור שבתחתית כדי להחליף בין האפשרויות). בכל זוג תמצאו סמל אחד הנראה רק לעין אחת (באדום) וסמל נוסף הנראה לעין השנייה בלבד (בירוק או בכחול). הסתכלו בשתי העיניים יחד כדי למצוא זוגות תואמים ולתרגל ראייה בינוקולרית.',
-        controls: {
-          difficultyLegend: 'רמת קושי',
-          selectDifficulty: 'בחר רמת קושי:',
-          easy: 'קל (4×4)',
-          medium: 'בינוני (8×8)',
-          hard: 'קשה (12×12)',
-          leftEyeLegend: 'הגדרות עין שמאל (אדום)',
-          rightEyeLegend: 'הגדרות עין ימין (ירוק)',
-          rightEyeLegendBlue: 'הגדרות עין ימין (כחול)',
-          brightness: 'בהירות',
-          contrast: 'ניגודיות',
-          restart: 'התחל מחדש'
-        },
+	        controls: {
+	          difficultyLegend: 'רמת קושי',
+	          selectDifficulty: 'בחר רמת קושי:',
+	          easy: 'קל (4×4)',
+	          medium: 'בינוני (8×8)',
+	          hard: 'קשה (12×12)',
+	          leftEyeLegend: 'הגדרות עין שמאל (אדום)',
+	          rightEyeLegend: 'הגדרות עין ימין (ירוק)',
+	          rightEyeLegendBlue: 'הגדרות עין ימין (כחול)',
+	          brightness: 'בהירות',
+	          contrast: 'ניגודיות',
+	          back: 'חזרה',
+	          restart: 'התחל מחדש'
+	        },
         stats: {
           timeLabel: 'זמן',
           movesLabel: 'מהלכים',
@@ -153,12 +155,13 @@ if (typeof document !== 'undefined') {
     const board = document.getElementById('game-board');
     const movesEl = document.getElementById('moves');
     const timerEl = document.getElementById('timer');
-    const scoreEl = document.getElementById('score');
-    const restartBtn = document.getElementById('restart');
-    const leftBrightness = document.getElementById('left-brightness');
-    const leftContrast = document.getElementById('left-contrast');
-    const rightBrightness = document.getElementById('right-brightness');
-    const rightContrast = document.getElementById('right-contrast');
+	    const scoreEl = document.getElementById('score');
+	    const restartBtn = document.getElementById('restart');
+	    const backBtn = document.getElementById('back-button');
+	    const leftBrightness = document.getElementById('left-brightness');
+	    const leftContrast = document.getElementById('left-contrast');
+	    const rightBrightness = document.getElementById('right-brightness');
+	    const rightContrast = document.getElementById('right-contrast');
     const colorToggleBtn = document.getElementById('toggle-eye-color');
     const langToggleBtn = document.getElementById('toggle-language');
     const rightEyeLegend = document.querySelector('[data-i18n="controls.rightEyeLegend"]');
@@ -589,7 +592,23 @@ if (typeof document !== 'undefined') {
       game.difficulty = difficultySelect.value;
       startGame();
     });
-    restartBtn.addEventListener('click', startGame);
+	    restartBtn.addEventListener('click', startGame);
+	    if (backBtn) {
+	      backBtn.addEventListener('click', () => {
+	        try {
+	          const hasReferrer = Boolean(document.referrer);
+	          const sameOrigin = hasReferrer
+	            && new URL(document.referrer).origin === window.location.origin;
+	          if (sameOrigin) {
+	            window.history.back();
+	            return;
+	          }
+	        } catch (_) {
+	          // Fall back to index navigation.
+	        }
+	        window.location.href = 'index.html';
+	      });
+	    }
     colorToggleBtn.addEventListener('click', toggleEyeColor);
     langToggleBtn?.addEventListener('click', toggleLanguage);
 

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>הסבר על דיפלופיה (כפל ראייה)</title>
+  <meta name="description" content="מדריך מקיף להבנת דיפלופיה (כפל ראייה), סיבותיה, סוגיה ומתי לפנות לטיפול רפואי.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.1rem;
+      background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+      color: #102a43;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      backdrop-filter: blur(12px);
+      background: rgba(255, 255, 255, 0.85);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    }
+
+    .page-wrapper {
+      width: min(1120px, 100%);
+      margin: 0 auto;
+      padding: 1.5rem 1.5rem 3rem;
+    }
+
+    .site-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.5rem 0 1rem;
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .brand span:first-child {
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #0077cc;
+      font-weight: 600;
+    }
+
+    .brand a {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #102a43;
+      text-decoration: none;
+    }
+
+    .brand a:hover {
+      color: #0284c7;
+    }
+
+    .back-link {
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      border: none;
+      color: #fff;
+      padding: 0.65rem 1.25rem;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 600;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      font-family: 'Poppins', sans-serif;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .back-link:hover,
+    .back-link:focus-visible {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 25px rgba(2, 132, 199, 0.25);
+      outline: none;
+    }
+
+    main {
+      flex: 1;
+    }
+
+    .article-content {
+      background: #ffffff;
+      border-radius: 26px;
+      padding: clamp(1.5rem, 3vw, 2.75rem);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.01);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      margin-top: 2rem;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 4vw, 2.5rem);
+      margin-top: 0;
+      color: #0f172a;
+    }
+
+    h2 {
+      font-size: clamp(1.45rem, 3vw, 1.95rem);
+      margin-top: 2rem;
+      color: #1e293b;
+    }
+
+    h3 {
+      font-size: 1.15rem;
+      margin-top: 1.75rem;
+      color: #334155;
+    }
+
+    p {
+      margin: 0.75rem 0;
+      line-height: 1.7;
+      color: #475569;
+    }
+
+    ul, ol {
+      margin: 0.75rem 0 1.5rem;
+      padding-right: 1.1rem;
+      color: #475569;
+      line-height: 1.7;
+    }
+
+    .citations {
+      direction: ltr;
+      text-align: left;
+      padding-right: 0;
+      padding-left: 1.1rem;
+    }
+
+    li + li {
+      margin-top: 0.4rem;
+    }
+
+    a {
+      color: #0284c7;
+      font-weight: 600;
+    }
+
+    footer {
+      margin-top: 3rem;
+      text-align: center;
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+
+    footer a {
+      color: #0284c7;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    footer a:hover,
+    footer a:focus-visible {
+      text-decoration: underline;
+      outline: none;
+    }
+
+    @media (max-width: 720px) {
+      .site-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="page-wrapper">
+      <div class="site-header">
+        <div class="brand">
+          <span>ערכת תרגול לשיקום ראייה</span>
+          <a href="index.html">מרכז תרגול דיפלופיה</a>
+        </div>
+        <a href="index.html" class="back-link">חזרה לדף הבית ←</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-wrapper">
+    <article class="article-content">
+      <h1>מהי דיפלופיה (כפל ראייה)?</h1>
+
+      <p>דיפלופיה פירושה ראייה של שתי תמונות של אותו אובייקט. התמונות יכולות להופיע זו לצד זו, אחת מעל השנייה או באלכסון זו ביחס לזו. היא יכולה להופיע בעין אחת בלבד (דיפלופיה מונוקולרית) או בשתי העיניים יחד (דיפלופיה בינוקולרית). בדיפלופיה בינוקולרית כפל הראייה נעלם כאשר מכסים אחת מן העיניים.</p>
+
+      <h2>איך עובדת מערכת הראייה</h2>
+
+      <p>כדי לראות תמונה אחת חדה ונוחה, שתי העיניים צריכות להיות מיושרות, לנוע יחד, והמח צריך "לאחד" נכון את שתי התמונות לתמונה אחת. דיפלופיה נוצרת בדרך כלל כאשר משהו במערכת הזו מופרע, לדוגמה:</p>
+
+      <ul>
+        <li>פזילה או חוסר יישור של העיניים (strabismus) בעקבות חולשה או הגבלה של שרירי העיניים, או בעיה בעצבים שמפעילים אותם, למשל לאחר שבץ מוחי, חבלת ראש, סוכרת או שיתוק של אחד העצבים.</li>
+        <li>בעיה אופטית בעין אחת, כמו קרנית לא סדירה, קטרקט או בעיית ראייה שלא תוקנה בעזרת משקפיים או עדשות מגע, שעלולים לגרום לכפל גם כאשר העין השנייה מכוסה (דיפלופיה מונוקולרית).</li>
+      </ul>
+
+      <h2>מתי לפנות לטיפול רפואי</h2>
+
+      <p>מכיוון שדיפלופיה יכולה לנוע ממצב פשוט יחסית ועד סימן אפשרי למחלה נוירולוגית או מערכתית משמעותית, חשוב מאוד לעבור בדיקה של רופא עיניים ולעיתים גם בדיקה נוירולוגית. לאחר שההערכה הרפואית שוללת מצבים דחופים ומבהירה את הסיבה לכפל הראייה, שיקום ראייה יכול לסייע בהפחתת הכפל, בשיפור הנוחות ובהקלת ההתנהלות בפעילויות היומיום.</p>
+
+      <h3>מקורות</h3>
+      <ol class="citations">
+        <li>Jain S. Diplopia: Diagnosis and management. Clinical Medicine. 2022;22(2):104–108. (PMC)</li>
+        <li>Glisson CC. Approach to diplopia. Continuum (Minneap Minn). 2019;25(5):1362–1383. (continuum.aan.com)</li>
+      </ol>
+    </article>
+  </main>
+
+  <footer class="page-wrapper">
+    <p>
+      נבנה על ידי טל בר ניצן ואורי ניצן •
+      <a href="mailto:restin3@gmail.com?subject=Contact%20about%20the%20therapy%20game">צרו קשר</a>
+    </p>
+    <p>
+      <a href="privacy-policy.html" target="_blank" rel="noopener">מדיניות פרטיות</a>
+    </p>
+  </footer>
+</body>
+</html>
