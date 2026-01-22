@@ -237,7 +237,7 @@ if (typeof document !== 'undefined') {
       const totalCards = gridSize * gridSize;
       const symbolsList = generateSymbols(totalCards / 2);
       game.pairsCount = symbolsList.length;
-      board.style.gridTemplateColumns = `repeat(${gridSize}, 80px)`;
+      board.style.setProperty('--grid-size', gridSize);
       const cardsArray = symbolsList.flatMap(sym => [{ symbol: sym, eye: 'left' }, { symbol: sym, eye: 'right' }]);
       game.cardSymbols = shuffle(cardsArray);
       game.cardSymbols.forEach(({ symbol, eye }, index) => {
