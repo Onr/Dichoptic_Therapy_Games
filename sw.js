@@ -3,9 +3,9 @@
  * Provides offline functionality, caching, and performance optimizations
  */
 
-const CACHE_NAME = 'dichoptic-therapy-v1.2.3';
-const STATIC_CACHE = 'static-resources-v1.2.3';
-const DYNAMIC_CACHE = 'dynamic-resources-v1.2.3';
+const CACHE_NAME = 'dichoptic-therapy-v1.2.4';
+const STATIC_CACHE = 'static-resources-v1.2.4';
+const DYNAMIC_CACHE = 'dynamic-resources-v1.2.4';
 
 // Files to cache immediately
 const STATIC_ASSETS = [
@@ -25,7 +25,8 @@ const STATIC_ASSETS = [
   '/src/utils/errorHandler.js',
   '/src/utils/environment.js',
   '/src/utils/userCounter.js',
-  '/src/utils/adminPanel.js'
+  '/src/utils/adminPanel.js',
+  '/assets/anaglyph-glasses.jpg'
 ];
 
 // Network-first resources (analytics, etc.)
