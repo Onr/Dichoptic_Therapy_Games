@@ -229,6 +229,34 @@ if (typeof document !== 'undefined') {
     }
 
     /**
+   * Computes responsive card sizing so the board stays visible on mobile.
+   * @param {number} gridSize Current board side length.
+   * @returns {{ cardSize: number, cardGap: number }}
+   */
+    function getResponsiveBoardLayout(gridSize) {
+      const viewportWidth = Math.max(
+        window.innerWidth || 0,
+        document.documentElement.clientWidth || 0
+      );
+      const cardGap = viewportWidth <= 480 ? 6 : 10;
+      const horizontalPadding = viewportWidth <= 480 ? 24 : 40;
+      const availableWidth = Math.max(220, viewportWidth - horizontalPadding);
+
+      let cardSize = Math.floor((availableWidth - ((gridSize - 1) * cardGap)) / gridSize);
+      cardSize = Math.min(80, cardSize);
+
+      if (gridSize <= 4) {
+        cardSize = Math.max(56, cardSize);
+      } else if (gridSize <= 8) {
+        cardSize = Math.max(30, cardSize);
+      } else {
+        cardSize = Math.max(22, cardSize);
+      }
+
+      return { cardSize, cardGap };
+    }
+
+    /**
    * Creates the game board.
    */
     function createBoard() {
@@ -236,8 +264,11 @@ if (typeof document !== 'undefined') {
       const gridSize = getGridSize(game.difficulty);
       const totalCards = gridSize * gridSize;
       const symbolsList = generateSymbols(totalCards / 2);
+      const { cardSize, cardGap } = getResponsiveBoardLayout(gridSize);
       game.pairsCount = symbolsList.length;
-      board.style.gridTemplateColumns = `repeat(${gridSize}, 80px)`;
+      board.style.gridTemplateColumns = `repeat(${gridSize}, ${cardSize}px)`;
+      board.style.setProperty('--card-size', `${cardSize}px`);
+      board.style.setProperty('--card-gap', `${cardGap}px`);
       const cardsArray = symbolsList.flatMap(sym => [{ symbol: sym, eye: 'left' }, { symbol: sym, eye: 'right' }]);
       game.cardSymbols = shuffle(cardsArray);
       game.cardSymbols.forEach(({ symbol, eye }, index) => {
@@ -274,6 +305,15 @@ if (typeof document !== 'undefined') {
       if (!header.classList.contains('collapsed')) {
         header.classList.add('collapsed');
         content.classList.add('collapsed');
+      }
+    }
+
+    /**
+   * Starts with collapsed settings on smaller screens so the board is visible immediately.
+   */
+    function initMobileLayout() {
+      if (window.matchMedia('(max-width: 768px)').matches) {
+        autoCollapseSettings();
       }
     }
 
@@ -616,6 +656,7 @@ if (typeof document !== 'undefined') {
     // Initial setup
     updateTexts();
     initSettings();
+    initMobileLayout();
     startGame();
     displayLeaderboard();
   });
