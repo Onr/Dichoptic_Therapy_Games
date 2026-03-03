@@ -555,11 +555,44 @@
       margin-top: 0.75rem;
     }
 
+    .faq-references {
+      margin-top: 1.2rem;
+      font-size: 0.83rem;
+      color: #5b6572;
+      line-height: 1.6;
+    }
+
+    .faq-references h3 {
+      margin: 0 0 0.55rem;
+      font-size: 0.9rem;
+      color: #424d5b;
+      font-weight: 700;
+    }
+
+    .faq-references ol {
+      margin: 0;
+      padding-left: 1.2rem;
+    }
+
+    .faq-references li + li {
+      margin-top: 0.45rem;
+    }
+
     .lang-section[dir="rtl"] article ul,
     .lang-section[dir="rtl"] article ol,
     .lang-section[dir="rtl"] .therapy-tips .tips-list {
       padding-right: 1.3rem;
       padding-left: 0;
+    }
+
+    .lang-section[dir="rtl"] .faq-references {
+      direction: ltr;
+      text-align: left;
+    }
+
+    .lang-section[dir="rtl"] .faq-references ol {
+      padding-right: 0;
+      padding-left: 1.2rem;
     }
 
     .lang-section[hidden] {
@@ -815,10 +848,17 @@
           <ul class="tips-list">
             <li>Warm up with slow eye stretches—gently trace a sideways figure eight to prime extraocular muscles.</li>
             <li>Keep a therapy journal. Note which mechanics—scanning, pursuit tracking, or saccades—felt easiest and hardest.</li>
-            <li>Celebrate small wins such as smoother pursuits or fewer suppression episodes to reinforce adherence.</li>
+            <li>Celebrate small wins such as smoother pursuits or fewer double vision episodes to reinforce adherence.</li>
             <li>While practicing, it is recommended to use a larger screen (such as a computer monitor or tablet) and sit so the screen is at eye level.</li>
             <li>Safety note: If double vision is sudden, new, or rapidly worsening, or comes with severe headache, eye pain, weakness, confusion, or slurred speech, seek urgent medical care.</li>
           </ul>
+          <div class="faq-references" aria-label="References">
+            <h3>References</h3>
+            <ol>
+              <li>Jain, S. (2022). Diplopia: Diagnosis and management. Clinical Medicine, 22(2), 104-106.</li>
+              <li>Glisson, C. C. (2019). Approach to diplopia. CONTINUUM: Lifelong Learning in Neurology, 25(5), 1362-1375.</li>
+            </ol>
+          </div>
         </article>
       </div>
 
@@ -837,7 +877,7 @@
             </div>
             <div class="faq-card">
               <h3>האם צריך ציוד מיוחד?</h3>
-              <p>כן. חבשו משקפי אנגליפ אדום/ירוק או אדום/כחול כדי שכל עין תראה את המטרה שלה. שלבו את המשקפיים עם תאורה מאוזנת בחדר והתיישבו 50–70 ס\"מ מהמסך כדי לשמור על קיבוע קבוע.</p>
+              <p>כן. חבשו משקפי אנגליפ אדום/ירוק או אדום/כחול כדי שכל עין תראה את המטרה שלה. שלבו את המשקפיים עם תאורה מאוזנת בחדר והתיישבו 50–70 ס"מ מהמסך כדי לשמור על קיבוע קבוע.</p>
 	              <div class="equipment-example">
                 <a href="https://s.click.aliexpress.com/e/_c3URKnU1" target="_blank" rel="noopener noreferrer" aria-label="דוגמה למשקפי אנגליפ אדום/ירוק">
                   <img src="assets/anaglyph-glasses.jpg" alt="דוגמה למשקפי אנגליפ אדום וירוק" loading="lazy">
@@ -867,7 +907,7 @@
             </div>
             <div class="faq-card">
               <h3>מי מלווה אותי בתהליך שיקום תפקודי הראייה?</h3>
-              <p>תכנית השיקום צריכה להתבצע בהנחיה וליווי של מומחה לשיקום תפקודי הראייה.</p>
+              <p>תכנית השיקום צריכה להתבצע בהנחיה וליווי של מומחה לשיקום תפקודי הראייה (לדוגמה: מרפאה בעיסוק המתמחה בשיקום ראייה, אופטומטריסט/ית).</p>
             </div>
           </div>
         </article>
@@ -878,11 +918,18 @@
           <p>שלבו אסטרטגיות אלה כדי לתמוך בתרגול היומי:</p>
           <ul class="tips-list">
             <li>התחילו בחימום בעיניים במתיחות איטיות, ציירו בעדינות צורת שמונה אופקית כדי להכין את שרירי העיניים.</li>
-            <li>נהלו יומן תרגול. ציינו אילו מנגנונים, סריקה, מעקב חלק או סקדות, הרגישו קלים או קשים.</li>
-            <li>חגגו נצחונות קטנים כמו מעקבים חלקים יותר או פחות אפיזודות של דיכוי כדי לחזק את המחויבות.</li>
+            <li>נהלו יומן תרגול. ציינו אילו תרגולים, סריקה, מעקב חלק או סקדות, הרגישו קלים או קשים.</li>
+            <li>חגגו נצחונות קטנים כמו מעקבים חלקים יותר או פחות אפיזודות של כפילות כדי לחזק את המחויבות.</li>
             <li>בזמן התרגול, מומלץ להשתמש במסך גדול יותר (כגון צג מחשב או טאבלט) ולשבת כך שהמסך יהיה בגובה העיניים.</li>
             <li>הערת בטיחות: אם הראייה הכפולה היא פתאומית, חדשה או מחמירה במהירות, או שמגיעה עם כאב ראש חמור, כאבי עיניים, חולשה, בלבול או דיבור לא ברור, פנו לטיפול רפואי דחוף.</li>
           </ul>
+          <div class="faq-references" aria-label="References">
+            <h3>References</h3>
+            <ol>
+              <li>Jain, S. (2022). Diplopia: Diagnosis and management. Clinical Medicine, 22(2), 104-106.</li>
+              <li>Glisson, C. C. (2019). Approach to diplopia. CONTINUUM: Lifelong Learning in Neurology, 25(5), 1362-1375.</li>
+            </ol>
+          </div>
         </article>
       </div>
     </section>

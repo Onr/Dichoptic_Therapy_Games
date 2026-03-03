@@ -26,6 +26,33 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: -12vmax;
+      background:
+        radial-gradient(circle at 18% 22%, rgba(14, 116, 144, 0.14), transparent 32%),
+        radial-gradient(circle at 82% 26%, rgba(14, 116, 144, 0.11), transparent 36%),
+        radial-gradient(circle at 50% 85%, rgba(14, 116, 144, 0.1), transparent 40%);
+      pointer-events: none;
+      z-index: 0;
+      animation: background-drift 24s ease-in-out infinite alternate;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        linear-gradient(120deg, rgba(255, 255, 255, 0.18), transparent 42%),
+        linear-gradient(305deg, rgba(2, 132, 199, 0.08), transparent 48%);
+      pointer-events: none;
+      z-index: 0;
+      animation: light-sweep 18s ease-in-out infinite;
     }
 
     header {
@@ -33,6 +60,13 @@
       background: rgba(255, 255, 255, 0.85);
       border-bottom: 1px solid rgba(255, 255, 255, 0.4);
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    }
+
+    header,
+    main,
+    footer {
+      position: relative;
+      z-index: 1;
     }
 
     .page-wrapper {
@@ -168,6 +202,36 @@
       outline: none;
     }
 
+    @keyframes background-drift {
+      0% {
+        transform: translate3d(0, 0, 0) scale(1);
+      }
+
+      100% {
+        transform: translate3d(-2%, 1.8%, 0) scale(1.03);
+      }
+    }
+
+    @keyframes light-sweep {
+      0%,
+      100% {
+        opacity: 0.5;
+        transform: translate3d(0, 0, 0);
+      }
+
+      50% {
+        opacity: 0.8;
+        transform: translate3d(1.6%, -1%, 0);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      body::before,
+      body::after {
+        animation: none;
+      }
+    }
+
     @media (max-width: 720px) {
       .site-header {
         flex-direction: column;
@@ -210,8 +274,8 @@
 
       <h3>References</h3>
       <ol>
-        <li>Jain S. Diplopia: Diagnosis and management. Clinical Medicine. 2022;22(2):104–108. (PMC)</li>
-        <li>Glisson CC. Approach to diplopia. Continuum (Minneap Minn). 2019;25(5):1362–1383. (continuum.aan.com)</li>
+        <li>Jain, S. (2022). Diplopia: Diagnosis and management. Clinical Medicine, 22(2), 104-106.</li>
+        <li>Glisson, C. C. (2019). Approach to diplopia. CONTINUUM: Lifelong Learning in Neurology, 25(5), 1362-1375.</li>
       </ol>
     </article>
   </main>
