@@ -3,9 +3,9 @@
  * Provides offline functionality, caching, and performance optimizations
  */
 
-const CACHE_NAME = 'dichoptic-therapy-v1.2.5';
-const STATIC_CACHE = 'static-resources-v1.2.5';
-const DYNAMIC_CACHE = 'dynamic-resources-v1.2.5';
+const CACHE_NAME = 'dichoptic-therapy-v1.2.6';
+const STATIC_CACHE = 'static-resources-v1.2.6';
+const DYNAMIC_CACHE = 'dynamic-resources-v1.2.6';
 
 // Files to cache immediately
 const STATIC_ASSETS = [
@@ -17,6 +17,7 @@ const STATIC_ASSETS = [
   '/styles.css',
   '/game.js',
   '/favicon.ico',
+  '/manifest.json',
   '/src/production.js',
   '/src/utils/logger.js',
   '/src/utils/alerts.js',
@@ -181,7 +182,12 @@ function getOfflineFallback(request) {
 
 // Helper functions
 function isStaticAsset(url) {
-  return STATIC_ASSETS.some(asset => url.includes(asset));
+  try {
+    const path = new URL(url).pathname;
+    return STATIC_ASSETS.some(asset => path === asset);
+  } catch {
+    return false;
+  }
 }
 
 function isNetworkFirst(url) {

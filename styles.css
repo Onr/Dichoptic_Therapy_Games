@@ -228,6 +228,13 @@ input[type="range"]::-moz-range-thumb {
   height: var(--card-size, 80px);
   perspective: 600px;
   cursor: pointer;
+  outline: none;
+}
+
+.game-board .card:focus-visible {
+  outline: 3px solid #4facfe;
+  outline-offset: 2px;
+  border-radius: 8px;
 }
 
 .card.flipped .inner {
@@ -425,6 +432,50 @@ button:active {
   0%, 100% { transform: translateX(0); }
   25% { transform: translateX(-5px); }
   75% { transform: translateX(5px); }
+}
+
+button:focus-visible {
+  outline: 3px solid #4facfe;
+  outline-offset: 2px;
+}
+
+/* Leaderboard Styling */
+.leaderboard {
+  width: 100%;
+  max-width: 600px;
+  margin: 2rem auto;
+  background: linear-gradient(135deg, rgba(42, 82, 152, 0.5), rgba(30, 60, 114, 0.5));
+  padding: 1.5rem 2rem;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.leaderboard h2 {
+  text-align: center;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.leaderboard h3 {
+  font-size: 1rem;
+  color: #e0e6ff;
+  margin: 0.75rem 0 0.25rem;
+}
+
+.leaderboard ol {
+  padding-left: 1.5rem;
+  color: #c0c6e0;
+  line-height: 1.8;
+}
+
+.leaderboard ol li {
+  font-variant-numeric: tabular-nums;
 }
 
 main {

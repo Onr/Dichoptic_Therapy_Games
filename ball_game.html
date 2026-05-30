@@ -1,7 +1,10 @@
 <!DOCTYPE html>
-<html lang="he">
+<html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="manifest" href="manifest.json">
   <title>משחק – לחצו על הכדורים לפי המספרים</title>
   <style>
     body { 
@@ -280,7 +283,7 @@
     </svg>
   </div>
   <div id="controls">
-    <div class="controls-header" onclick="toggleControls()">
+    <div class="controls-header" onclick="toggleControls()" tabindex="0" role="button" aria-expanded="true" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleControls()}">
       <span id="controlsHeaderText">הגדרות משחק</span>
       <span class="controls-toggle">▼</span>
     </div>
@@ -429,6 +432,21 @@
     ballsLabel.textContent = numBalls;
     let rightColor = 'green';
     let celebrationTimeout;
+    let gameStartTime = 0;
+    let gameTimer = 0;
+    let timerInterval = null;
+
+    function startTimer() {
+      gameStartTime = Date.now();
+      timerInterval = setInterval(() => {
+        gameTimer = Math.floor((Date.now() - gameStartTime) / 1000);
+      }, 1000);
+    }
+
+    function stopTimer() {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
 
     ballsSlider.addEventListener('input', () => {
       numBalls = BALL_COUNTS[ballsSlider.value];
@@ -523,6 +541,8 @@
     }
 
     function initGame() {
+      stopTimer();
+      startTimer();
       if (celebrationTimeout) {
         clearTimeout(celebrationTimeout);
         celebrationTimeout = null;
@@ -576,6 +596,7 @@
       
       header.classList.toggle('collapsed');
       content.classList.toggle('collapsed');
+      header.setAttribute('aria-expanded', String(!header.classList.contains('collapsed')));
     }
 
     let animationFrameId;
@@ -613,6 +634,7 @@
       if (!allClicked) {
         animationFrameId = requestAnimationFrame(loop);
       } else {
+        stopTimer();
         msg.textContent = translations[currentLang].completed;
         triggerCelebration();
         animationFrameId = null;
@@ -620,8 +642,17 @@
         if (window.UserCounter) {
           window.UserCounter.recordGameCompletion('Ball Game (Tracking)', {
             ballCount: numBalls,
+            time: gameTimer,
             completed: true
           });
+        }
+
+        if (window.AlertSystem) {
+          window.AlertSystem.gameOver(
+            { time: gameTimer, score: numBalls, moves: numBalls },
+            () => initGame(),
+            () => window.location.href = 'index.html'
+          );
         }
       }
     }
@@ -635,7 +666,6 @@
       }
       celebrationTimeout = setTimeout(() => {
         celebrationEl.classList.remove('visible');
-        initGame();
       }, 2000);
     }
 
@@ -698,7 +728,15 @@
     initGame();
   </script>
   
-  <!-- User Tracking -->
+  <!-- Production Utilities -->
+  <script src="src/utils/environment.js"></script>
+  <script src="src/utils/logger.js"></script>
+  <script src="src/utils/errorHandler.js"></script>
+  <script src="src/utils/alerts.js"></script>
+  <script src="src/utils/performance.js"></script>
+  <script src="src/utils/health.js"></script>
   <script src="src/utils/userCounter.js"></script>
+  <script src="src/utils/adminPanel.js"></script>
+  <script src="src/production.js"></script>
 </body>
 </html>

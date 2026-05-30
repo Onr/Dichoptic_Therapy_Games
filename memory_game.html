@@ -6,6 +6,7 @@
   <title>Therapy Memory Card Game</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="manifest" href="manifest.json">
 
   <script>
     const GA_ID = 'G-HKSKJJB4DJ';
@@ -87,11 +88,11 @@
     This site uses analytics cookies to measure gameplay.
     <button onclick="acceptCookies()">Accept</button>
     <button onclick="rejectCookies()">Reject</button>
-    <a href="privacy-policy.html" style="color:#8cf; margin-left:1rem;" target="_blank">Learn more</a>
+    <a href="privacy-policy.html" style="color:#8cf; margin-left:1rem;" target="_blank" rel="noopener noreferrer">Learn more</a>
   </div>
 
   <div class="controls-container">
-    <div class="controls-header" onclick="toggleControls()">
+    <div class="controls-header" onclick="toggleControls()" tabindex="0" role="button" aria-expanded="true" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleControls()}">
       <span data-i18n="controls.settings">Game Settings</span>
       <span class="controls-toggle">▼</span>
     </div>
@@ -207,6 +208,7 @@
       
       header.classList.toggle('collapsed');
       content.classList.toggle('collapsed');
+      header.setAttribute('aria-expanded', String(!header.classList.contains('collapsed')));
     }
   </script>
   <script src="game.js"></script>

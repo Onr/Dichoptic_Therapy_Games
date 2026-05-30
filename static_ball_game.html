@@ -1,7 +1,10 @@
 <!DOCTYPE html>
-<html lang="he">
+<html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="manifest" href="manifest.json">
   <title>משחק – לחצו על הכדורים הסטטיים</title>
   <style>
     body { 
@@ -387,7 +390,7 @@
 	  </div>
   <div id="message">לחצו על הכדור</div>
   <div id="controls">
-    <div class="controls-header" onclick="toggleControls()">
+    <div class="controls-header" onclick="toggleControls()" tabindex="0" role="button" aria-expanded="true" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleControls()}">
       <span>הגדרות משחק</span>
       <span class="controls-toggle">▼</span>
     </div>
@@ -457,7 +460,21 @@
     let colorBarValue = 0;
     let colorBarInterval;
     let gameStartTime = 0;
+    let gameTimer = 0;
+    let timerInterval = null;
     let isGameActive = false;
+
+    function startTimer() {
+      gameStartTime = Date.now();
+      timerInterval = setInterval(() => {
+        gameTimer = Math.floor((Date.now() - gameStartTime) / 1000);
+      }, 1000);
+    }
+
+    function stopTimer() {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
 
     const redBrightnessSlider = document.getElementById('redBrightness');
     const redContrastSlider = document.getElementById('redContrast');
@@ -575,11 +592,11 @@
 
     function updateColorBar() {
       if (!isGameActive) return;
-      
+
       colorBarValue = Math.max(0, colorBarValue - COLOR_BAR_DECREASE_RATE);
       const percentage = (colorBarValue / MAX_COLOR_BAR) * 100;
       colorBarFill.style.width = percentage + '%';
-      
+
       // Update label with percentage
       colorBarLabel.textContent = `${translations[currentLanguage].speedMeter}: ${Math.round(percentage)}%`;
       
@@ -629,13 +646,21 @@
 
     function completeColorBar() {
       isGameActive = false;
+      stopTimer();
       const completionTime = (Date.now() - gameStartTime) / 1000;
       
       // Stop the interval
       if (colorBarInterval) {
         clearInterval(colorBarInterval);
       }
-      
+      if (window.UserCounter) {
+        window.UserCounter.recordGameCompletion('Static Ball Game (Saccades)', {
+          clicks: clickCount,
+          time: completionTime,
+          completed: true
+        });
+      }
+
       // Set bar to 100% and celebration effects
       colorBarFill.style.width = '100%';
       colorBarFill.style.animation = 'pulse 0.3s infinite alternate';
@@ -708,7 +733,9 @@
       canvas.height = window.innerHeight;
       clickCount = 0;
       colorBarValue = 0;
-      gameStartTime = Date.now();
+      updateColorBar();
+      stopTimer();
+      startTimer();
       isGameActive = true;
       
       msg.textContent = `${translations[currentLanguage].ballsClicked}: ${clickCount}`;
@@ -785,6 +812,7 @@
       
       header.classList.toggle('collapsed');
       content.classList.toggle('collapsed');
+      header.setAttribute('aria-expanded', String(!header.classList.contains('collapsed')));
     }
 
     function handlePointerDown(e) {
@@ -953,6 +981,15 @@
   </script>
   
   <!-- User Tracking -->
+  <!-- Production Utilities -->
+  <script src="src/utils/environment.js"></script>
+  <script src="src/utils/logger.js"></script>
+  <script src="src/utils/errorHandler.js"></script>
+  <script src="src/utils/alerts.js"></script>
+  <script src="src/utils/performance.js"></script>
+  <script src="src/utils/health.js"></script>
   <script src="src/utils/userCounter.js"></script>
+  <script src="src/utils/adminPanel.js"></script>
+  <script src="src/production.js"></script>
 </body>
 </html>
