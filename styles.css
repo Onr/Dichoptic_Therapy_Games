@@ -276,7 +276,6 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .face-layer.left-eye {
-  clip-path: inset(0 50% 0 0);
   background-color: red;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -286,7 +285,6 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .face-layer.right-eye {
-  clip-path: inset(0 0 0 50%);
   background-color: var(--right-eye-color);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
