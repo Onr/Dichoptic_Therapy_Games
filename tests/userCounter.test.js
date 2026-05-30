@@ -2,6 +2,9 @@
  * Test file for User Counter functionality
  */
 
+// Import UserCounter
+const UserCounter = require('../src/utils/userCounter');
+
 describe('UserCounter', () => {
   let userCounter;
   
@@ -27,8 +30,6 @@ describe('UserCounter', () => {
       })
     };
     
-    // Import UserCounter
-    const UserCounter = require('../src/utils/userCounter');
     userCounter = new UserCounter();
   });
 
@@ -75,17 +76,15 @@ describe('UserCounter', () => {
 
   test('should end session and update duration', () => {
     const initialSession = userCounter.currentSession;
-    
-    // Simulate time passing
-    setTimeout(() => {
-      userCounter.endSession();
-      
-      const stats = userCounter.getStats();
-      const session = stats.sessions.find(s => s.sessionId === initialSession.sessionId);
-      
-      expect(session.endTime).toBeDefined();
-      expect(session.duration).toBeGreaterThan(0);
-    }, 100);
+
+    initialSession.startTime = new Date(Date.now() - 1000).toISOString();
+    userCounter.endSession();
+
+    const stats = userCounter.getStats();
+    const session = stats.sessions.find(s => s.sessionId === initialSession.sessionId);
+
+    expect(session.endTime).toBeDefined();
+    expect(session.duration).toBeGreaterThan(0);
   });
 
   test('should generate comprehensive report', () => {

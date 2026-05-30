@@ -25,20 +25,21 @@ if (typeof document !== 'undefined') {
         pageTitle: 'Therapy Memory Card Game',
         title: 'Scanning Practice',
         description: 'Play using red–green anaglyph glasses (or red–blue – click the button at the bottom to switch between modes). Each pair contains one symbol visible only to one eye (red) and another visible only to the other eye (green or blue). Use both eyes together to find matching pairs and improve binocular vision.',
-	        controls: {
-	          difficultyLegend: 'Difficulty',
-	          selectDifficulty: 'Select difficulty:',
-	          easy: 'Easy (4×4)',
-	          medium: 'Medium (8×8)',
-	          hard: 'Hard (12×12)',
-	          leftEyeLegend: 'Left Eye (Red) Settings',
-	          rightEyeLegend: 'Right Eye (Green) Settings',
-	          rightEyeLegendBlue: 'Right Eye (Blue) Settings',
-	          brightness: 'Brightness',
-	          contrast: 'Contrast',
-	          back: 'Back',
-	          restart: 'Restart'
-	        },
+        controls: {
+          settings: 'Game Settings',
+          difficultyLegend: 'Difficulty',
+          selectDifficulty: 'Select difficulty:',
+          easy: 'Easy (4×4)',
+          medium: 'Medium (8×8)',
+          hard: 'Hard (12×12)',
+          leftEyeLegend: 'Left Eye (Red) Settings',
+          rightEyeLegend: 'Right Eye (Green) Settings',
+          rightEyeLegendBlue: 'Right Eye (Blue) Settings',
+          brightness: 'Brightness',
+          contrast: 'Contrast',
+          back: 'Back',
+          restart: 'Restart'
+        },
         stats: {
           timeLabel: 'Time',
           movesLabel: 'Moves',
@@ -75,20 +76,21 @@ if (typeof document !== 'undefined') {
         pageTitle: 'משחק הזיכרון הטיפולי',
         title: 'אימון סריקה',
         description: 'שחקו באמצעות משקפי אנגליף אדום–ירוק (או אדום–כחול – לחצו על הכפתור שבתחתית כדי להחליף בין האפשרויות). בכל זוג תמצאו סמל אחד הנראה רק לעין אחת (באדום) וסמל נוסף הנראה לעין השנייה בלבד (בירוק או בכחול). הסתכלו בשתי העיניים יחד כדי למצוא זוגות תואמים ולתרגל ראייה בינוקולרית.',
-	        controls: {
-	          difficultyLegend: 'רמת קושי',
-	          selectDifficulty: 'בחר רמת קושי:',
-	          easy: 'קל (4×4)',
-	          medium: 'בינוני (8×8)',
-	          hard: 'קשה (12×12)',
-	          leftEyeLegend: 'הגדרות עין שמאל (אדום)',
-	          rightEyeLegend: 'הגדרות עין ימין (ירוק)',
-	          rightEyeLegendBlue: 'הגדרות עין ימין (כחול)',
-	          brightness: 'בהירות',
-	          contrast: 'ניגודיות',
-	          back: 'חזרה',
-	          restart: 'התחל מחדש'
-	        },
+        controls: {
+          settings: 'הגדרות משחק',
+          difficultyLegend: 'רמת קושי',
+          selectDifficulty: 'בחר רמת קושי:',
+          easy: 'קל (4×4)',
+          medium: 'בינוני (8×8)',
+          hard: 'קשה (12×12)',
+          leftEyeLegend: 'הגדרות עין שמאל (אדום)',
+          rightEyeLegend: 'הגדרות עין ימין (ירוק)',
+          rightEyeLegendBlue: 'הגדרות עין ימין (כחול)',
+          brightness: 'בהירות',
+          contrast: 'ניגודיות',
+          back: 'חזרה',
+          restart: 'התחל מחדש'
+        },
         stats: {
           timeLabel: 'זמן',
           movesLabel: 'מהלכים',
@@ -155,13 +157,13 @@ if (typeof document !== 'undefined') {
     const board = document.getElementById('game-board');
     const movesEl = document.getElementById('moves');
     const timerEl = document.getElementById('timer');
-	    const scoreEl = document.getElementById('score');
-	    const restartBtn = document.getElementById('restart');
-	    const backBtn = document.getElementById('back-button');
-	    const leftBrightness = document.getElementById('left-brightness');
-	    const leftContrast = document.getElementById('left-contrast');
-	    const rightBrightness = document.getElementById('right-brightness');
-	    const rightContrast = document.getElementById('right-contrast');
+    const scoreEl = document.getElementById('score');
+    const restartBtn = document.getElementById('restart');
+    const backBtn = document.getElementById('back-button');
+    const leftBrightness = document.getElementById('left-brightness');
+    const leftContrast = document.getElementById('left-contrast');
+    const rightBrightness = document.getElementById('right-brightness');
+    const rightContrast = document.getElementById('right-contrast');
     const colorToggleBtn = document.getElementById('toggle-eye-color');
     const langToggleBtn = document.getElementById('toggle-language');
     const rightEyeLegend = document.querySelector('[data-i18n="controls.rightEyeLegend"]');
@@ -280,7 +282,7 @@ if (typeof document !== 'undefined') {
         card.innerHTML = `
         <div class="inner">
           <div class="face front">
-            <div class="face-layer ${eye}-eye" style="clip-path: inset(0 0 0 0);">${symbol}</div>
+            <div class="face-layer ${eye}-eye">${symbol}</div>
           </div>
           <div class="face back"></div>
         </div>
@@ -289,6 +291,7 @@ if (typeof document !== 'undefined') {
         card.addEventListener('click', flipCard);
         card.addEventListener('keydown', (e) => {
           if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
             flipCard.call(card);
           }
         });
@@ -301,7 +304,7 @@ if (typeof document !== 'undefined') {
     function autoCollapseSettings() {
       const header = document.querySelector('.controls-header');
       const content = document.getElementById('controls-content');
-      
+
       if (!header.classList.contains('collapsed')) {
         header.classList.add('collapsed');
         content.classList.add('collapsed');
@@ -322,12 +325,12 @@ if (typeof document !== 'undefined') {
    */
     function flipCard() {
       if (game.lockBoard || this === game.firstCard || this.classList.contains('flipped')) {return;}
-      
+
       // Auto-collapse settings when user starts playing (first card flip)
       if (!game.firstCard && game.moves === 0) {
         autoCollapseSettings();
       }
-      
+
       this.classList.add('flipped');
       this.setAttribute('aria-label', `${translations[game.currentLanguage].cardFlipped}: ${this.querySelector('.face-layer').textContent}`);
       if (!game.firstCard) {
@@ -356,7 +359,6 @@ if (typeof document !== 'undefined') {
         if (game.matchedPairs === game.pairsCount) {
           stopTimer();
           setTimeout(() => {
-            updateLeaderboard();
             showGameOverModal();
           }, 500);
         }
@@ -381,12 +383,19 @@ if (typeof document !== 'undefined') {
    */
     function unflipCards() {
       game.lockBoard = true;
+      const first = game.firstCard;
+      const second = game.secondCard;
+      resetBoardState();
       setTimeout(() => {
-        game.firstCard.classList.remove('flipped', 'mismatched');
-        game.secondCard.classList.remove('flipped', 'mismatched');
-        game.firstCard.setAttribute('aria-label', `${translations[game.currentLanguage].card} ${game.firstCard.dataset.index + 1}`);
-        game.secondCard.setAttribute('aria-label', `${translations[game.currentLanguage].card} ${game.secondCard.dataset.index + 1}`);
-        resetBoardState();
+        if (first && first.parentNode) {
+          first.classList.remove('flipped', 'mismatched');
+          first.setAttribute('aria-label', `${translations[game.currentLanguage].card} ${Number(first.dataset.index) + 1}`);
+        }
+        if (second && second.parentNode) {
+          second.classList.remove('flipped', 'mismatched');
+          second.setAttribute('aria-label', `${translations[game.currentLanguage].card} ${Number(second.dataset.index) + 1}`);
+        }
+        game.lockBoard = false;
       }, 1000);
     }
 
@@ -462,6 +471,7 @@ if (typeof document !== 'undefined') {
    */
     function stopTimer() {
       clearInterval(game.timerInterval);
+      game.timerInterval = null;
     }
 
     /**
@@ -480,7 +490,7 @@ if (typeof document !== 'undefined') {
       if (window.Logger) {
         window.Logger.gameEnd({
           difficulty: game.difficulty,
-          time: game.time,
+          time: game.timer,
           moves: game.moves,
           score: game.score
         });
@@ -489,7 +499,7 @@ if (typeof document !== 'undefined') {
       // Track performance
       if (window.PerformanceMonitor) {
         window.PerformanceMonitor.endGamePerformance({
-          time: game.time,
+          time: game.timer,
           moves: game.moves,
           score: game.score
         });
@@ -498,7 +508,7 @@ if (typeof document !== 'undefined') {
       // Track game completion in user counter
       if (window.UserCounter) {
         window.UserCounter.recordGameCompletion('Memory Game (Scanning)', {
-          time: game.time,
+          time: game.timer,
           moves: game.moves,
           score: game.score,
           difficulty: game.difficulty
@@ -511,7 +521,7 @@ if (typeof document !== 'undefined') {
       // Show game over alert using production alert system
       if (window.AlertSystem) {
         window.AlertSystem.gameOver(
-          { time: game.time, moves: game.moves, score: game.score },
+          { time: game.timer, moves: game.moves, score: game.score },
           () => startGame(), // onRestart
           () => window.location.href = 'index.html' // onMenu
         );
@@ -538,7 +548,7 @@ if (typeof document !== 'undefined') {
       if (typeof gtag === 'function') {
         gtag('event', 'game_complete', {
           game_difficulty: game.difficulty,
-          game_time: game.time,
+          game_time: game.timer,
           game_moves: game.moves,
           game_score: game.score
         });
@@ -568,7 +578,8 @@ if (typeof document !== 'undefined') {
    * Initializes the settings controls.
    */
     function initSettings() {
-      const savedSettings = JSON.parse(localStorage.getItem('eyeSettings'));
+      let savedSettings;
+      try { savedSettings = JSON.parse(localStorage.getItem('eyeSettings')); } catch { savedSettings = null; }
       if (savedSettings) {
         leftBrightness.value = savedSettings.leftBrightness;
         leftContrast.value = savedSettings.leftContrast;
@@ -632,26 +643,38 @@ if (typeof document !== 'undefined') {
       game.difficulty = difficultySelect.value;
       startGame();
     });
-	    restartBtn.addEventListener('click', startGame);
-	    if (backBtn) {
-	      backBtn.addEventListener('click', () => {
-	        try {
-	          const hasReferrer = Boolean(document.referrer);
-	          const sameOrigin = hasReferrer
-	            && new URL(document.referrer).origin === window.location.origin;
-	          if (sameOrigin) {
-	            window.history.back();
-	            return;
-	          }
-	        } catch (_) {
-	          // Fall back to index navigation.
-	        }
-	        window.location.href = 'index.html';
-	      });
-	    }
+    restartBtn.addEventListener('click', startGame);
+    if (backBtn) {
+      backBtn.addEventListener('click', () => {
+        try {
+          const hasReferrer = Boolean(document.referrer);
+          const sameOrigin = hasReferrer
+            && new URL(document.referrer).origin === window.location.origin;
+          if (sameOrigin) {
+            window.history.back();
+            return;
+          }
+        } catch (_) {
+          // Fall back to index navigation.
+        }
+        window.location.href = 'index.html';
+      });
+    }
     colorToggleBtn.addEventListener('click', toggleEyeColor);
     langToggleBtn?.addEventListener('click', toggleLanguage);
 
+
+    // Recalculate board layout on window resize (debounced)
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        const gridSize = getGridSize(game.difficulty);
+        const { cardSize, cardGap } = getResponsiveBoardLayout(gridSize);
+        board.style.setProperty('--card-size', `${cardSize}px`);
+        board.style.setProperty('--card-gap', `${cardGap}px`);
+      }, 200);
+    });
 
     // Initial setup
     updateTexts();
