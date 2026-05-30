@@ -4,6 +4,8 @@
   --right-brightness: 1;
   --right-contrast: 1;
   --right-eye-color: lime; /* default green */
+  --card-size: 80px;
+  --card-gap: 10px;
 }
 
 * {
@@ -204,17 +206,26 @@ input[type="range"]::-moz-range-thumb {
 
 .game-board {
   display: grid;
-  grid-template-columns: repeat(var(--grid-size, 4), 1fr);
-  gap: 10px;
+  grid-template-columns: repeat(var(--grid-size, 4), var(--card-size, 80px));
+  grid-gap: var(--card-gap, 10px);
   margin-bottom: 1rem;
-  width: 100%;
-  max-width: calc(var(--grid-size, 4) * 90px);
+  width: max-content;
 }
 
-.card {
-  position: relative;
+.board-scroll {
   width: 100%;
-  aspect-ratio: 1;
+  overflow-x: auto;
+  overflow-y: visible;
+  display: flex;
+  justify-content: center;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.game-board .card {
+  position: relative;
+  width: var(--card-size, 80px);
+  height: var(--card-size, 80px);
   perspective: 600px;
   cursor: pointer;
 }
@@ -416,13 +427,21 @@ button:active {
   75% { transform: translateX(5px); }
 }
 
+main {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  body {
+    padding: 0.75rem;
+  }
+}
+
 @media (max-width: 480px) {
   body {
     padding: 0.5rem;
   }
-  
-  .game-board {
-    gap: 6px;
-  }
 }
-
