@@ -3,9 +3,9 @@
  * Provides offline functionality, caching, and performance optimizations
  */
 
-const CACHE_NAME = 'dichoptic-therapy-v1.2.6';
-const STATIC_CACHE = 'static-resources-v1.2.6';
-const DYNAMIC_CACHE = 'dynamic-resources-v1.2.6';
+const CACHE_NAME = 'dichoptic-therapy-v1.2.7';
+const STATIC_CACHE = 'static-resources-v1.2.7';
+const DYNAMIC_CACHE = 'dynamic-resources-v1.2.7';
 
 // Files to cache immediately
 const STATIC_ASSETS = [
