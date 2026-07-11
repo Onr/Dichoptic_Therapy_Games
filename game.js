@@ -240,11 +240,24 @@ if (typeof document !== 'undefined') {
         window.innerWidth || 0,
         document.documentElement.clientWidth || 0
       );
+      const viewportHeight = Math.max(
+        window.innerHeight || 0,
+        document.documentElement.clientHeight || 0
+      );
       const cardGap = viewportWidth <= 480 ? 6 : 10;
       const horizontalPadding = viewportWidth <= 480 ? 24 : 40;
       const availableWidth = Math.max(220, viewportWidth - horizontalPadding);
 
-      let cardSize = Math.floor((availableWidth - ((gridSize - 1) * cardGap)) / gridSize);
+      // Also size to the viewport HEIGHT so the whole board fits on screen and
+      // doesn't spill below the fold on mobile (the previous width-only sizing
+      // made 8x8 / 12x12 boards taller than the phone screen). Reserve room for
+      // the header, collapsed settings, stats and buttons above/below the board.
+      const verticalChrome = viewportWidth <= 480 ? 300 : 360;
+      const availableHeight = Math.max(200, viewportHeight - verticalChrome);
+
+      const cardSizeByWidth = Math.floor((availableWidth - ((gridSize - 1) * cardGap)) / gridSize);
+      const cardSizeByHeight = Math.floor((availableHeight - ((gridSize - 1) * cardGap)) / gridSize);
+      let cardSize = Math.min(cardSizeByWidth, cardSizeByHeight);
       cardSize = Math.min(80, cardSize);
 
       if (gridSize <= 4) {
