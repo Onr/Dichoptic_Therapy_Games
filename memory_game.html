@@ -88,14 +88,14 @@
     This site uses analytics cookies to measure gameplay.
     <button onclick="acceptCookies()">Accept</button>
     <button onclick="rejectCookies()">Reject</button>
-    <a href="privacy-policy.html" style="color:#8cf; margin-left:1rem;" target="_blank" rel="noopener noreferrer">Learn more</a>
+    <a href="privacy-policy.html" style="color:#8cf; margin-left:1rem;" target="_blank">Learn more</a>
   </div>
 
   <div class="controls-container">
-    <div class="controls-header" onclick="toggleControls()" tabindex="0" role="button" aria-expanded="true" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleControls()}">
+    <button type="button" class="controls-header" onclick="toggleControls()" aria-expanded="true" aria-controls="controls-content">
       <span data-i18n="controls.settings">Game Settings</span>
-      <span class="controls-toggle">▼</span>
-    </div>
+      <span class="controls-toggle" aria-hidden="true">▼</span>
+    </button>
     <div class="controls-content" id="controls-content">
       <section class="controls">
         <fieldset>
@@ -188,6 +188,8 @@
     <p class="credit">
       <a href="privacy-policy.html" target="_blank">Privacy Policy</a>
       </p>
+    <!-- Live announcer for screen readers -->
+    <div id="live-announcer" aria-live="polite" aria-atomic="true" class="sr-only"></div>
     </footer>
 
   <!-- Production Systems -->
@@ -208,7 +210,8 @@
       
       header.classList.toggle('collapsed');
       content.classList.toggle('collapsed');
-      header.setAttribute('aria-expanded', String(!header.classList.contains('collapsed')));
+      const isExpanded = !header.classList.contains('collapsed');
+      header.setAttribute('aria-expanded', String(isExpanded));
     }
   </script>
   <script src="game.js"></script>

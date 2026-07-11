@@ -7,16 +7,16 @@
   <link rel="manifest" href="manifest.json">
   <title>משחק – לחצו על הכדורים הסטטיים</title>
   <style>
-    body { 
-      margin: 0; 
-      overflow: hidden; 
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); 
-      color: #fff; 
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+      color: #fff;
     }
-    #gameCanvas { 
-      display: block; 
-      background: #000000; 
+    #gameCanvas {
+      display: block;
+      background: #000000;
       box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
     }
     #message {
@@ -31,7 +31,7 @@
       backdrop-filter: blur(10px);
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     }
-    
+
     #colorBar {
       position: absolute;
       top: 20px;
@@ -46,28 +46,28 @@
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
       backdrop-filter: blur(10px);
     }
-    
+
     #colorBarFill {
       height: 100%;
       width: 0%;
-      background: linear-gradient(90deg, 
-        #ff0000 0%, 
-        #ff8800 20%, 
-        #ffff00 40%, 
-        #88ff00 60%, 
-        #00ff00 80%, 
-        #00ff88 100%);
+      background: linear-gradient(90deg,
+        #4a6cf7 0%,
+        #6366f1 20%,
+        #7c5bf0 40%,
+        #8b5cf6 60%,
+        #a78bfa 80%,
+        #c4b5fd 100%);
       border-radius: 18px;
       transition: width 0.1s ease-out;
-      box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+      box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
       transition: transform 0.1s ease-out;
     }
-    
+
     @keyframes pulse {
-      from { box-shadow: 0 0 30px rgba(0, 255, 0, 0.8); }
-      to { box-shadow: 0 0 50px rgba(0, 255, 0, 1), 0 0 80px rgba(0, 255, 0, 0.5); }
+      from { box-shadow: 0 0 30px rgba(139, 92, 246, 0.8); }
+      to { box-shadow: 0 0 50px rgba(139, 92, 246, 1), 0 0 80px rgba(139, 92, 246, 0.5); }
     }
-    
+
     #colorBarLabel {
       position: absolute;
       top: -5px;
@@ -89,7 +89,7 @@
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
       min-width: 200px;
     }
-    
+
     .controls-header {
       padding: 1rem 1.5rem;
       cursor: pointer;
@@ -104,33 +104,33 @@
       user-select: none;
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
-    
+
     .controls-header:hover {
       background: linear-gradient(135deg, rgba(52, 92, 162, 0.95), rgba(40, 70, 124, 0.95));
     }
-    
+
     .controls-header.collapsed {
       border-radius: 16px;
       border-bottom: none;
     }
-    
+
     .controls-toggle {
       font-size: 1.2rem;
       transition: transform 0.3s ease;
       color: #e0e6ff;
     }
-    
+
     .controls-header.collapsed .controls-toggle {
       transform: rotate(-90deg);
     }
-    
+
     .controls-content {
       overflow: hidden;
       transition: max-height 0.3s ease-out, padding 0.3s ease-out;
       max-height: 1000px;
       padding: 20px;
     }
-    
+
     .controls-content.collapsed {
       max-height: 0;
       padding: 0 20px;
@@ -148,7 +148,7 @@
       font-size: 14px;
       color: #e0e6ff;
     }
-    
+
     /* Modern Slider Styling */
     input[type="range"] {
       -webkit-appearance: none;
@@ -162,7 +162,7 @@
       cursor: pointer;
       box-shadow: 0 2px 10px rgba(79, 172, 254, 0.3);
     }
-    
+
     input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
@@ -175,12 +175,12 @@
       box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
       transition: all 0.3s ease;
     }
-    
+
     input[type="range"]::-webkit-slider-thumb:hover {
       transform: scale(1.2);
       box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
     }
-    
+
     input[type="range"]::-moz-range-thumb {
       width: 20px;
       height: 20px;
@@ -191,7 +191,7 @@
       box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
       transition: all 0.3s ease;
     }
-    
+
     /* Modern Button Styling */
     button {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -209,13 +209,13 @@
       backdrop-filter: blur(10px);
       width: 100%;
     }
-    
+
     button:hover {
       transform: translateY(-2px);
       box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
       background: linear-gradient(135deg, #5a6fd8 0%, #6b42a6 100%);
     }
-    
+
 	    button:active {
 	      transform: translateY(0);
 	      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
@@ -230,7 +230,30 @@
 
 	    #navButtons button {
 	      width: auto;
+	      vertical-align: middle;
 	      margin: 0;
+	    }
+
+	    #pauseButton {
+	      margin-inline-start: 8px;
+	    }
+
+	    #pauseOverlay {
+	      position: absolute;
+	      top: 0;
+	      left: 0;
+	      width: 100%;
+	      height: 100%;
+	      background: rgba(0, 0, 0, 0.6);
+	      display: none;
+	      justify-content: center;
+	      align-items: center;
+	      z-index: 5;
+	      font-size: 48px;
+	      font-weight: bold;
+	      color: #fff;
+	      text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+	      backdrop-filter: blur(4px);
 	    }
 
 	    /* Completion Modal */
@@ -383,6 +406,7 @@
 	<body>
 	  <div id="navButtons">
 	    <button id="backButton" type="button" onclick="goBack()"></button>
+    <button id="pauseButton" type="button" onclick="togglePause()" aria-label="Pause" title="Pause">⏸</button>
 	  </div>
 	  <div id="colorBar">
 	    <div id="colorBarFill"></div>
@@ -390,10 +414,10 @@
 	  </div>
   <div id="message">לחצו על הכדור</div>
   <div id="controls">
-    <div class="controls-header" onclick="toggleControls()" tabindex="0" role="button" aria-expanded="true" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleControls()}">
+    <button type="button" class="controls-header" onclick="toggleControls()" aria-expanded="true" aria-controls="controls-content">
       <span>הגדרות משחק</span>
-      <span class="controls-toggle">▼</span>
-    </div>
+      <span class="controls-toggle" aria-hidden="true">▼</span>
+    </button>
     <div class="controls-content" id="controls-content">
       <div class="control-group">
         <button onclick="initGame()">התחל מחדש</button>
@@ -423,10 +447,13 @@
   </div>
   <canvas id="gameCanvas"></canvas>
 
+  <!-- Pause Overlay -->
+  <div id="pauseOverlay"><span id="pauseOverlayText">⏸ מושהה</span></div>
+
   <!-- Completion Modal -->
-  <div id="completionModal">
+  <div id="completionModal" role="dialog" aria-modal="true" aria-labelledby="completionModalTitle">
     <div class="modal-content">
-      <div class="modal-title">🎉 מעולה! 🎉</div>
+      <div class="modal-title" id="completionModalTitle">🎉 מעולה! 🎉</div>
       <div class="modal-message">מילאת את מד המהירות!</div>
       <div class="modal-time" id="completionTime">0.00s</div>
       <div class="modal-message" id="completionRank">מקום חדש בלוח התוצאות!</div>
@@ -436,9 +463,9 @@
   </div>
 
   <!-- Leaderboard Modal -->
-  <div id="leaderboardModal">
+  <div id="leaderboardModal" role="dialog" aria-modal="true" aria-labelledby="leaderboardModalTitle">
     <div class="leaderboard-content">
-      <div class="leaderboard-title">🏆 לוח התוצאות 🏆</div>
+      <div class="leaderboard-title" id="leaderboardModalTitle">🏆 לוח התוצאות 🏆</div>
       <div id="leaderboardList"></div>
       <button class="modal-button" onclick="closeLeaderboard()" style="width: 100%; margin-top: 20px;">סגור</button>
     </div>
@@ -455,26 +482,15 @@
     const msg    = document.getElementById('message');
     const colorBarFill = document.getElementById('colorBarFill');
     const colorBarLabel = document.getElementById('colorBarLabel');
-    
+
     let currentBall, clickCount = 0;
     let colorBarValue = 0;
     let colorBarInterval;
     let gameStartTime = 0;
-    let gameTimer = 0;
-    let timerInterval = null;
     let isGameActive = false;
-
-    function startTimer() {
-      gameStartTime = Date.now();
-      timerInterval = setInterval(() => {
-        gameTimer = Math.floor((Date.now() - gameStartTime) / 1000);
-      }, 1000);
-    }
-
-    function stopTimer() {
-      clearInterval(timerInterval);
-      timerInterval = null;
-    }
+    let isPaused = false;
+    let pauseStartTime = 0;
+    let totalPausedTime = 0;
 
     const redBrightnessSlider = document.getElementById('redBrightness');
     const redContrastSlider = document.getElementById('redContrast');
@@ -501,6 +517,9 @@
         contrastGreen: 'ניגודיות (ירוק)',
         brightnessBlue: 'בהירות (כחול)',
         contrastBlue: 'ניגודיות (כחול)',
+        pause: 'השהה',
+        resume: 'המשך',
+        paused: '⏸ מושהה',
         toggleColor: 'החלף ירוק ↔ כחול',
         toggleColorBlue: 'החלף כחול ↔ ירוק',
         leaderboard: 'לוח התוצאות',
@@ -533,6 +552,9 @@
         contrastGreen: 'Contrast (Green)',
         brightnessBlue: 'Brightness (Blue)',
         contrastBlue: 'Contrast (Blue)',
+        pause: 'Pause',
+        resume: 'Resume',
+        paused: '⏸ Paused',
         toggleColor: 'Switch Green ↔ Blue',
         toggleColorBlue: 'Switch Blue ↔ Green',
         leaderboard: 'Leaderboard',
@@ -585,9 +607,46 @@
     function createNewBall() {
       return {
         color: Math.random() < 0.5 ? 'red' : rightColor,
-        x: Math.random() * (canvas.width - 2 * BALL_RADIUS) + BALL_RADIUS,
-        y: Math.random() * (canvas.height - 2 * BALL_RADIUS) + BALL_RADIUS
+        ...createSafeTargetPosition()
       };
+    }
+
+    function createSafeTargetPosition() {
+      const exclusions = ['controls', 'message', 'colorBar', 'navButtons']
+        .map(id => document.getElementById(id))
+        .filter(Boolean)
+        .map(element => element.getBoundingClientRect());
+      const margin = BALL_RADIUS + 16;
+      for (let attempt = 0; attempt < 80; attempt++) {
+        const x = margin + Math.random() * Math.max(1, canvas.width - (margin * 2));
+        const y = margin + Math.random() * Math.max(1, canvas.height - (margin * 2));
+        const overlapsUi = exclusions.some(rect =>
+          x + BALL_RADIUS + 16 > rect.left && x - BALL_RADIUS - 16 < rect.right &&
+          y + BALL_RADIUS + 16 > rect.top && y - BALL_RADIUS - 16 < rect.bottom
+        );
+        if (!overlapsUi) return { x, y };
+      }
+      // Safe fallback for unusually small viewports.
+      return { x: canvas.width / 2, y: Math.max(BALL_RADIUS + 16, canvas.height / 2) };
+    }
+
+    function drawSpaceship(x, y, radius, color) {
+      // Keep the dichoptic stimulus one flat, solid colour.
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.beginPath();
+      ctx.moveTo(radius, 0);
+      ctx.lineTo(-radius * 0.42, -radius * 0.56);
+      ctx.lineTo(-radius * 0.26, -radius * 0.18);
+      ctx.lineTo(-radius * 0.72, -radius * 0.34);
+      ctx.lineTo(-radius * 0.58, 0);
+      ctx.lineTo(-radius * 0.72, radius * 0.34);
+      ctx.lineTo(-radius * 0.26, radius * 0.18);
+      ctx.lineTo(-radius * 0.42, radius * 0.56);
+      ctx.closePath();
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.restore();
     }
 
     function updateColorBar() {
@@ -599,22 +658,22 @@
 
       // Update label with percentage
       colorBarLabel.textContent = `${translations[currentLanguage].speedMeter}: ${Math.round(percentage)}%`;
-      
+
       // Update glow effect based on bar level
       if (percentage > 80) {
-        colorBarFill.style.boxShadow = '0 0 30px rgba(0, 255, 0, 0.8)';
-        colorBarLabel.style.color = '#00ff00';
+        colorBarFill.style.boxShadow = '0 0 30px rgba(139, 92, 246, 0.8)';
+        colorBarLabel.style.color = '#a78bfa';
       } else if (percentage > 50) {
-        colorBarFill.style.boxShadow = '0 0 20px rgba(255, 255, 0, 0.6)';
-        colorBarLabel.style.color = '#ffff00';
+        colorBarFill.style.boxShadow = '0 0 20px rgba(99, 102, 241, 0.6)';
+        colorBarLabel.style.color = '#818cf8';
       } else if (percentage > 20) {
-        colorBarFill.style.boxShadow = '0 0 15px rgba(255, 128, 0, 0.4)';
-        colorBarLabel.style.color = '#ff8800';
+        colorBarFill.style.boxShadow = '0 0 15px rgba(79, 70, 229, 0.4)';
+        colorBarLabel.style.color = '#6366f1';
       } else {
-        colorBarFill.style.boxShadow = '0 0 10px rgba(255, 0, 0, 0.3)';
-        colorBarLabel.style.color = '#ff0000';
+        colorBarFill.style.boxShadow = '0 0 10px rgba(67, 56, 202, 0.3)';
+        colorBarLabel.style.color = '#4f46e5';
       }
-      
+
       // Add pulsing effect when bar is very high
       if (percentage > 90) {
         colorBarFill.style.animation = 'pulse 0.5s infinite alternate';
@@ -625,18 +684,18 @@
 
     function increaseColorBar() {
       if (!isGameActive) return;
-      
+
       colorBarValue = Math.min(MAX_COLOR_BAR, colorBarValue + COLOR_BAR_INCREASE);
-      
+
       // Check for completion immediately after increase
       if (colorBarValue >= MAX_COLOR_BAR) {
         colorBarValue = MAX_COLOR_BAR; // Ensure it's exactly at max
         completeColorBar();
         return;
       }
-      
+
       updateColorBar();
-      
+
       // Add visual feedback when clicking
       colorBarFill.style.transform = 'scaleY(1.2)';
       setTimeout(() => {
@@ -646,34 +705,20 @@
 
     function completeColorBar() {
       isGameActive = false;
-      stopTimer();
-      const completionTime = (Date.now() - gameStartTime) / 1000;
-      
+      const completionTime = (Date.now() - gameStartTime - totalPausedTime) / 1000;
+
       // Stop the interval
       if (colorBarInterval) {
         clearInterval(colorBarInterval);
-      }
-      if (window.UserCounter) {
-        window.UserCounter.recordGameCompletion('Static Ball Game (Saccades)', {
-          clicks: clickCount,
-          time: completionTime,
-          completed: true
-        });
       }
 
       // Set bar to 100% and celebration effects
       colorBarFill.style.width = '100%';
       colorBarFill.style.animation = 'pulse 0.3s infinite alternate';
-      colorBarFill.style.boxShadow = '0 0 50px rgba(0, 255, 0, 1), 0 0 100px rgba(0, 255, 0, 0.5)';
+      colorBarFill.style.boxShadow = '0 0 50px rgba(139, 92, 246, 1), 0 0 100px rgba(139, 92, 246, 0.5)';
       colorBarLabel.textContent = translations[currentLanguage].completed;
-      colorBarLabel.style.color = '#00ff00';
-      
-      // Add screen flash effect
-      document.body.style.background = 'linear-gradient(135deg, #00ff00 0%, #00cc00 100%)';
-      setTimeout(() => {
-        document.body.style.background = 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)';
-      }, 200);
-      
+      colorBarLabel.style.color = '#c4b5fd';
+
       // Save time and show modal with slight delay for effect
       saveCompletionTime(completionTime);
       setTimeout(() => {
@@ -699,13 +744,13 @@
       const modal = document.getElementById('completionModal');
       const timeElement = document.getElementById('completionTime');
       const rankElement = document.getElementById('completionRank');
-      
+
       timeElement.textContent = time.toFixed(2) + 's';
-      
+
       // Check rank
       const times = JSON.parse(localStorage.getItem('colorBarTimes') || '[]');
       const rank = times.findIndex(entry => entry.time === time) + 1;
-      
+
       if (rank === 1) {
         rankElement.textContent = translations[currentLanguage].newRecord;
         rankElement.style.color = '#ffd700';
@@ -719,8 +764,11 @@
         rankElement.textContent = translations[currentLanguage].goodTime;
         rankElement.style.color = '#ccc';
       }
-      
+
       modal.style.display = 'flex';
+      // Focus the first button in the modal
+      const firstBtn = modal.querySelector('.modal-button');
+      if (firstBtn) firstBtn.focus();
     }
 
     function closeCompletionModal() {
@@ -733,29 +781,36 @@
       canvas.height = window.innerHeight;
       clickCount = 0;
       colorBarValue = 0;
-      updateColorBar();
-      stopTimer();
-      startTimer();
+      gameStartTime = Date.now();
       isGameActive = true;
-      
+      isPaused = false;
+      totalPausedTime = 0;
+
+      // Reset pause UI
+      document.getElementById('pauseOverlay').style.display = 'none';
+      const pauseButton = document.getElementById('pauseButton');
+      pauseButton.textContent = '⏸';
+      pauseButton.setAttribute('aria-label', translations[currentLanguage].pause);
+      pauseButton.title = translations[currentLanguage].pause;
+
       msg.textContent = `${translations[currentLanguage].ballsClicked}: ${clickCount}`;
-      
+
       // Reset color bar appearance
       colorBarFill.style.animation = 'none';
       colorBarLabel.textContent = `${translations[currentLanguage].speedMeter}: 0%`;
       colorBarLabel.style.color = '#fff';
-      
+
       // Start color bar decrease timer
       if (colorBarInterval) {
         clearInterval(colorBarInterval);
       }
       colorBarInterval = setInterval(updateColorBar, 50); // Update every 50ms for smooth animation
-      
+
       // Track game start in user counter
       if (window.UserCounter) {
         window.UserCounter.recordGameStart('Static Ball Game (Saccades)', 'Static Mode');
       }
-      
+
       currentBall = createNewBall();
       updateColorBar();
       drawGame();
@@ -763,27 +818,25 @@
 
     function drawGame() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
+
       if (currentBall) {
-        ctx.beginPath();
-        ctx.arc(currentBall.x, currentBall.y, BALL_RADIUS, 0, Math.PI * 2);
-        
-        if (currentBall.color === 'red') {
-          ctx.fillStyle = applyColorTransforms('red', redBrightnessSlider.value, redContrastSlider.value);
-        } else {
-          ctx.fillStyle = applyColorTransforms(rightColor, rightBrightnessSlider.value, rightContrastSlider.value);
-        }
-        ctx.fill();
-        ctx.stroke();
+      let targetColor;
+      if (currentBall.color === 'red') {
+          targetColor = applyColorTransforms('red', redBrightnessSlider.value, redContrastSlider.value);
+      } else {
+          targetColor = applyColorTransforms(rightColor, rightBrightnessSlider.value, rightContrastSlider.value);
+      }
+      drawSpaceship(currentBall.x, currentBall.y, BALL_RADIUS, targetColor);
       }
     }
 
     function nextBall() {
       clickCount++;
       increaseColorBar(); // Increase color bar on each ball click
+      if (!isGameActive) return;
       currentBall = createNewBall();
       msg.textContent = `${translations[currentLanguage].ballsClicked}: ${clickCount}`;
-      
+
       // Track milestone completions (every 10 clicks)
       if (window.UserCounter && clickCount % 10 === 0) {
         window.UserCounter.recordGameCompletion('Static Ball Game (Saccades)', {
@@ -791,14 +844,14 @@
           milestone: `${clickCount} clicks`
         });
       }
-      
+
       drawGame();
     }
 
     function toggleRightColor() {
       rightColor = rightColor === 'green' ? 'blue' : 'green';
       updateLanguageTexts();
-      
+
       // Update current ball color if it's not red
       if (currentBall && currentBall.color !== 'red') {
         currentBall.color = rightColor;
@@ -809,13 +862,45 @@
     function toggleControls() {
       const header = document.querySelector('.controls-header');
       const content = document.getElementById('controls-content');
-      
+
       header.classList.toggle('collapsed');
       content.classList.toggle('collapsed');
-      header.setAttribute('aria-expanded', String(!header.classList.contains('collapsed')));
+      const isExpanded = !header.classList.contains('collapsed');
+      header.setAttribute('aria-expanded', String(isExpanded));
+    }
+
+    function togglePause() {
+      if (!isGameActive) return;
+
+      isPaused = !isPaused;
+      const overlay = document.getElementById('pauseOverlay');
+      const btn = document.getElementById('pauseButton');
+
+      if (isPaused) {
+        // Pause
+        pauseStartTime = Date.now();
+        if (colorBarInterval) {
+          clearInterval(colorBarInterval);
+          colorBarInterval = null;
+        }
+        overlay.style.display = 'flex';
+        document.getElementById('pauseOverlayText').textContent = translations[currentLanguage].paused;
+        btn.textContent = '▶';
+        btn.setAttribute('aria-label', translations[currentLanguage].resume);
+        btn.title = translations[currentLanguage].resume;
+      } else {
+        // Resume
+        totalPausedTime += Date.now() - pauseStartTime;
+        colorBarInterval = setInterval(updateColorBar, 50);
+        overlay.style.display = 'none';
+        btn.textContent = '⏸';
+        btn.setAttribute('aria-label', translations[currentLanguage].pause);
+        btn.title = translations[currentLanguage].pause;
+      }
     }
 
     function handlePointerDown(e) {
+      if (isPaused) return; // Ignore clicks while paused
       e.preventDefault(); // Prevent default touch behavior
       const rect = canvas.getBoundingClientRect();
       const mx = (e.clientX || e.touches[0].clientX) - rect.left;
@@ -835,22 +920,23 @@
     function autoCollapseSettings() {
       const header = document.querySelector('.controls-header');
       const content = document.getElementById('controls-content');
-      
+
       if (!header.classList.contains('collapsed')) {
         header.classList.add('collapsed');
         content.classList.add('collapsed');
+        header.setAttribute('aria-expanded', 'false');
       }
     }
 
     canvas.addEventListener('mousedown', handlePointerDown);
     canvas.addEventListener('touchstart', handlePointerDown, { passive: false }); // Added touch support
 
-    
+
     function showLeaderboard() {
       const modal = document.getElementById('leaderboardModal');
       const listElement = document.getElementById('leaderboardList');
       const times = JSON.parse(localStorage.getItem('colorBarTimes') || '[]');
-      
+
       if (times.length === 0) {
         listElement.innerHTML = `<div style="text-align: center; color: #ccc; padding: 20px;">${translations[currentLanguage].noResults}</div>`;
       } else {
@@ -868,8 +954,11 @@
           `;
         }).join('');
       }
-      
+
       modal.style.display = 'flex';
+      // Focus the close button in the leaderboard modal
+      const closeBtn = modal.querySelector('.modal-button');
+      if (closeBtn) closeBtn.focus();
     }
 
     function closeLeaderboard() {
@@ -887,48 +976,52 @@
       // Update document title and lang attribute
       document.title = translations[currentLanguage].title;
       document.documentElement.lang = currentLanguage;
-      
+
       // Update UI elements
       document.querySelector('.controls-header span').textContent = translations[currentLanguage].gameSettings;
       document.querySelector('button[onclick="initGame()"]').textContent = translations[currentLanguage].restart;
       document.querySelector('label[for="redBrightness"]').textContent = translations[currentLanguage].brightnessRed + ':';
       document.querySelector('label[for="redContrast"]').textContent = translations[currentLanguage].contrastRed + ':';
-      
+
       // Update right color labels based on current color
       const colorName = rightColor === 'green' ? translations[currentLanguage].green : translations[currentLanguage].blue;
       rightBrightnessLabel.textContent = `${translations[currentLanguage][rightColor === 'green' ? 'brightnessGreen' : 'brightnessBlue']}:`;
       rightContrastLabel.textContent = `${translations[currentLanguage][rightColor === 'green' ? 'contrastGreen' : 'contrastBlue']}:`;
-      
+
       // Update toggle color button
-      document.getElementById('toggleColor').textContent = rightColor === 'green' 
-        ? translations[currentLanguage].toggleColor 
+      document.getElementById('toggleColor').textContent = rightColor === 'green'
+        ? translations[currentLanguage].toggleColor
         : translations[currentLanguage].toggleColorBlue;
-      
+
 	      // Update other buttons
 	      document.getElementById('showLeaderboard').textContent = translations[currentLanguage].leaderboard;
-	      document.getElementById('languageToggle').textContent = translations[currentLanguage].languageButton;
+      document.getElementById('languageToggle').textContent = translations[currentLanguage].languageButton;
+      const pauseButton = document.getElementById('pauseButton');
+      const pauseLabel = isPaused ? translations[currentLanguage].resume : translations[currentLanguage].pause;
+      pauseButton.setAttribute('aria-label', pauseLabel);
+      pauseButton.title = pauseLabel;
 	      document.getElementById('backButton').textContent = translations[currentLanguage].back;
-      
+
       // Update message
       msg.textContent = `${translations[currentLanguage].ballsClicked}: ${clickCount}`;
-      
+
       // Update color bar label
       const percentage = (colorBarValue / MAX_COLOR_BAR) * 100;
       colorBarLabel.textContent = `${translations[currentLanguage].speedMeter}: ${Math.round(percentage)}%`;
-      
+
       // Update modal content
       document.querySelector('.modal-title').textContent = translations[currentLanguage].excellent;
       document.querySelector('.modal-message').textContent = translations[currentLanguage].filledSpeedMeter;
       document.querySelector('button[onclick="closeCompletionModal()"]').textContent = translations[currentLanguage].continue;
       document.querySelector('button[onclick="showLeaderboard()"]').textContent = translations[currentLanguage].leaderboard;
-      
+
       // Update leaderboard modal
       document.querySelector('.leaderboard-title').textContent = translations[currentLanguage].leaderboardTitle;
       document.querySelector('button[onclick="closeLeaderboard()"]').textContent = translations[currentLanguage].close;
-      
+
       // Update text direction for RTL/LTR
       document.body.style.direction = currentLanguage === 'he' ? 'rtl' : 'ltr';
-      
+
       // Update message position for RTL/LTR
       if (currentLanguage === 'he') {
         msg.style.right = '20px';
@@ -941,7 +1034,7 @@
 
 	    function toggleLanguage() {
 	      currentLanguage = currentLanguage === 'he' ? 'en' : 'he';
-	      localStorage.setItem('gameLanguage', currentLanguage);
+	      localStorage.setItem('language', currentLanguage);
 	      updateLanguageTexts();
 	    }
 
@@ -962,7 +1055,7 @@
 
     // Load saved language preference
     function loadLanguagePreference() {
-      const savedLanguage = localStorage.getItem('gameLanguage');
+      const savedLanguage = localStorage.getItem('language');
       if (savedLanguage && (savedLanguage === 'he' || savedLanguage === 'en')) {
         currentLanguage = savedLanguage;
       }
@@ -975,21 +1068,52 @@
 
     window.addEventListener('resize', initGame);
 
+    // Modal focus trap and Escape key handling
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        const completionModal = document.getElementById('completionModal');
+        const leaderboardModal = document.getElementById('leaderboardModal');
+        if (completionModal.style.display === 'flex') {
+          closeCompletionModal();
+        } else if (leaderboardModal.style.display === 'flex') {
+          closeLeaderboard();
+        }
+      }
+
+      // Focus trap for open modals
+      if (e.key === 'Tab') {
+        const completionModal = document.getElementById('completionModal');
+        const leaderboardModal = document.getElementById('leaderboardModal');
+        let activeModal = null;
+        if (completionModal.style.display === 'flex') activeModal = completionModal;
+        else if (leaderboardModal.style.display === 'flex') activeModal = leaderboardModal;
+
+        if (activeModal) {
+          const focusable = activeModal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+          if (focusable.length === 0) return;
+          const first = focusable[0];
+          const last = focusable[focusable.length - 1];
+          if (e.shiftKey) {
+            if (document.activeElement === first) {
+              e.preventDefault();
+              last.focus();
+            }
+          } else {
+            if (document.activeElement === last) {
+              e.preventDefault();
+              first.focus();
+            }
+          }
+        }
+      }
+    });
+
     // Initialize language and game
     loadLanguagePreference();
     initGame();
   </script>
-  
+
   <!-- User Tracking -->
-  <!-- Production Utilities -->
-  <script src="src/utils/environment.js"></script>
-  <script src="src/utils/logger.js"></script>
-  <script src="src/utils/errorHandler.js"></script>
-  <script src="src/utils/alerts.js"></script>
-  <script src="src/utils/performance.js"></script>
-  <script src="src/utils/health.js"></script>
   <script src="src/utils/userCounter.js"></script>
-  <script src="src/utils/adminPanel.js"></script>
-  <script src="src/production.js"></script>
 </body>
 </html>

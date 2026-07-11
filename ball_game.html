@@ -17,7 +17,7 @@
     #gameCanvas { 
       display: block; 
       background: #1a1a2e; 
-      box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+      box-shadow: none;
     }
     #message {
       position: absolute;
@@ -195,7 +195,7 @@
 	      margin: 0;
 	    }
 
-	    #celebration {
+    #celebration {
 	      position: fixed;
 	      top: 50%;
 	      left: 50%;
@@ -204,7 +204,7 @@
       width: 180px;
       height: 180px;
       pointer-events: none;
-      filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.45));
+      display: none;
     }
 
     #celebration.visible {
@@ -241,16 +241,67 @@
         transform: translate(-50%, -50%) scale(0.3);
       }
     }
+
+    /* Completion Modal */
+    #completionModal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(6px);
+      justify-content: center;
+      align-items: center;
+    }
+    #completionModal.visible {
+      display: flex;
+    }
+    .modal-content {
+      background: linear-gradient(135deg, rgba(42, 82, 152, 0.98), rgba(30, 60, 114, 0.98));
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 20px;
+      padding: 40px 48px;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      max-width: 400px;
+      width: 90%;
+    }
+    .modal-content h2 {
+      margin: 0 0 12px;
+      font-size: 28px;
+      color: #ffe29f;
+    }
+    .modal-content p {
+      margin: 0 0 28px;
+      font-size: 18px;
+      color: #e0e6ff;
+    }
+    .modal-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
   </style>
 </head>
 	<body>
+	  <div id="completionModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+	    <div class="modal-content">
+	      <h2 id="modalTitle">🎉</h2>
+	      <p id="modalMessage"></p>
+	      <div class="modal-buttons">
+	        <button id="modalPlayAgain" type="button"></button>
+	        <button id="modalBackToHub" type="button" onclick="window.location.href='index.html'"></button>
+	      </div>
+	    </div>
+	  </div>
 	  <div id="message">לחצו על הכדורים בסדר עולה</div>
 	  <button id="languageToggle" onclick="toggleLanguage()">English</button>
 	  <div id="navButtons">
 	    <button id="backButton" type="button" onclick="goBack()"></button>
 	    <button id="quickRestartButton" type="button" onclick="initGame()"></button>
 	  </div>
-	  <div id="celebration" aria-hidden="true">
+  <div id="celebration" aria-hidden="true" hidden>
 	    <svg viewBox="0 0 160 160">
 	      <defs>
 	        <radialGradient id="celebrationGradient" cx="50%" cy="50%" r="75%">
@@ -283,10 +334,10 @@
     </svg>
   </div>
   <div id="controls">
-    <div class="controls-header" onclick="toggleControls()" tabindex="0" role="button" aria-expanded="true" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleControls()}">
+    <button type="button" class="controls-header" aria-expanded="true" aria-controls="controls-content" onclick="toggleControls()">
       <span id="controlsHeaderText">הגדרות משחק</span>
-      <span class="controls-toggle">▼</span>
-    </div>
+      <span class="controls-toggle" aria-hidden="true">▼</span>
+    </button>
     <div class="controls-content" id="controls-content">
       <div class="control-group">
         <label id="difficultyLabel">קושי:</label>
@@ -361,7 +412,9 @@
           blue: 'כחול'
         },
         languageToggle: 'English',
-        celebrationText: 'כל הכבוד!'
+        celebrationText: 'כל הכבוד!',
+        playAgain: 'שחק שוב',
+        backToHub: 'חזרה לתפריט'
       },
       en: {
         title: 'Game – Click the Balls in Order',
@@ -393,7 +446,9 @@
           blue: 'Blue'
         },
         languageToggle: 'עברית',
-        celebrationText: 'Great job!'
+        celebrationText: 'Great job!',
+        playAgain: 'Play Again',
+        backToHub: 'Back to Hub'
       }
     };
 
@@ -427,26 +482,15 @@
 	    const celebrationText = document.getElementById('celebrationText');
 	    const backButton = document.getElementById('backButton');
 	    const quickRestartButton = document.getElementById('quickRestartButton');
+	    const completionModal = document.getElementById('completionModal');
+	    const modalMessage = document.getElementById('modalMessage');
+	    const modalPlayAgain = document.getElementById('modalPlayAgain');
+	    const modalBackToHub = document.getElementById('modalBackToHub');
 
     let balls, nextNumber, numBalls = BALL_COUNTS[ballsSlider.value];
     ballsLabel.textContent = numBalls;
     let rightColor = 'green';
-    let celebrationTimeout;
-    let gameStartTime = 0;
-    let gameTimer = 0;
-    let timerInterval = null;
-
-    function startTimer() {
-      gameStartTime = Date.now();
-      timerInterval = setInterval(() => {
-        gameTimer = Math.floor((Date.now() - gameStartTime) / 1000);
-      }, 1000);
-    }
-
-    function stopTimer() {
-      clearInterval(timerInterval);
-      timerInterval = null;
-    }
+    let feedbackTimeout;
 
     ballsSlider.addEventListener('input', () => {
       numBalls = BALL_COUNTS[ballsSlider.value];
@@ -473,7 +517,8 @@
 	      quickRestartButton.textContent = t.restart;
 	      fontSizeLabel.textContent = t.fontSizeLabel;
 	      languageToggleBtn.textContent = t.languageToggle;
-	      celebrationText.textContent = t.celebrationText;
+      modalPlayAgain.textContent = t.playAgain;
+	      modalBackToHub.textContent = t.backToHub;
 	      updateColorLabels();
 	      msg.textContent = t.instructionsRange(numBalls);
 	    }
@@ -541,19 +586,18 @@
     }
 
     function initGame() {
-      stopTimer();
-      startTimer();
-      if (celebrationTimeout) {
-        clearTimeout(celebrationTimeout);
-        celebrationTimeout = null;
+      if (feedbackTimeout) {
+        clearTimeout(feedbackTimeout);
+        feedbackTimeout = null;
       }
-      celebrationEl.classList.remove('visible');
+      completionModal.classList.remove('visible');
       canvas.width  = window.innerWidth;
       canvas.height = window.innerHeight;
       numBalls = BALL_COUNTS[ballsSlider.value];
       ballsLabel.textContent = numBalls;
       nextNumber = 1;
       msg.textContent = translations[currentLang].instructionsRange(numBalls);
+      msg.style.borderColor = 'rgba(255, 255, 255, 0.2)';
 
       if (window.UserCounter) {
         window.UserCounter.recordGameStart('Ball Game (Tracking)', `${numBalls} balls`);
@@ -563,10 +607,9 @@
       shuffle(numbers);
 
       balls = numbers.map(n => ({
-        num:   n,
+        num: n,
         color: Math.random() < 0.5 ? 'red' : 'green',
-        x:     Math.random() * (canvas.width  - 2 * BALL_RADIUS) + BALL_RADIUS,
-        y:     Math.random() * (canvas.height - 2 * BALL_RADIUS) + BALL_RADIUS,
+        ...createSafeTargetPosition(),
         vx:    (Math.random() * 2 - 1) * SPEED,
         vy:    (Math.random() * 2 - 1) * SPEED,
         clicked: false
@@ -596,7 +639,44 @@
       
       header.classList.toggle('collapsed');
       content.classList.toggle('collapsed');
-      header.setAttribute('aria-expanded', String(!header.classList.contains('collapsed')));
+      const isExpanded = !header.classList.contains('collapsed');
+      header.setAttribute('aria-expanded', String(isExpanded));
+    }
+
+    function createSafeTargetPosition() {
+      // Keep targets away from the permanent controls (left) and status UI (top).
+      // On phones the settings drawer is collapsed after the first interaction,
+      // so retain a simple edge inset rather than creating an impossibly small area.
+      const isCompact = window.innerWidth < 760;
+      const minX = Math.min(canvas.width - BALL_RADIUS, isCompact ? BALL_RADIUS + 16 : 280);
+      const maxX = Math.max(minX, canvas.width - BALL_RADIUS - 20);
+      const minY = Math.min(canvas.height - BALL_RADIUS, isCompact ? BALL_RADIUS + 112 : BALL_RADIUS + 100);
+      const maxY = Math.max(minY, canvas.height - BALL_RADIUS - 88);
+      return {
+        x: minX + Math.random() * (maxX - minX),
+        y: minY + Math.random() * (maxY - minY)
+      };
+    }
+
+    function drawSpaceship(x, y, radius, angle, color) {
+      // A single, solid therapeutic target. It deliberately has no outline,
+      // label, gradient, glow, or second colour.
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(angle);
+      ctx.beginPath();
+      ctx.moveTo(radius, 0);
+      ctx.lineTo(-radius * 0.42, -radius * 0.56);
+      ctx.lineTo(-radius * 0.26, -radius * 0.18);
+      ctx.lineTo(-radius * 0.72, -radius * 0.34);
+      ctx.lineTo(-radius * 0.58, 0);
+      ctx.lineTo(-radius * 0.72, radius * 0.34);
+      ctx.lineTo(-radius * 0.26, radius * 0.18);
+      ctx.lineTo(-radius * 0.42, radius * 0.56);
+      ctx.closePath();
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.restore();
     }
 
     let animationFrameId;
@@ -610,62 +690,56 @@
           ball.x += ball.vx;
           ball.y += ball.vy;
 
-          if (ball.x - BALL_RADIUS < 0 || ball.x + BALL_RADIUS > canvas.width)  ball.vx *= -1;
-          if (ball.y - BALL_RADIUS < 0 || ball.y + BALL_RADIUS > canvas.height) ball.vy *= -1;
+          const leftEdge = window.innerWidth < 760 ? BALL_RADIUS + 16 : 280;
+          const rightEdge = canvas.width - BALL_RADIUS - 20;
+          if (ball.x < leftEdge || ball.x > rightEdge) ball.vx *= -1;
+          if (ball.y - BALL_RADIUS < 100 || ball.y + BALL_RADIUS > canvas.height - 80) ball.vy *= -1;
 
-          ctx.beginPath();
-          ctx.arc(ball.x, ball.y, BALL_RADIUS, 0, Math.PI * 2);
+          let targetColor;
           if (ball.color === 'red') {
-            ctx.fillStyle = applyColorTransforms('red', redBrightnessSlider.value, redContrastSlider.value);
+            targetColor = applyColorTransforms('red', redBrightnessSlider.value, redContrastSlider.value);
           } else {
-            ctx.fillStyle = applyColorTransforms(rightColor, rightBrightnessSlider.value, rightContrastSlider.value);
+            targetColor = applyColorTransforms(rightColor, rightBrightnessSlider.value, rightContrastSlider.value);
           }
-          ctx.fill();
-          ctx.stroke();
-
-          ctx.fillStyle = 'white';
-          ctx.font = `${FONT_SIZE}px sans-serif`;
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.fillText(ball.num, ball.x, ball.y);
+          drawSpaceship(ball.x, ball.y, BALL_RADIUS, Math.atan2(ball.vy, ball.vx), targetColor);
         }
       }
 
       if (!allClicked) {
         animationFrameId = requestAnimationFrame(loop);
       } else {
-        stopTimer();
         msg.textContent = translations[currentLang].completed;
-        triggerCelebration();
+        showCompletionModal();
         animationFrameId = null;
         
         if (window.UserCounter) {
           window.UserCounter.recordGameCompletion('Ball Game (Tracking)', {
             ballCount: numBalls,
-            time: gameTimer,
             completed: true
           });
-        }
-
-        if (window.AlertSystem) {
-          window.AlertSystem.gameOver(
-            { time: gameTimer, score: numBalls, moves: numBalls },
-            () => initGame(),
-            () => window.location.href = 'index.html'
-          );
         }
       }
     }
 
-    function triggerCelebration() {
-      celebrationEl.classList.remove('visible');
-      void celebrationEl.offsetWidth;
-      celebrationEl.classList.add('visible');
-      if (celebrationTimeout) {
-        clearTimeout(celebrationTimeout);
-      }
-      celebrationTimeout = setTimeout(() => {
-        celebrationEl.classList.remove('visible');
+    function showCompletionModal() {
+      const t = translations[currentLang];
+      modalMessage.textContent = t.completed;
+      completionModal.classList.add('visible');
+      modalPlayAgain.focus();
+    }
+
+    modalPlayAgain.addEventListener('click', () => {
+      completionModal.classList.remove('visible');
+      initGame();
+    });
+
+    function showInlineFeedback(text) {
+      if (feedbackTimeout) clearTimeout(feedbackTimeout);
+      msg.textContent = text;
+      msg.style.borderColor = 'rgba(255, 160, 80, 0.6)';
+      feedbackTimeout = setTimeout(() => {
+        msg.textContent = translations[currentLang].instructionsRange(numBalls);
+        msg.style.borderColor = 'rgba(255, 255, 255, 0.2)';
       }, 2000);
     }
 
@@ -689,7 +763,7 @@
                 msg.textContent = translations[currentLang].nextNumber(nextNumber);
               }
             } else {
-              alert(translations[currentLang].wrongOrder(ball.num, nextNumber));
+              showInlineFeedback(translations[currentLang].wrongOrder(ball.num, nextNumber));
             }
             break;
           }
@@ -704,6 +778,7 @@
       if (!header.classList.contains('collapsed')) {
         header.classList.add('collapsed');
         content.classList.add('collapsed');
+        header.setAttribute('aria-expanded', 'false');
       }
     }
 
@@ -728,15 +803,7 @@
     initGame();
   </script>
   
-  <!-- Production Utilities -->
-  <script src="src/utils/environment.js"></script>
-  <script src="src/utils/logger.js"></script>
-  <script src="src/utils/errorHandler.js"></script>
-  <script src="src/utils/alerts.js"></script>
-  <script src="src/utils/performance.js"></script>
-  <script src="src/utils/health.js"></script>
+  <!-- User Tracking -->
   <script src="src/utils/userCounter.js"></script>
-  <script src="src/utils/adminPanel.js"></script>
-  <script src="src/production.js"></script>
 </body>
 </html>

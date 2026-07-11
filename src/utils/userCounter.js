@@ -598,8 +598,10 @@ class UserCounter {
   }
 }
 
-// Initialize the user counter when the script loads
-if (typeof window !== 'undefined') {
+// Initialize automatically only when loaded directly in a browser.  In a
+// CommonJS environment (including Jest), callers construct the instance so
+// test state is not mutated during `require()`.
+if (typeof window !== 'undefined' && !(typeof module !== 'undefined' && module.exports)) {
   window.UserCounter = new UserCounter();
 
   // End session when user leaves

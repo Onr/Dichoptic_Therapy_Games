@@ -26,7 +26,6 @@ if (typeof document !== 'undefined') {
         title: 'Scanning Practice',
         description: 'Play using red–green anaglyph glasses (or red–blue – click the button at the bottom to switch between modes). Each pair contains one symbol visible only to one eye (red) and another visible only to the other eye (green or blue). Use both eyes together to find matching pairs and improve binocular vision.',
         controls: {
-          settings: 'Game Settings',
           difficultyLegend: 'Difficulty',
           selectDifficulty: 'Select difficulty:',
           easy: 'Easy (4×4)',
@@ -38,7 +37,9 @@ if (typeof document !== 'undefined') {
           brightness: 'Brightness',
           contrast: 'Contrast',
           back: 'Back',
-          restart: 'Restart'
+          restart: 'Restart',
+          settings: 'Game Settings',
+          optionsLegend: 'Options'
         },
         stats: {
           timeLabel: 'Time',
@@ -77,7 +78,6 @@ if (typeof document !== 'undefined') {
         title: 'אימון סריקה',
         description: 'שחקו באמצעות משקפי אנגליף אדום–ירוק (או אדום–כחול – לחצו על הכפתור שבתחתית כדי להחליף בין האפשרויות). בכל זוג תמצאו סמל אחד הנראה רק לעין אחת (באדום) וסמל נוסף הנראה לעין השנייה בלבד (בירוק או בכחול). הסתכלו בשתי העיניים יחד כדי למצוא זוגות תואמים ולתרגל ראייה בינוקולרית.',
         controls: {
-          settings: 'הגדרות משחק',
           difficultyLegend: 'רמת קושי',
           selectDifficulty: 'בחר רמת קושי:',
           easy: 'קל (4×4)',
@@ -89,7 +89,9 @@ if (typeof document !== 'undefined') {
           brightness: 'בהירות',
           contrast: 'ניגודיות',
           back: 'חזרה',
-          restart: 'התחל מחדש'
+          restart: 'התחל מחדש',
+          settings: 'הגדרות משחק',
+          optionsLegend: 'אפשרויות'
         },
         stats: {
           timeLabel: 'זמן',
@@ -170,6 +172,13 @@ if (typeof document !== 'undefined') {
     const leaderboardEasy = document.getElementById('leaderboard-easy');
     const leaderboardMedium = document.getElementById('leaderboard-medium');
     const leaderboardHard = document.getElementById('leaderboard-hard');
+    const liveAnnouncer = document.getElementById('live-announcer');
+
+    function announce(message) {
+      if (!liveAnnouncer) { return; }
+      liveAnnouncer.textContent = '';
+      window.setTimeout(() => { liveAnnouncer.textContent = message; }, 50);
+    }
 
 
     /**
@@ -268,7 +277,7 @@ if (typeof document !== 'undefined') {
       const symbolsList = generateSymbols(totalCards / 2);
       const { cardSize, cardGap } = getResponsiveBoardLayout(gridSize);
       game.pairsCount = symbolsList.length;
-      board.style.setProperty('--grid-size', gridSize);
+      board.style.gridTemplateColumns = `repeat(${gridSize}, ${cardSize}px)`;
       board.style.setProperty('--card-size', `${cardSize}px`);
       board.style.setProperty('--card-gap', `${cardGap}px`);
       const cardsArray = symbolsList.flatMap(sym => [{ symbol: sym, eye: 'left' }, { symbol: sym, eye: 'right' }]);
@@ -282,7 +291,7 @@ if (typeof document !== 'undefined') {
         card.innerHTML = `
         <div class="inner">
           <div class="face front">
-            <div class="face-layer ${eye}-eye">${symbol}</div>
+            <div class="face-layer ${eye}-eye" style="clip-path: inset(0 0 0 0);">${symbol}</div>
           </div>
           <div class="face back"></div>
         </div>
@@ -291,7 +300,6 @@ if (typeof document !== 'undefined') {
         card.addEventListener('click', flipCard);
         card.addEventListener('keydown', (e) => {
           if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
             flipCard.call(card);
           }
         });
@@ -356,15 +364,18 @@ if (typeof document !== 'undefined') {
         game.secondCard.classList.add('matched');
         disableCards();
         game.matchedPairs++;
+        announce(`${game.matchedPairs} / ${game.pairsCount}`);
         if (game.matchedPairs === game.pairsCount) {
           stopTimer();
           setTimeout(() => {
+            updateLeaderboard();
             showGameOverModal();
           }, 500);
         }
       } else {
         game.firstCard.classList.add('mismatched');
         game.secondCard.classList.add('mismatched');
+        announce(translations[game.currentLanguage].cardFlipped);
         unflipCards();
       }
     }
@@ -383,19 +394,12 @@ if (typeof document !== 'undefined') {
    */
     function unflipCards() {
       game.lockBoard = true;
-      const first = game.firstCard;
-      const second = game.secondCard;
-      resetBoardState();
       setTimeout(() => {
-        if (first && first.parentNode) {
-          first.classList.remove('flipped', 'mismatched');
-          first.setAttribute('aria-label', `${translations[game.currentLanguage].card} ${Number(first.dataset.index) + 1}`);
-        }
-        if (second && second.parentNode) {
-          second.classList.remove('flipped', 'mismatched');
-          second.setAttribute('aria-label', `${translations[game.currentLanguage].card} ${Number(second.dataset.index) + 1}`);
-        }
-        game.lockBoard = false;
+        game.firstCard.classList.remove('flipped', 'mismatched');
+        game.secondCard.classList.remove('flipped', 'mismatched');
+        game.firstCard.setAttribute('aria-label', `${translations[game.currentLanguage].card} ${game.firstCard.dataset.index + 1}`);
+        game.secondCard.setAttribute('aria-label', `${translations[game.currentLanguage].card} ${game.secondCard.dataset.index + 1}`);
+        resetBoardState();
       }, 1000);
     }
 
@@ -471,7 +475,6 @@ if (typeof document !== 'undefined') {
    */
     function stopTimer() {
       clearInterval(game.timerInterval);
-      game.timerInterval = null;
     }
 
     /**
@@ -515,8 +518,7 @@ if (typeof document !== 'undefined') {
         });
       }
 
-      // Update leaderboard first
-      updateLeaderboard();
+      // Leaderboard already updated in checkForMatch() before this function is called
 
       // Show game over alert using production alert system
       if (window.AlertSystem) {
@@ -578,8 +580,7 @@ if (typeof document !== 'undefined') {
    * Initializes the settings controls.
    */
     function initSettings() {
-      let savedSettings;
-      try { savedSettings = JSON.parse(localStorage.getItem('eyeSettings')); } catch { savedSettings = null; }
+      const savedSettings = JSON.parse(localStorage.getItem('eyeSettings'));
       if (savedSettings) {
         leftBrightness.value = savedSettings.leftBrightness;
         leftContrast.value = savedSettings.leftContrast;
@@ -649,7 +650,7 @@ if (typeof document !== 'undefined') {
         try {
           const hasReferrer = Boolean(document.referrer);
           const sameOrigin = hasReferrer
-            && new URL(document.referrer).origin === window.location.origin;
+              && new URL(document.referrer).origin === window.location.origin;
           if (sameOrigin) {
             window.history.back();
             return;
@@ -663,18 +664,6 @@ if (typeof document !== 'undefined') {
     colorToggleBtn.addEventListener('click', toggleEyeColor);
     langToggleBtn?.addEventListener('click', toggleLanguage);
 
-
-    // Recalculate board layout on window resize (debounced)
-    let resizeTimer;
-    window.addEventListener('resize', () => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => {
-        const gridSize = getGridSize(game.difficulty);
-        const { cardSize, cardGap } = getResponsiveBoardLayout(gridSize);
-        board.style.setProperty('--card-size', `${cardSize}px`);
-        board.style.setProperty('--card-gap', `${cardGap}px`);
-      }, 200);
-    });
 
     // Initial setup
     updateTexts();
