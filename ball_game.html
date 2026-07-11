@@ -326,9 +326,36 @@
 
   <script>
     const BALL_COUNTS = [7, 14, 21, 35];
-    const BALL_RADIUS = 60;
+    let BALL_RADIUS   = 60;
     let SPEED         = 2.5;
     let FONT_SIZE     = 56;
+
+    // Logical (CSS-pixel) drawing size. Kept separate from canvas.width/height
+    // because the backing store is scaled by devicePixelRatio for crisp mobile
+    // rendering. All game logic uses viewW/viewH, never canvas.width/height.
+    let viewW = window.innerWidth;
+    let viewH = window.innerHeight;
+
+    // Scale the ball size to the screen so balls actually fit on phones,
+    // where a fixed 60px radius filled a third of the display.
+    function computeSizes() {
+      const minDim = Math.min(viewW, viewH);
+      BALL_RADIUS = Math.round(Math.max(20, Math.min(60, minDim * 0.09)));
+      FONT_SIZE   = Math.round(BALL_RADIUS * 0.9);
+    }
+
+    // Size the canvas to the visual viewport, accounting for devicePixelRatio.
+    function resizeCanvas() {
+      viewW = window.innerWidth;
+      viewH = window.innerHeight;
+      const dpr = window.devicePixelRatio || 1;
+      canvas.style.width  = viewW + 'px';
+      canvas.style.height = viewH + 'px';
+      canvas.width  = Math.round(viewW * dpr);
+      canvas.height = Math.round(viewH * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      computeSizes();
+    }
 
     const translations = {
       he: {
@@ -548,8 +575,7 @@
         celebrationTimeout = null;
       }
       celebrationEl.classList.remove('visible');
-      canvas.width  = window.innerWidth;
-      canvas.height = window.innerHeight;
+      resizeCanvas();
       numBalls = BALL_COUNTS[ballsSlider.value];
       ballsLabel.textContent = numBalls;
       nextNumber = 1;
@@ -565,8 +591,8 @@
       balls = numbers.map(n => ({
         num:   n,
         color: Math.random() < 0.5 ? 'red' : 'green',
-        x:     Math.random() * (canvas.width  - 2 * BALL_RADIUS) + BALL_RADIUS,
-        y:     Math.random() * (canvas.height - 2 * BALL_RADIUS) + BALL_RADIUS,
+        x:     Math.random() * (viewW - 2 * BALL_RADIUS) + BALL_RADIUS,
+        y:     Math.random() * (viewH - 2 * BALL_RADIUS) + BALL_RADIUS,
         vx:    (Math.random() * 2 - 1) * SPEED,
         vy:    (Math.random() * 2 - 1) * SPEED,
         clicked: false
@@ -601,7 +627,7 @@
 
     let animationFrameId;
     function loop() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.clearRect(0, 0, viewW, viewH);
 
       let allClicked = true;
       for (let ball of balls) {
@@ -610,8 +636,8 @@
           ball.x += ball.vx;
           ball.y += ball.vy;
 
-          if (ball.x - BALL_RADIUS < 0 || ball.x + BALL_RADIUS > canvas.width)  ball.vx *= -1;
-          if (ball.y - BALL_RADIUS < 0 || ball.y + BALL_RADIUS > canvas.height) ball.vy *= -1;
+          if (ball.x - BALL_RADIUS < 0 || ball.x + BALL_RADIUS > viewW)  ball.vx *= -1;
+          if (ball.y - BALL_RADIUS < 0 || ball.y + BALL_RADIUS > viewH) ball.vy *= -1;
 
           ctx.beginPath();
           ctx.arc(ball.x, ball.y, BALL_RADIUS, 0, Math.PI * 2);
@@ -722,7 +748,25 @@
     });
 
     toggleColorBtn.addEventListener('click', toggleRightColor);
-    window.addEventListener('resize', initGame);
+
+    // Resize without resetting the game. On mobile the address bar showing/hiding
+    // fires 'resize' constantly; re-running initGame there reset progress and made
+    // the board appear to jump/resize. Instead, resize the canvas, recompute the
+    // ball size, and clamp existing balls back into the visible area.
+    let resizeTimer;
+    function handleResize() {
+      resizeCanvas();
+      for (const ball of balls) {
+        ball.x = Math.min(Math.max(ball.x, BALL_RADIUS), viewW - BALL_RADIUS);
+        ball.y = Math.min(Math.max(ball.y, BALL_RADIUS), viewH - BALL_RADIUS);
+      }
+      if (!animationFrameId) loop();
+    }
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(handleResize, 150);
+    });
+    window.addEventListener('orientationchange', () => setTimeout(handleResize, 200));
 
     applyLanguage();
     initGame();
