@@ -41,6 +41,14 @@
       box-sizing: border-box;
     }
 
+    /* Lock horizontal scrolling on the root element too. body-only overflow-x
+       hidden does not reliably stop the page from scrolling sideways on iOS
+       Safari, which makes the header/menu appear offset over the text. */
+    html {
+      overflow-x: hidden;
+      max-width: 100%;
+    }
+
     body {
       margin: 0;
       font-family: 'Poppins', sans-serif;

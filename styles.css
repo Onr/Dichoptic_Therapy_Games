@@ -14,15 +14,26 @@
   padding: 0;
 }
 
+/* Lock horizontal page scrolling so the page always opens at the correct
+   width. Without this, any element a hair wider than the viewport makes the
+   whole page scroll sideways and it opens offset ("scroll right to see the
+   right size"). The board keeps its own scroll via .board-scroll below. */
+html,
+body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #080d16 0%, #030e20 100%); 
+  background: linear-gradient(135deg, #080d16 0%, #030e20 100%);
   color: #fff;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 1rem;
   min-height: 100vh;
+  width: 100%;
 }
 
 header,
@@ -214,10 +225,14 @@ input[type="range"]::-moz-range-thumb {
 
 .board-scroll {
   width: 100%;
+  max-width: 100%;
   overflow-x: auto;
   overflow-y: visible;
   display: flex;
-  justify-content: center;
+  /* "safe center" keeps the board centred when it fits, but falls back to the
+     start edge when it is wider than the screen, so the first cards stay
+     reachable. Plain "center" hides the start off-screen when overflowing. */
+  justify-content: safe center;
   padding-bottom: 0.5rem;
   margin-bottom: 0.5rem;
 }
