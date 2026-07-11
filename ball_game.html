@@ -88,38 +88,6 @@
       max-height: 0;
       padding: 0 20px;
     }
-
-    @media (max-width: 759px) {
-      #controls {
-        top: 12px;
-        left: 12px;
-        min-width: 0;
-        max-width: calc(100vw - 24px);
-        z-index: 4;
-      }
-
-      .controls-header {
-        min-height: 48px;
-        padding: 0.75rem 1rem;
-      }
-
-      .controls-content {
-        /* A deliberately bounded, scrollable sheet when the user opens it. */
-        max-height: min(52svh, 420px);
-        overflow-y: auto;
-        overscroll-behavior: contain;
-      }
-
-      #message {
-        top: 72px;
-        left: 12px;
-        right: 12px;
-        padding: 10px 12px;
-        font-size: 1rem;
-        line-height: 1.35;
-        text-align: center;
-      }
-    }
     .control-group {
       margin-bottom: 20px;
     }
@@ -625,7 +593,6 @@
       completionModal.classList.remove('visible');
       canvas.width  = window.innerWidth;
       canvas.height = window.innerHeight;
-      collapseControlsForCompactViewport();
       numBalls = BALL_COUNTS[ballsSlider.value];
       ballsLabel.textContent = numBalls;
       nextNumber = 1;
@@ -674,22 +641,6 @@
       content.classList.toggle('collapsed');
       const isExpanded = !header.classList.contains('collapsed');
       header.setAttribute('aria-expanded', String(isExpanded));
-      content.setAttribute('aria-hidden', String(!isExpanded));
-    }
-
-    function setControlsCollapsed(collapsed) {
-      const header = document.querySelector('.controls-header');
-      const content = document.getElementById('controls-content');
-      header.classList.toggle('collapsed', collapsed);
-      content.classList.toggle('collapsed', collapsed);
-      header.setAttribute('aria-expanded', String(!collapsed));
-      content.setAttribute('aria-hidden', String(collapsed));
-    }
-
-    function collapseControlsForCompactViewport() {
-      if (window.matchMedia('(max-width: 759px)').matches) {
-        setControlsCollapsed(true);
-      }
     }
 
     function createSafeTargetPosition() {
@@ -699,7 +650,7 @@
       const isCompact = window.innerWidth < 760;
       const minX = Math.min(canvas.width - BALL_RADIUS, isCompact ? BALL_RADIUS + 16 : 280);
       const maxX = Math.max(minX, canvas.width - BALL_RADIUS - 20);
-      const minY = Math.min(canvas.height - BALL_RADIUS, isCompact ? BALL_RADIUS + 155 : BALL_RADIUS + 100);
+      const minY = Math.min(canvas.height - BALL_RADIUS, isCompact ? BALL_RADIUS + 112 : BALL_RADIUS + 100);
       const maxY = Math.max(minY, canvas.height - BALL_RADIUS - 88);
       return {
         x: minX + Math.random() * (maxX - minX),
@@ -742,8 +693,7 @@
           const leftEdge = window.innerWidth < 760 ? BALL_RADIUS + 16 : 280;
           const rightEdge = canvas.width - BALL_RADIUS - 20;
           if (ball.x < leftEdge || ball.x > rightEdge) ball.vx *= -1;
-          const topEdge = window.innerWidth < 760 ? BALL_RADIUS + 155 : BALL_RADIUS + 100;
-          if (ball.y < topEdge || ball.y + BALL_RADIUS > canvas.height - 80) ball.vy *= -1;
+          if (ball.y - BALL_RADIUS < 100 || ball.y + BALL_RADIUS > canvas.height - 80) ball.vy *= -1;
 
           let targetColor;
           if (ball.color === 'red') {
@@ -822,7 +772,14 @@
     };
 
     function autoCollapseSettings() {
-      setControlsCollapsed(true);
+      const header = document.querySelector('.controls-header');
+      const content = document.getElementById('controls-content');
+      
+      if (!header.classList.contains('collapsed')) {
+        header.classList.add('collapsed');
+        content.classList.add('collapsed');
+        header.setAttribute('aria-expanded', 'false');
+      }
     }
 
     canvas.addEventListener('mousedown', handlePointerDown);
