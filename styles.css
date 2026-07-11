@@ -276,21 +276,30 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .face-layer.left-eye {
-  background-color: red;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  color: transparent;
+  color: red;
   filter: brightness(var(--left-brightness)) contrast(var(--left-contrast));
 }
 
 .face-layer.right-eye {
-  background-color: var(--right-eye-color);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  color: transparent;
+  color: var(--right-eye-color);
   filter: brightness(var(--right-brightness)) contrast(var(--right-contrast));
+}
+
+/* Shared Scanning stimulus: one simple, colour-controlled numbered ball. */
+.ball-symbol {
+  width: 1.08em;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: currentColor;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  font-size: 0.82em;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
 
 .stats {

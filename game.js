@@ -24,7 +24,7 @@ if (typeof document !== 'undefined') {
       en: {
         pageTitle: 'Therapy Memory Card Game',
         title: 'Scanning Practice',
-        description: 'Play using red–green anaglyph glasses (or red–blue – click the button at the bottom to switch between modes). Each pair contains one symbol visible only to one eye (red) and another visible only to the other eye (green or blue). Use both eyes together to find matching pairs and improve binocular vision.',
+        description: 'Play using red–green anaglyph glasses (or red–blue – click the button at the bottom to switch between modes). Match the numbered balls: one ball is visible to the red eye and its partner is visible to the green or blue eye. Use both eyes together to find the pairs.',
         controls: {
           settings: 'Game Settings',
           difficultyLegend: 'Difficulty',
@@ -65,9 +65,9 @@ if (typeof document !== 'undefined') {
         cardFlipped: 'Card flipped',
         howToPlay: 'How to Play',
         instructions: `
-        <p>The goal of this game is to find all the matching pairs of symbols.</p>
-        <p>Each pair consists of two cards: one with a red symbol and one with a green (or blue) symbol.</p>
-        <p>You need to use both eyes to see the symbols and find the matches.</p>
+        <p>The goal of this game is to find all the matching pairs of numbered balls.</p>
+        <p>Each pair consists of two balls: one red and one green (or blue).</p>
+        <p>You need to use both eyes to see the balls and find the matches.</p>
         <p>Click on a card to flip it over. Then, click on another card to see if it's a match.</p>
         <p>Have fun, and good luck!</p>
       `
@@ -75,7 +75,7 @@ if (typeof document !== 'undefined') {
       he: {
         pageTitle: 'משחק הזיכרון הטיפולי',
         title: 'אימון סריקה',
-        description: 'שחקו באמצעות משקפי אנגליף אדום–ירוק (או אדום–כחול – לחצו על הכפתור שבתחתית כדי להחליף בין האפשרויות). בכל זוג תמצאו סמל אחד הנראה רק לעין אחת (באדום) וסמל נוסף הנראה לעין השנייה בלבד (בירוק או בכחול). הסתכלו בשתי העיניים יחד כדי למצוא זוגות תואמים ולתרגל ראייה בינוקולרית.',
+        description: 'שחקו באמצעות משקפי אנגליף אדום–ירוק (או אדום–כחול – לחצו על הכפתור שבתחתית כדי להחליף בין האפשרויות). התאימו בין הכדורים הממוספרים: כדור אחד נראה לעין האדומה והכדור התואם נראה לעין הירוקה או הכחולה. הסתכלו בשתי העיניים יחד כדי למצוא זוגות תואמים ולתרגל ראייה בינוקולרית.',
         controls: {
           settings: 'הגדרות משחק',
           difficultyLegend: 'רמת קושי',
@@ -116,9 +116,9 @@ if (typeof document !== 'undefined') {
         cardFlipped: 'קלף הפוך',
         howToPlay: 'איך לשחק',
         instructions: `
-      <p>מטרת המשחק היא למצוא את כל זוגות הסמלים התואמים.</p>
-      <p>כל זוג מורכב משני קלפים: אחד עם סמל באדום והשני עם סמל בירוק (או כחול).</p>
-      <p>כדי לראות את הסמלים, השתמשו בשתי העיניים יחד דרך משקפי האנגליף.</p>
+      <p>מטרת המשחק היא למצוא את כל זוגות הכדורים הממוספרים התואמים.</p>
+      <p>כל זוג מורכב משני קלפים: אחד עם כדור אדום והשני עם כדור ירוק (או כחול).</p>
+      <p>כדי לראות את הכדורים, השתמשו בשתי העיניים יחד דרך משקפי האנגליף.</p>
       <p>לחצו על קלף כדי לחשוף אותו, ולאחר מכן לחצו על קלף נוסף כדי לבדוק אם יש התאמה.</p>
       <p>בהצלחה ואל תשכחו ליהנות!</p>
       `
@@ -138,17 +138,9 @@ if (typeof document !== 'undefined') {
       timer: 0,
       timerInterval: null,
       score: 0,
-      baseSymbols: [
-        '🍎','🍌','🍇','🍒','🍋','🍉','🍍','🐻',
-        '🥑','🫐','🍓','🍑','🍐','🦄','⭐️','❤️',
-        '🍅','🌽','🥕','🧄','🍄','🥦','🎈','🎮',
-        '🥬','🫑','🌶️','🍆','🥒','🍞','🥨','🌸',
-        '🧀','🍖','🍗','🥩','🥓','🍔','🍟','🍕',
-        '🌭','🌮','🌯','🥙','🍣','🍤','🥟','🥠',
-        '🍙','🍡','🍧','🍨','🍦','🚗','❄️','✈️',
-        '🧁','🎂','🍰','🥧','🍮','🍯','🍿','🧋',
-        '🥤','🍺','🍻','🥂','🍷','🍸','🌵','🌴',
-      ],
+      // Stable numeric identities make each stimulus a ball, rather than an
+      // OS-dependent emoji or arrow-like glyph.
+      baseSymbols: Array.from({ length: 72 }, (_, index) => String(index + 1)),
       cardSymbols: []
     };
 
@@ -282,7 +274,7 @@ if (typeof document !== 'undefined') {
         card.innerHTML = `
         <div class="inner">
           <div class="face front">
-            <div class="face-layer ${eye}-eye">${symbol}</div>
+            <div class="face-layer ${eye}-eye"><span class="ball-symbol">${symbol}</span></div>
           </div>
           <div class="face back"></div>
         </div>
