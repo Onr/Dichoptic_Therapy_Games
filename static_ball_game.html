@@ -226,6 +226,8 @@
 	      inset-block-end: 20px;
 	      inset-inline-start: 20px;
 	      z-index: 3;
+	      display: flex;
+	      gap: 10px;
 	    }
 
 	    #navButtons button {
@@ -378,17 +380,41 @@
       font-size: 14px;
       color: #ccc;
     }
+
+    /* Accessibility: clear keyboard focus indicator */
+    button:focus-visible,
+    .controls-header:focus-visible,
+    input[type="range"]:focus-visible {
+      outline: 3px solid #ffd700;
+      outline-offset: 2px;
+    }
+
+    /* Accessibility: respect reduced-motion preference */
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      #colorBarFill,
+      .controls-toggle,
+      .controls-content,
+      button,
+      input[type="range"]::-webkit-slider-thumb,
+      input[type="range"]::-moz-range-thumb {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+      }
+    }
   </style>
 </head>
 	<body>
 	  <div id="navButtons">
 	    <button id="backButton" type="button" onclick="goBack()"></button>
+	    <button id="pauseButton" type="button" onclick="togglePause()" aria-pressed="false"></button>
 	  </div>
-	  <div id="colorBar">
+	  <div id="colorBar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="מד מהירות">
 	    <div id="colorBarFill"></div>
 	    <div id="colorBarLabel">מד מהירות</div>
 	  </div>
-  <div id="message">לחצו על הכדור</div>
+  <div id="message" aria-live="polite">לחצו על הכדור</div>
   <div id="controls">
     <div class="controls-header" onclick="toggleControls()" tabindex="0" role="button" aria-expanded="true" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleControls()}">
       <span>הגדרות משחק</span>
@@ -479,6 +505,7 @@
       computeSizes();
     }
     const msg    = document.getElementById('message');
+    const colorBarEl = document.getElementById('colorBar');
     const colorBarFill = document.getElementById('colorBarFill');
     const colorBarLabel = document.getElementById('colorBarLabel');
     
@@ -489,12 +516,18 @@
     let gameTimer = 0;
     let timerInterval = null;
     let isGameActive = false;
+    let isPaused = false;
+    let pauseStartTime = 0;
 
-    function startTimer() {
-      gameStartTime = Date.now();
+    function runTimerInterval() {
       timerInterval = setInterval(() => {
         gameTimer = Math.floor((Date.now() - gameStartTime) / 1000);
       }, 1000);
+    }
+
+    function startTimer() {
+      gameStartTime = Date.now();
+      runTimerInterval();
     }
 
     function stopTimer() {
@@ -544,7 +577,10 @@
         close: 'סגור',
         noResults: 'אין תוצאות עדיין<br>השלם את מד המהירות כדי להתחיל!',
         green: 'ירוק',
-        blue: 'כחול'
+        blue: 'כחול',
+        pause: 'השהה',
+        resume: 'המשך',
+        paused: 'המשחק מושהה'
       },
       en: {
         title: 'Game – Click the Static Balls',
@@ -576,7 +612,10 @@
         close: 'Close',
         noResults: 'No results yet<br>Complete the speed meter to start!',
         green: 'Green',
-        blue: 'Blue'
+        blue: 'Blue',
+        pause: 'Pause',
+        resume: 'Resume',
+        paused: 'Game paused'
       }
     };
 
@@ -622,6 +661,7 @@
       colorBarValue = Math.max(0, colorBarValue - COLOR_BAR_DECREASE_RATE);
       const percentage = (colorBarValue / MAX_COLOR_BAR) * 100;
       colorBarFill.style.width = percentage + '%';
+      colorBarEl.setAttribute('aria-valuenow', String(Math.round(percentage)));
 
       // Update label with percentage
       colorBarLabel.textContent = `${translations[currentLanguage].speedMeter}: ${Math.round(percentage)}%`;
@@ -689,6 +729,7 @@
 
       // Set bar to 100% and celebration effects
       colorBarFill.style.width = '100%';
+      colorBarEl.setAttribute('aria-valuenow', '100');
       colorBarFill.style.animation = 'pulse 0.3s infinite alternate';
       colorBarFill.style.boxShadow = '0 0 50px rgba(0, 255, 0, 1), 0 0 100px rgba(0, 255, 0, 0.5)';
       colorBarLabel.textContent = translations[currentLanguage].completed;
@@ -758,11 +799,13 @@
       resizeCanvas();
       clickCount = 0;
       colorBarValue = 0;
+      isPaused = false;
+      updatePauseButton();
       updateColorBar();
       stopTimer();
       startTimer();
       isGameActive = true;
-      
+
       msg.textContent = `${translations[currentLanguage].ballsClicked}: ${clickCount}`;
       
       // Reset color bar appearance
@@ -834,13 +877,56 @@
     function toggleControls() {
       const header = document.querySelector('.controls-header');
       const content = document.getElementById('controls-content');
-      
+
       header.classList.toggle('collapsed');
       content.classList.toggle('collapsed');
       header.setAttribute('aria-expanded', String(!header.classList.contains('collapsed')));
     }
 
+    function updatePauseButton() {
+      const btn = document.getElementById('pauseButton');
+      btn.textContent = isPaused
+        ? '▶ ' + translations[currentLanguage].resume
+        : '⏸ ' + translations[currentLanguage].pause;
+      btn.setAttribute('aria-pressed', String(isPaused));
+    }
+
+    function togglePause() {
+      // Nothing to pause once the round is complete (modal flow takes over).
+      if (!isGameActive && !isPaused) { return; }
+
+      isPaused = !isPaused;
+      if (isPaused) {
+        pauseStartTime = Date.now();
+        stopTimer();
+        if (colorBarInterval) {
+          clearInterval(colorBarInterval);
+          colorBarInterval = null;
+        }
+        isGameActive = false;
+        msg.textContent = translations[currentLanguage].paused;
+      } else {
+        // Shift the start time forward so paused time never counts toward
+        // the completion time / leaderboard.
+        gameStartTime += Date.now() - pauseStartTime;
+        runTimerInterval();
+        colorBarInterval = setInterval(updateColorBar, 50);
+        isGameActive = true;
+        msg.textContent = `${translations[currentLanguage].ballsClicked}: ${clickCount}`;
+      }
+      updatePauseButton();
+    }
+
+    // Auto-pause when the tab/app goes to the background so the speed meter
+    // doesn't drain and the clock doesn't run while the player isn't looking.
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden && isGameActive && !isPaused) {
+        togglePause();
+      }
+    });
+
     function handlePointerDown(e) {
+      if (isPaused || !isGameActive) { return; }
       e.preventDefault(); // Prevent default touch behavior
       const rect = canvas.getBoundingClientRect();
       const mx = (e.clientX || e.touches[0].clientX) - rect.left;
@@ -933,13 +1019,17 @@
 	      document.getElementById('showLeaderboard').textContent = translations[currentLanguage].leaderboard;
 	      document.getElementById('languageToggle').textContent = translations[currentLanguage].languageButton;
 	      document.getElementById('backButton').textContent = translations[currentLanguage].back;
-      
+      updatePauseButton();
+
       // Update message
-      msg.textContent = `${translations[currentLanguage].ballsClicked}: ${clickCount}`;
-      
+      msg.textContent = isPaused
+        ? translations[currentLanguage].paused
+        : `${translations[currentLanguage].ballsClicked}: ${clickCount}`;
+
       // Update color bar label
       const percentage = (colorBarValue / MAX_COLOR_BAR) * 100;
       colorBarLabel.textContent = `${translations[currentLanguage].speedMeter}: ${Math.round(percentage)}%`;
+      colorBarEl.setAttribute('aria-label', translations[currentLanguage].speedMeter);
       
       // Update modal content
       document.querySelector('.modal-title').textContent = translations[currentLanguage].excellent;
