@@ -30,6 +30,20 @@
       border: 1px solid rgba(255, 255, 255, 0.2);
       backdrop-filter: blur(10px);
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      transition: background 0.2s ease;
+    }
+
+    /* Non-blocking wrong-click feedback (replaces the blocking alert()) */
+    #message.error {
+      background: linear-gradient(135deg, rgba(190, 45, 45, 0.95), rgba(130, 25, 25, 0.95));
+      animation: messageShake 0.4s;
+    }
+
+    @keyframes messageShake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      50% { transform: translateX(6px); }
+      75% { transform: translateX(-4px); }
     }
     #controls {
       position: absolute;
@@ -174,6 +188,14 @@
       box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
     }
 
+    /* Keyboard focus visibility for accessibility */
+    button:focus-visible,
+    input[type="range"]:focus-visible,
+    .controls-header:focus-visible {
+      outline: 3px solid #ffd166;
+      outline-offset: 2px;
+    }
+
 	    #languageToggle {
 	      position: absolute;
 	      top: 90px;
@@ -244,11 +266,12 @@
   </style>
 </head>
 	<body>
-	  <div id="message">לחצו על הכדורים בסדר עולה</div>
+	  <div id="message" aria-live="polite">לחצו על הכדורים בסדר עולה</div>
 	  <button id="languageToggle" onclick="toggleLanguage()">English</button>
 	  <div id="navButtons">
 	    <button id="backButton" type="button" onclick="goBack()"></button>
 	    <button id="quickRestartButton" type="button" onclick="initGame()"></button>
+	    <button id="pauseButton" type="button" onclick="togglePause()" aria-pressed="false"></button>
 	  </div>
 	  <div id="celebration" aria-hidden="true">
 	    <svg viewBox="0 0 160 160">
@@ -388,7 +411,10 @@
           blue: 'כחול'
         },
         languageToggle: 'English',
-        celebrationText: 'כל הכבוד!'
+        celebrationText: 'כל הכבוד!',
+        pause: 'השהה',
+        resume: 'המשך',
+        paused: 'המשחק מושהה'
       },
       en: {
         title: 'Game – Click the Balls in Order',
@@ -420,7 +446,10 @@
           blue: 'Blue'
         },
         languageToggle: 'עברית',
-        celebrationText: 'Great job!'
+        celebrationText: 'Great job!',
+        pause: 'Pause',
+        resume: 'Resume',
+        paused: 'Game paused'
       }
     };
 
@@ -462,12 +491,20 @@
     let gameStartTime = 0;
     let gameTimer = 0;
     let timerInterval = null;
+    let isPaused = false;
+    let pauseStartTime = 0;
+    let gameFinished = false;
+    let wrongFeedbackTimeout = null;
 
-    function startTimer() {
-      gameStartTime = Date.now();
+    function runTimerInterval() {
       timerInterval = setInterval(() => {
         gameTimer = Math.floor((Date.now() - gameStartTime) / 1000);
       }, 1000);
+    }
+
+    function startTimer() {
+      gameStartTime = Date.now();
+      runTimerInterval();
     }
 
     function stopTimer() {
@@ -501,6 +538,7 @@
 	      fontSizeLabel.textContent = t.fontSizeLabel;
 	      languageToggleBtn.textContent = t.languageToggle;
 	      celebrationText.textContent = t.celebrationText;
+	      updatePauseButton();
 	      updateColorLabels();
 	      msg.textContent = t.instructionsRange(numBalls);
 	    }
@@ -570,6 +608,11 @@
     function initGame() {
       stopTimer();
       startTimer();
+      isPaused = false;
+      gameFinished = false;
+      lastFrameTime = null;
+      clearWrongClickFeedback();
+      updatePauseButton();
       if (celebrationTimeout) {
         clearTimeout(celebrationTimeout);
         celebrationTimeout = null;
@@ -625,19 +668,87 @@
       header.setAttribute('aria-expanded', String(!header.classList.contains('collapsed')));
     }
 
+    function updatePauseButton() {
+      const btn = document.getElementById('pauseButton');
+      btn.textContent = isPaused
+        ? '▶ ' + translations[currentLang].resume
+        : '⏸ ' + translations[currentLang].pause;
+      btn.setAttribute('aria-pressed', String(isPaused));
+    }
+
+    function togglePause() {
+      if (gameFinished) { return; }
+
+      isPaused = !isPaused;
+      if (isPaused) {
+        pauseStartTime = Date.now();
+        stopTimer();
+        if (animationFrameId) {
+          cancelAnimationFrame(animationFrameId);
+          animationFrameId = null;
+        }
+        msg.textContent = translations[currentLang].paused;
+      } else {
+        // Shift the start time forward so paused time doesn't count.
+        gameStartTime += Date.now() - pauseStartTime;
+        runTimerInterval();
+        msg.textContent = nextNumber === 1
+          ? translations[currentLang].instructionsRange(numBalls)
+          : translations[currentLang].nextNumber(nextNumber);
+        lastFrameTime = null;
+        if (!animationFrameId) { loop(); }
+      }
+      updatePauseButton();
+    }
+
+    // Auto-pause when the tab/app goes to the background so the timer doesn't
+    // keep counting while the player isn't looking.
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden && !isPaused && !gameFinished) {
+        togglePause();
+      }
+    });
+
     let animationFrameId;
-    function loop() {
+    // Movement is normalized to a 60fps time step so ball speed is identical
+    // on 60Hz and 120Hz screens (and doesn't slow down when frames drop).
+    let lastFrameTime = null;
+    function loop(timestamp) {
+      // While paused, direct loop() calls (slider/color changes) must only
+      // redraw the frozen scene, never advance it.
+      let dt = isPaused ? 0 : 1;
+      if (typeof timestamp === 'number') {
+        if (lastFrameTime !== null && !isPaused) {
+          dt = Math.min(3, (timestamp - lastFrameTime) / (1000 / 60));
+        }
+        lastFrameTime = timestamp;
+      }
+
       ctx.clearRect(0, 0, viewW, viewH);
 
       let allClicked = true;
       for (let ball of balls) {
         if (!ball.clicked) {
           allClicked = false;
-          ball.x += ball.vx;
-          ball.y += ball.vy;
+          ball.x += ball.vx * dt;
+          ball.y += ball.vy * dt;
 
-          if (ball.x - BALL_RADIUS < 0 || ball.x + BALL_RADIUS > viewW)  ball.vx *= -1;
-          if (ball.y - BALL_RADIUS < 0 || ball.y + BALL_RADIUS > viewH) ball.vy *= -1;
+          // Bounce and clamp back inside so a ball can never get stuck
+          // jittering in a wall after spawning or resizing near an edge.
+          if (ball.x - BALL_RADIUS < 0) {
+            ball.x = BALL_RADIUS;
+            ball.vx = Math.abs(ball.vx);
+          } else if (ball.x + BALL_RADIUS > viewW) {
+            ball.x = viewW - BALL_RADIUS;
+            ball.vx = -Math.abs(ball.vx);
+          }
+          if (ball.y - BALL_RADIUS < 0) {
+            ball.y = BALL_RADIUS;
+            ball.vy = Math.abs(ball.vy);
+          } else if (ball.y + BALL_RADIUS > viewH) {
+            ball.y = viewH - BALL_RADIUS;
+            ball.vy = -Math.abs(ball.vy);
+          }
 
           ctx.beginPath();
           ctx.arc(ball.x, ball.y, BALL_RADIUS, 0, Math.PI * 2);
@@ -658,27 +769,36 @@
       }
 
       if (!allClicked) {
-        animationFrameId = requestAnimationFrame(loop);
-      } else {
-        stopTimer();
-        msg.textContent = translations[currentLang].completed;
-        triggerCelebration();
-        animationFrameId = null;
-        
-        if (window.UserCounter) {
-          window.UserCounter.recordGameCompletion('Ball Game (Tracking)', {
-            ballCount: numBalls,
-            time: gameTimer,
-            completed: true
-          });
+        if (!isPaused) {
+          animationFrameId = requestAnimationFrame(loop);
         }
+      } else {
+        animationFrameId = null;
+        // Run the completion side effects only once. loop() is also invoked
+        // directly by the slider/color handlers to redraw after the game
+        // ends, and without this guard each of those re-triggered the
+        // celebration and re-recorded the completion.
+        if (!gameFinished) {
+          gameFinished = true;
+          stopTimer();
+          msg.textContent = translations[currentLang].completed;
+          triggerCelebration();
 
-        if (window.AlertSystem) {
-          window.AlertSystem.gameOver(
-            { time: gameTimer, score: numBalls, moves: numBalls },
-            () => initGame(),
-            () => window.location.href = 'index.html'
-          );
+          if (window.UserCounter) {
+            window.UserCounter.recordGameCompletion('Ball Game (Tracking)', {
+              ballCount: numBalls,
+              time: gameTimer,
+              completed: true
+            });
+          }
+
+          if (window.AlertSystem) {
+            window.AlertSystem.gameOver(
+              { time: gameTimer, score: numBalls, moves: numBalls },
+              () => initGame(),
+              () => window.location.href = 'index.html'
+            );
+          }
         }
       }
     }
@@ -695,7 +815,28 @@
       }, 2000);
     }
 
+    // Show the wrong-click message inline instead of a blocking alert() —
+    // alerts froze the animation and are jarring on mobile.
+    function showWrongClickFeedback(clickedNum) {
+      msg.textContent = translations[currentLang].wrongOrder(clickedNum, nextNumber);
+      msg.classList.add('error');
+      clearTimeout(wrongFeedbackTimeout);
+      wrongFeedbackTimeout = setTimeout(() => {
+        clearWrongClickFeedback();
+        msg.textContent = nextNumber === 1
+          ? translations[currentLang].instructionsRange(numBalls)
+          : translations[currentLang].nextNumber(nextNumber);
+      }, 2000);
+    }
+
+    function clearWrongClickFeedback() {
+      clearTimeout(wrongFeedbackTimeout);
+      wrongFeedbackTimeout = null;
+      msg.classList.remove('error');
+    }
+
     function handlePointerDown(e) {
+      if (isPaused || gameFinished) { return; }
       e.preventDefault();
       const rect = canvas.getBoundingClientRect();
       const mx = (e.clientX || e.touches[0].clientX) - rect.left;
@@ -707,15 +848,16 @@
           const dy = my - ball.y;
           if (dx * dx + dy * dy <= BALL_RADIUS * BALL_RADIUS) {
             autoCollapseSettings();
-            
+
             if (ball.num === nextNumber) {
               ball.clicked = true;
               nextNumber++;
+              clearWrongClickFeedback();
               if (nextNumber <= numBalls) {
                 msg.textContent = translations[currentLang].nextNumber(nextNumber);
               }
             } else {
-              alert(translations[currentLang].wrongOrder(ball.num, nextNumber));
+              showWrongClickFeedback(ball.num);
             }
             break;
           }
