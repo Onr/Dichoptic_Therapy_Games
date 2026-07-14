@@ -328,7 +328,7 @@ if (typeof document !== 'undefined') {
    * Starts with collapsed settings on smaller screens so the board is visible immediately.
    */
     function initMobileLayout() {
-      if (window.matchMedia('(max-width: 768px)').matches) {
+      if (typeof window.matchMedia === 'function' && window.matchMedia('(max-width: 768px)').matches) {
         autoCollapseSettings();
       }
     }
@@ -398,7 +398,11 @@ if (typeof document !== 'undefined') {
       game.lockBoard = true;
       const first = game.firstCard;
       const second = game.secondCard;
-      resetBoardState();
+      // Clear the active card references but keep the board locked until the
+      // reveal timeout ends. (Calling resetBoardState() here would set
+      // lockBoard back to false immediately, letting a third card be flipped
+      // during the 1s mismatch reveal.)
+      [game.firstCard, game.secondCard] = [null, null];
       setTimeout(() => {
         if (first && first.parentNode) {
           first.classList.remove('flipped', 'mismatched');
@@ -466,17 +470,24 @@ if (typeof document !== 'undefined') {
     }
 
     /**
-   * Starts the timer.
+   * (Re)starts the ticking interval without resetting the elapsed time.
    */
-    function startTimer() {
-      game.timer = 0;
-      timerEl.textContent = game.timer;
+    function resumeTimer() {
       clearInterval(game.timerInterval);
       game.timerInterval = setInterval(() => {
         game.timer++;
         timerEl.textContent = game.timer;
         updateScore();
       }, 1000);
+    }
+
+    /**
+   * Starts the timer.
+   */
+    function startTimer() {
+      game.timer = 0;
+      timerEl.textContent = game.timer;
+      resumeTimer();
     }
 
     /**
@@ -676,6 +687,22 @@ if (typeof document !== 'undefined') {
     colorToggleBtn.addEventListener('click', toggleEyeColor);
     langToggleBtn?.addEventListener('click', toggleLanguage);
 
+
+    // Pause the round timer while the tab/app is in the background so the
+    // time-based score doesn't drain while the player isn't looking, and
+    // resume it when they come back.
+    let timerPausedByVisibility = false;
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        if (game.timerInterval !== null) {
+          stopTimer();
+          timerPausedByVisibility = true;
+        }
+      } else if (timerPausedByVisibility) {
+        timerPausedByVisibility = false;
+        resumeTimer();
+      }
+    });
 
     // Recalculate board layout on window resize (debounced)
     let resizeTimer;

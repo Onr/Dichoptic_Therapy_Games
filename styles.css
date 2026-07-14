@@ -435,9 +435,13 @@ button:active {
 
 .card.matched .face {
   border: 2px solid gold;
+  box-shadow: 0 0 12px 2px rgba(255, 215, 0, 0.55);
 }
 
-.card.mismatched .face {
+/* Shake the whole card container rather than the .face, so the mismatch
+   wobble does not fight the inner 3D flip transform (which would briefly
+   expose the plain back face over the symbol). */
+.card.mismatched {
   animation: shake 0.5s;
 }
 
@@ -507,5 +511,26 @@ main {
 @media (max-width: 480px) {
   body {
     padding: 0.5rem;
+  }
+}
+
+/* Respect users who prefer reduced motion: keep the game fully playable but
+   drop the flip/shake/hover motion (color separation and layout are
+   unaffected). */
+@media (prefers-reduced-motion: reduce) {
+  .inner {
+    transition: none;
+  }
+
+  .card.mismatched {
+    animation: none;
+  }
+
+  button:hover {
+    transform: none;
+  }
+
+  input[type="range"]::-webkit-slider-thumb:hover {
+    transform: none;
   }
 }
