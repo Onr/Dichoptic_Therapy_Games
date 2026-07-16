@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#07111f">
+  <meta name="description" content="A therapist-guided dichoptic alignment exercise using complementary red and green targets.">
+  <title>Fusion Quest — Dichoptic Alignment Practice</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #050b14;
+      --panel: rgba(12, 27, 46, 0.92);
+      --panel-2: rgba(17, 38, 63, 0.9);
+      --line: rgba(146, 191, 228, 0.2);
+      --ink: #f4f8fc;
+      --muted: #a9bdd0;
+      --blue: #55a9e6;
+      --blue-2: #2d78b5;
+      --red: rgb(255, 0, 0);
+      --green: rgb(0, 255, 90);
+      --gold: #ffd166;
+      --danger: #ff8794;
+      --safe-bottom: max(12px, env(safe-area-inset-bottom));
+    }
+
+    * { box-sizing: border-box; }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+      overflow-x: hidden;
+      background: var(--bg);
+    }
+
+    body {
+      min-height: 100svh;
+      color: var(--ink);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 50% 16%, rgba(40, 107, 157, 0.19), transparent 31rem),
+        linear-gradient(rgba(73, 123, 161, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(73, 123, 161, 0.045) 1px, transparent 1px),
+        var(--bg);
+      background-size: auto, 32px 32px, 32px 32px, auto;
+    }
+
+    button,
+    input,
+    select { font: inherit; }
+
+    button { touch-action: manipulation; }
+
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    a:focus-visible {
+      outline: 3px solid rgba(114, 196, 255, 0.8);
+      outline-offset: 3px;
+    }
+
+    .app {
+      width: min(1080px, 100%);
+      min-height: 100svh;
+      margin: 0 auto;
+      padding: max(12px, env(safe-area-inset-top)) clamp(12px, 2.5vw, 26px) var(--safe-bottom);
+      display: grid;
+      grid-template-rows: auto auto minmax(360px, 1fr) auto;
+      gap: 12px;
+    }
+
+    .topbar,
+    .statusbar,
+    .play-card,
+    .control-dock,
+    .dialog-card {
+      border: 1px solid var(--line);
+      background: linear-gradient(145deg, var(--panel), rgba(8, 20, 35, 0.95));
+      box-shadow: 0 22px 50px -32px rgba(0, 0, 0, 0.95);
+    }
+
+    .topbar {
+      min-height: 58px;
+      padding: 9px 12px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand { min-width: 0; }
+    .brand small {
+      display: block;
+      color: #7fb8df;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    .brand strong {
+      display: block;
+      font-size: clamp(1.05rem, 3.2vw, 1.4rem);
+      line-height: 1.2;
+    }
+
+    .top-actions { display: flex; gap: 8px; }
+    .icon-button,
+    .home-link {
+      min-width: 44px;
+      min-height: 44px;
+      padding: 0 13px;
+      border: 1px solid rgba(137, 190, 229, 0.26);
+      border-radius: 13px;
+      color: var(--ink);
+      background: rgba(31, 64, 91, 0.68);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .statusbar {
+      padding: 10px 14px;
+      border-radius: 16px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .stat { text-align: center; }
+    .stat span {
+      display: block;
+      color: var(--muted);
+      font-size: clamp(0.62rem, 2vw, 0.75rem);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .stat strong { font-size: clamp(1rem, 3vw, 1.25rem); }
+
+    .play-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 24px;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-height: 0;
+    }
+
+    .mission {
+      z-index: 2;
+      padding: 14px 18px 8px;
+      text-align: center;
+    }
+    .mission h1 {
+      margin: 0 0 3px;
+      font-size: clamp(1.05rem, 3vw, 1.35rem);
+    }
+    .mission p {
+      min-height: 1.4em;
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(0.78rem, 2.4vw, 0.95rem);
+    }
+
+    .space {
+      position: relative;
+      min-height: 250px;
+      overflow: hidden;
+      isolation: isolate;
+      background:
+        radial-gradient(circle at center, rgba(35, 94, 132, 0.18), transparent 46%),
+        radial-gradient(circle, rgba(180, 221, 249, 0.5) 0 1px, transparent 1.5px) 0 0 / 43px 43px,
+        radial-gradient(circle, rgba(180, 221, 249, 0.28) 0 1px, transparent 1.5px) 18px 13px / 61px 61px;
+    }
+
+    .space::before,
+    .space::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      pointer-events: none;
+    }
+    .space::before {
+      width: min(68vw, 470px);
+      aspect-ratio: 1;
+      border: 1px solid rgba(95, 170, 222, 0.12);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 80px rgba(59, 141, 198, 0.08), inset 0 0 80px rgba(59, 141, 198, 0.05);
+    }
+    .space::after {
+      width: 1px;
+      height: 32px;
+      background: rgba(210, 233, 248, 0.24);
+      transform: translate(-50%, -50%);
+      box-shadow: -16px 16px 0 -0.25px rgba(210, 233, 248, 0.24), 16px 16px 0 -0.25px rgba(210, 233, 248, 0.24);
+    }
+
+    .portal {
+      position: absolute;
+      inset: 0;
+      transition: filter 180ms ease;
+    }
+
+    .eye-layer {
+      --contrast: 1;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: clamp(116px, 28vw, 190px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      opacity: var(--contrast);
+      transition: transform 110ms ease-out, opacity 150ms ease;
+      mix-blend-mode: screen;
+      filter: drop-shadow(0 0 12px currentColor);
+    }
+
+    .eye-layer::before,
+    .eye-layer::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+    }
+
+    .red-layer { color: var(--red); }
+    .green-layer { color: var(--green); }
+
+    .red-layer::before {
+      border: clamp(7px, 1.6vw, 11px) solid transparent;
+      border-top-color: currentColor;
+      border-bottom-color: currentColor;
+    }
+    .red-layer::after {
+      inset: 29%;
+      border: clamp(4px, 1vw, 7px) solid transparent;
+      border-top-color: currentColor;
+      border-bottom-color: currentColor;
+      transform: rotate(45deg);
+    }
+
+    .green-layer::before {
+      border: clamp(7px, 1.6vw, 11px) solid transparent;
+      border-left-color: currentColor;
+      border-right-color: currentColor;
+    }
+    .green-layer::after {
+      inset: 29%;
+      border: clamp(4px, 1vw, 7px) solid transparent;
+      border-left-color: currentColor;
+      border-right-color: currentColor;
+      transform: rotate(45deg);
+    }
+
+    .portal.locked { filter: drop-shadow(0 0 25px rgba(255, 223, 115, 0.72)); }
+    .portal.locked .eye-layer { transition-duration: 220ms; }
+
+    .direction-hint {
+      position: absolute;
+      left: 50%;
+      bottom: 12px;
+      z-index: 2;
+      transform: translateX(-50%);
+      color: rgba(190, 215, 234, 0.67);
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .round-feedback {
+      z-index: 2;
+      min-height: 46px;
+      padding: 10px 16px 14px;
+      text-align: center;
+      color: var(--muted);
+      font-weight: 650;
+    }
+    .round-feedback.good { color: var(--gold); }
+    .round-feedback.try { color: #9fcef0; }
+
+    .control-dock {
+      padding: 10px;
+      border-radius: 20px;
+      display: grid;
+      grid-template-columns: 1fr minmax(130px, 1.45fr) 1fr;
+      gap: 9px;
+    }
+
+    .move-button,
+    .lock-button,
+    .primary-button,
+    .secondary-button,
+    .danger-button {
+      min-height: 54px;
+      border-radius: 15px;
+      border: 1px solid rgba(130, 190, 232, 0.24);
+      color: white;
+      cursor: pointer;
+      font-weight: 800;
+    }
+    .move-button { background: linear-gradient(145deg, #244d6e, #18364f); font-size: 1.35rem; }
+    .lock-button,
+    .primary-button { background: linear-gradient(145deg, #428fc4, #226b9e); }
+    .secondary-button { background: linear-gradient(145deg, #294b65, #1d374d); }
+    .danger-button { background: rgba(109, 31, 45, 0.72); border-color: rgba(255, 135, 148, 0.34); }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+    button:not(:disabled):active { transform: translateY(1px) scale(0.99); }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      padding: max(12px, env(safe-area-inset-top)) 12px var(--safe-bottom);
+      display: grid;
+      place-items: center;
+      background: rgba(2, 7, 13, 0.86);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    .overlay[hidden] { display: none; }
+
+    .dialog-card {
+      width: min(620px, 100%);
+      max-height: calc(100svh - 24px);
+      overflow: auto;
+      border-radius: 24px;
+      padding: clamp(18px, 4vw, 30px);
+    }
+    .dialog-card h2 { margin: 0 0 8px; font-size: clamp(1.45rem, 5vw, 2rem); }
+    .dialog-card > p { margin: 0 0 18px; color: var(--muted); line-height: 1.55; }
+    .steps { display: grid; gap: 10px; margin: 0 0 18px; }
+    .step {
+      display: grid;
+      grid-template-columns: 32px 1fr;
+      gap: 10px;
+      align-items: start;
+      padding: 10px;
+      border: 1px solid rgba(134, 187, 225, 0.14);
+      background: rgba(19, 43, 69, 0.52);
+      border-radius: 14px;
+      color: #ccdae7;
+      line-height: 1.4;
+    }
+    .step b {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #dff3ff;
+      background: #245f88;
+    }
+
+    .calibration {
+      margin: 14px 0 18px;
+      padding: 14px;
+      border: 1px solid rgba(130, 188, 228, 0.18);
+      border-radius: 16px;
+      background: rgba(4, 14, 25, 0.56);
+    }
+    .calibration-targets {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .cal-target {
+      min-height: 76px;
+      border: 1px solid currentColor;
+      border-radius: 13px;
+      display: grid;
+      place-items: center;
+      font-size: 2rem;
+      font-weight: 900;
+      opacity: var(--cal-opacity, 1);
+      background: rgba(0, 0, 0, 0.56);
+    }
+    .cal-target.red { color: var(--red); }
+    .cal-target.green { color: var(--green); }
+    .field { margin-top: 12px; }
+    .field-row { display: flex; justify-content: space-between; gap: 12px; color: #d6e2ec; }
+    .field small { color: var(--muted); }
+    input[type="range"] { width: 100%; min-height: 32px; accent-color: var(--blue); }
+    select {
+      width: 100%;
+      min-height: 46px;
+      margin-top: 6px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      color: white;
+      background: #102a40;
+    }
+    .dialog-actions { display: grid; grid-template-columns: 1fr 1.5fr; gap: 10px; }
+
+    .safety-note {
+      margin-top: 15px;
+      padding: 11px 12px;
+      border-left: 3px solid var(--danger);
+      border-radius: 8px;
+      color: #d7c2c7;
+      background: rgba(83, 25, 35, 0.3);
+      font-size: 0.82rem;
+      line-height: 1.5;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin: 18px 0;
+    }
+    .summary-item {
+      padding: 14px;
+      border: 1px solid rgba(132, 188, 229, 0.16);
+      border-radius: 14px;
+      background: rgba(16, 42, 65, 0.7);
+    }
+    .summary-item span { display: block; color: var(--muted); font-size: 0.76rem; }
+    .summary-item strong { display: block; margin-top: 3px; font-size: 1.25rem; }
+    .summary-note { font-size: 0.8rem; color: var(--muted); }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: calc(var(--safe-bottom) + 90px);
+      z-index: 30;
+      transform: translate(-50%, 18px);
+      opacity: 0;
+      padding: 10px 14px;
+      border: 1px solid rgba(255, 209, 102, 0.42);
+      border-radius: 999px;
+      color: #fff3ce;
+      background: rgba(54, 42, 15, 0.94);
+      pointer-events: none;
+      transition: 180ms ease;
+      white-space: nowrap;
+    }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    @media (max-width: 560px) {
+      .app { grid-template-rows: auto auto minmax(330px, 1fr) auto; }
+      .topbar { border-radius: 15px; }
+      .home-link { font-size: 0; padding: 0; }
+      .home-link::before { content: "⌂"; font-size: 1.25rem; }
+      .statusbar { padding-inline: 6px; }
+      .stat span { letter-spacing: 0.03em; }
+      .play-card { border-radius: 19px; }
+      .dialog-actions { grid-template-columns: 1fr; }
+      .summary-grid { gap: 8px; }
+    }
+
+    @media (max-height: 670px) and (orientation: landscape) {
+      .app { grid-template-columns: 1fr 220px; grid-template-rows: auto auto 1fr; }
+      .topbar, .statusbar { grid-column: 1 / -1; }
+      .play-card { grid-column: 1; }
+      .control-dock { grid-column: 2; grid-row: 3; grid-template-columns: 1fr; align-content: center; }
+      .space { min-height: 190px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app" aria-label="Fusion Quest game">
+    <header class="topbar">
+      <div class="brand"><small>Binocular mission 04</small><strong>Fusion Quest</strong></div>
+      <div class="top-actions">
+        <button class="icon-button" id="pauseButton" type="button" aria-label="Pause game" disabled>Ⅱ</button>
+        <a class="home-link" href="index.html">Home</a>
+      </div>
+    </header>
+
+    <section class="statusbar" aria-label="Session status">
+      <div class="stat"><span>Round</span><strong id="roundStat">0 / 12</strong></div>
+      <div class="stat"><span>Level</span><strong id="levelStat">1</strong></div>
+      <div class="stat"><span>Streak</span><strong id="streakStat">0</strong></div>
+      <div class="stat"><span>Time</span><strong id="timeStat">0:00</strong></div>
+    </section>
+
+    <section class="play-card" aria-labelledby="missionTitle">
+      <div class="mission">
+        <h1 id="missionTitle">Bring both portal halves together</h1>
+        <p id="missionText">Use the arrows until the red and green pieces form one complete portal.</p>
+      </div>
+      <div class="space" id="space">
+        <div class="portal" id="portal" aria-hidden="true">
+          <div class="eye-layer red-layer" id="redLayer"></div>
+          <div class="eye-layer green-layer" id="greenLayer"></div>
+        </div>
+        <span class="direction-hint">Move the green-eye layer</span>
+      </div>
+      <div class="round-feedback" id="feedback" role="status" aria-live="polite">Complete the quick setup to begin.</div>
+    </section>
+
+    <section class="control-dock" aria-label="Alignment controls">
+      <button class="move-button" id="leftButton" type="button" aria-label="Move green target left" disabled>←</button>
+      <button class="lock-button" id="lockButton" type="button" disabled>Lock alignment</button>
+      <button class="move-button" id="rightButton" type="button" aria-label="Move green target right" disabled>→</button>
+    </section>
+  </main>
+
+  <section class="overlay" id="setupOverlay" role="dialog" aria-modal="true" aria-labelledby="setupTitle">
+    <div class="dialog-card">
+      <h2 id="setupTitle">Prepare your portal</h2>
+      <p>This prototype gives each eye complementary target pieces. Aligning the complete shape requires information from both channels.</p>
+      <div class="steps">
+        <div class="step"><b>1</b><span>Wear your red/green or red/blue anaglyph glasses and sit at your normal clinician-recommended distance.</span></div>
+        <div class="step"><b>2</b><span>Confirm that both symbols below are visible. Adjust intensity only to balance their visibility.</span></div>
+        <div class="step"><b>3</b><span>During play, use the arrows or keyboard keys, then lock the alignment when the portal looks complete.</span></div>
+      </div>
+      <div class="calibration" aria-label="Visibility calibration">
+        <div class="calibration-targets" aria-hidden="true">
+          <div class="cal-target red" id="redCalTarget">＋</div>
+          <div class="cal-target green" id="greenCalTarget">◆</div>
+        </div>
+        <div class="field">
+          <div class="field-row"><label for="redContrast">Red intensity</label><output id="redOutput">100%</output></div>
+          <input id="redContrast" type="range" min="35" max="100" value="100">
+        </div>
+        <div class="field">
+          <div class="field-row"><label for="greenContrast">Green intensity</label><output id="greenOutput">100%</output></div>
+          <input id="greenContrast" type="range" min="35" max="100" value="100">
+        </div>
+        <div class="field">
+          <label for="stepSize">Alignment control <small>(ask your clinician if unsure)</small></label>
+          <select id="stepSize">
+            <option value="5">Standard — 5 px steps</option>
+            <option value="3">Fine — 3 px steps</option>
+            <option value="8">Large — 8 px steps</option>
+          </select>
+        </div>
+      </div>
+      <div class="dialog-actions">
+        <a class="secondary-button" href="index.html" style="display:grid;place-items:center;text-decoration:none">Not now</a>
+        <button class="primary-button" id="startButton" type="button">Both visible — start</button>
+      </div>
+      <div class="safety-note">Stop immediately if you develop new or worsening double vision, eye pain, severe headache, nausea, or dizziness. This exercise is not a diagnostic tool or a substitute for professional care.</div>
+    </div>
+  </section>
+
+  <section class="overlay" id="pauseOverlay" role="dialog" aria-modal="true" aria-labelledby="pauseTitle" hidden>
+    <div class="dialog-card" style="max-width:470px;text-align:center">
+      <h2 id="pauseTitle">Session paused</h2>
+      <p>The timer and alignment controls are stopped.</p>
+      <div class="dialog-actions">
+        <button class="danger-button" id="stopButton" type="button">Stop session</button>
+        <button class="primary-button" id="resumeButton" type="button">Resume</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="overlay" id="summaryOverlay" role="dialog" aria-modal="true" aria-labelledby="summaryTitle" hidden>
+    <div class="dialog-card">
+      <h2 id="summaryTitle">Mission complete</h2>
+      <p id="summaryLead">Your session summary is ready.</p>
+      <div class="summary-grid">
+        <div class="summary-item"><span>Rounds aligned</span><strong id="summaryRounds">0 / 12</strong></div>
+        <div class="summary-item"><span>First-try accuracy</span><strong id="summaryAccuracy">0%</strong></div>
+        <div class="summary-item"><span>Average attempts</span><strong id="summaryAttempts">0</strong></div>
+        <div class="summary-item"><span>Largest separation</span><strong id="summaryRange">0 px</strong></div>
+        <div class="summary-item"><span>Best streak</span><strong id="summaryStreak">0</strong></div>
+        <div class="summary-item"><span>Active time</span><strong id="summaryTime">0:00</strong></div>
+      </div>
+      <p class="summary-note">“Largest separation” is a game setting measured in screen pixels, not a clinical vergence measurement. Share symptoms and results with your clinician if they use this exercise in your plan.</p>
+      <div class="dialog-actions">
+        <a class="secondary-button" href="index.html" style="display:grid;place-items:center;text-decoration:none">Home</a>
+        <button class="primary-button" id="playAgainButton" type="button">Play again</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const TOTAL_ROUNDS = 12;
+      const SUCCESS_TOLERANCE = 6;
+      const els = {
+        redLayer: document.getElementById('redLayer'), greenLayer: document.getElementById('greenLayer'), portal: document.getElementById('portal'),
+        round: document.getElementById('roundStat'), level: document.getElementById('levelStat'), streak: document.getElementById('streakStat'), time: document.getElementById('timeStat'),
+        feedback: document.getElementById('feedback'), missionText: document.getElementById('missionText'), left: document.getElementById('leftButton'),
+        right: document.getElementById('rightButton'), lock: document.getElementById('lockButton'), pause: document.getElementById('pauseButton'),
+        setup: document.getElementById('setupOverlay'), pauseOverlay: document.getElementById('pauseOverlay'), summary: document.getElementById('summaryOverlay'),
+        start: document.getElementById('startButton'), resume: document.getElementById('resumeButton'), stop: document.getElementById('stopButton'), playAgain: document.getElementById('playAgainButton'),
+        redContrast: document.getElementById('redContrast'), greenContrast: document.getElementById('greenContrast'), redOutput: document.getElementById('redOutput'),
+        greenOutput: document.getElementById('greenOutput'), redCal: document.getElementById('redCalTarget'), greenCal: document.getElementById('greenCalTarget'), step: document.getElementById('stepSize'), toast: document.getElementById('toast')
+      };
+
+      const state = {
+        running: false, paused: false, transitioning: false, round: 0, level: 1, offset: 0, startOffset: 0,
+        step: 5, attemptsThisRound: 0, totalAttempts: 0, completedRounds: 0, firstTrySuccesses: 0, streak: 0, bestStreak: 0,
+        maxSeparation: 0, activeMs: 0, lastTick: 0, frame: 0, redContrast: 1, greenContrast: 1
+      };
+
+      function updateCalibration() {
+        state.redContrast = Number(els.redContrast.value) / 100;
+        state.greenContrast = Number(els.greenContrast.value) / 100;
+        els.redOutput.value = `${els.redContrast.value}%`;
+        els.greenOutput.value = `${els.greenContrast.value}%`;
+        els.redCal.style.setProperty('--cal-opacity', state.redContrast);
+        els.greenCal.style.setProperty('--cal-opacity', state.greenContrast);
+        els.redLayer.style.setProperty('--contrast', state.redContrast);
+        els.greenLayer.style.setProperty('--contrast', state.greenContrast);
+      }
+
+      function formatTime(milliseconds) {
+        const seconds = Math.floor(milliseconds / 1000);
+        return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
+      }
+
+      function tick(now) {
+        if (state.running && !state.paused) {
+          if (state.lastTick) state.activeMs += Math.min(now - state.lastTick, 100);
+          state.lastTick = now;
+          els.time.textContent = formatTime(state.activeMs);
+        } else {
+          state.lastTick = 0;
+        }
+        state.frame = requestAnimationFrame(tick);
+      }
+
+      function randomOffset() {
+        const base = Math.min(34 + (state.level - 1) * 8, 74);
+        const variation = Math.floor(Math.random() * 15);
+        const sign = Math.random() < 0.5 ? -1 : 1;
+        return sign * (base + variation);
+      }
+
+      function renderPortal() {
+        els.redLayer.style.transform = 'translate(-50%, -50%)';
+        els.greenLayer.style.transform = `translate(calc(-50% + ${state.offset}px), -50%)`;
+      }
+
+      function updateStats() {
+        els.round.textContent = `${state.round} / ${TOTAL_ROUNDS}`;
+        els.level.textContent = String(state.level);
+        els.streak.textContent = String(state.streak);
+      }
+
+      function enableControls(enabled) {
+        els.left.disabled = !enabled;
+        els.right.disabled = !enabled;
+        els.lock.disabled = !enabled;
+        els.pause.disabled = !state.running;
+      }
+
+      function beginRound() {
+        state.round += 1;
+        state.attemptsThisRound = 0;
+        state.transitioning = false;
+        state.startOffset = randomOffset();
+        state.offset = state.startOffset;
+        state.maxSeparation = Math.max(state.maxSeparation, Math.abs(state.startOffset));
+        els.portal.classList.remove('locked');
+        els.feedback.className = 'round-feedback';
+        els.feedback.textContent = 'Align the complementary pieces, then lock the portal.';
+        els.missionText.textContent = 'Use the arrows until the red and green pieces form one complete portal.';
+        updateStats();
+        renderPortal();
+        enableControls(true);
+      }
+
+      function resetSession() {
+        Object.assign(state, {
+          running: true, paused: false, transitioning: false, round: 0, level: 1, offset: 0, startOffset: 0,
+          step: Number(els.step.value), attemptsThisRound: 0, totalAttempts: 0, completedRounds: 0, firstTrySuccesses: 0, streak: 0,
+          bestStreak: 0, maxSeparation: 0, activeMs: 0, lastTick: performance.now()
+        });
+        els.time.textContent = '0:00';
+        els.setup.hidden = true;
+        els.summary.hidden = true;
+        els.pauseOverlay.hidden = true;
+        els.pause.textContent = 'Ⅱ';
+        els.pause.setAttribute('aria-label', 'Pause game');
+        beginRound();
+      }
+
+      function move(direction) {
+        if (!state.running || state.paused || state.transitioning) return;
+        state.offset = Math.max(-110, Math.min(110, state.offset + direction * state.step));
+        renderPortal();
+        els.feedback.className = 'round-feedback';
+        els.feedback.textContent = 'When the shape looks complete, lock the alignment.';
+      }
+
+      function lockAlignment() {
+        if (!state.running || state.paused || state.transitioning) return;
+        state.attemptsThisRound += 1;
+        state.totalAttempts += 1;
+        const error = Math.abs(state.offset);
+
+        if (error <= SUCCESS_TOLERANCE) {
+          state.transitioning = true;
+          state.offset = 0;
+          state.streak += 1;
+          state.completedRounds += 1;
+          state.bestStreak = Math.max(state.bestStreak, state.streak);
+          if (state.attemptsThisRound === 1) state.firstTrySuccesses += 1;
+          if (state.streak > 0 && state.streak % 2 === 0) state.level = Math.min(6, state.level + 1);
+          renderPortal();
+          els.portal.classList.add('locked');
+          els.feedback.className = 'round-feedback good';
+          els.feedback.textContent = 'Portal fused — excellent binocular lock.';
+          enableControls(false);
+          updateStats();
+          window.setTimeout(() => {
+            if (!state.running) return;
+            if (state.round >= TOTAL_ROUNDS) finishSession(false);
+            else beginRound();
+          }, 850);
+        } else {
+          state.streak = 0;
+          if (state.attemptsThisRound >= 3 && state.level > 1) state.level -= 1;
+          els.feedback.className = 'round-feedback try';
+          els.feedback.textContent = error > 28 ? 'Still separated — keep bringing the pieces together.' : 'Very close — make a smaller adjustment.';
+          updateStats();
+        }
+      }
+
+      function setPaused(paused, automatic = false) {
+        if (!state.running || state.transitioning) return;
+        state.paused = paused;
+        state.lastTick = paused ? 0 : performance.now();
+        els.pauseOverlay.hidden = !paused;
+        els.pause.textContent = paused ? '▶' : 'Ⅱ';
+        els.pause.setAttribute('aria-label', paused ? 'Resume game' : 'Pause game');
+        enableControls(!paused);
+        if (paused && automatic) showToast('Paused while the app was in the background');
+        if (paused) els.resume.focus();
+      }
+
+      function finishSession(stopped) {
+        state.running = false;
+        state.paused = false;
+        state.transitioning = false;
+        enableControls(false);
+        els.pauseOverlay.hidden = true;
+        const completed = state.completedRounds;
+        const accuracy = completed ? Math.round((state.firstTrySuccesses / completed) * 100) : 0;
+        const avgAttempts = completed ? (state.totalAttempts / completed).toFixed(1) : '0';
+        document.getElementById('summaryLead').textContent = stopped ? 'The session ended early. Stopping when uncomfortable is the correct choice.' : 'You completed all portal alignments.';
+        document.getElementById('summaryRounds').textContent = `${completed} / ${TOTAL_ROUNDS}`;
+        document.getElementById('summaryAccuracy').textContent = `${accuracy}%`;
+        document.getElementById('summaryAttempts').textContent = avgAttempts;
+        document.getElementById('summaryRange').textContent = `${state.maxSeparation} px`;
+        document.getElementById('summaryStreak').textContent = String(state.bestStreak);
+        document.getElementById('summaryTime').textContent = formatTime(state.activeMs);
+        els.summary.hidden = false;
+        els.playAgain.focus();
+        try {
+          localStorage.setItem('fusionQuestLastSession', JSON.stringify({
+            completed, totalRounds: TOTAL_ROUNDS, firstTryAccuracy: accuracy, averageAttempts: Number(avgAttempts),
+            maxSeparationPx: state.maxSeparation, bestStreak: state.bestStreak, activeSeconds: Math.round(state.activeMs / 1000),
+            redIntensity: Math.round(state.redContrast * 100), greenIntensity: Math.round(state.greenContrast * 100), recordedAt: new Date().toISOString()
+          }));
+        } catch (_) { /* Storage can be unavailable in private browsing. */ }
+      }
+
+      let toastTimer;
+      function showToast(message) {
+        els.toast.textContent = message;
+        els.toast.classList.add('show');
+        window.clearTimeout(toastTimer);
+        toastTimer = window.setTimeout(() => els.toast.classList.remove('show'), 2400);
+      }
+
+      els.redContrast.addEventListener('input', updateCalibration);
+      els.greenContrast.addEventListener('input', updateCalibration);
+      els.start.addEventListener('click', resetSession);
+      els.playAgain.addEventListener('click', () => { els.summary.hidden = true; els.setup.hidden = false; els.start.focus(); });
+      els.left.addEventListener('click', () => move(-1));
+      els.right.addEventListener('click', () => move(1));
+      els.lock.addEventListener('click', lockAlignment);
+      els.pause.addEventListener('click', () => setPaused(!state.paused));
+      els.resume.addEventListener('click', () => setPaused(false));
+      els.stop.addEventListener('click', () => finishSession(true));
+
+      document.addEventListener('keydown', (event) => {
+        if (els.setup.hidden && els.summary.hidden && !state.paused) {
+          if (event.key === 'ArrowLeft') { event.preventDefault(); move(-1); }
+          if (event.key === 'ArrowRight') { event.preventDefault(); move(1); }
+          if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); lockAlignment(); }
+        }
+        if (event.key === 'Escape' && state.running) setPaused(!state.paused);
+      });
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden && state.running && !state.paused) setPaused(true, true);
+      });
+
+      updateCalibration();
+      state.frame = requestAnimationFrame(tick);
+    })();
+  </script>
+</body>
+</html>

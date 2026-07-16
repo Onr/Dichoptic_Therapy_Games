@@ -345,7 +345,7 @@
     .game-grid {
       display: grid;
       gap: 2.5rem;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       perspective: 1000px;
     }
 
@@ -405,6 +405,11 @@
 
     .game-card:nth-child(3) {
       animation-delay: 150ms;
+    }
+
+    .game-card:nth-child(4) {
+      animation-delay: 220ms;
+      border-top-color: #4b7f9f;
     }
 
     .game-card::before {
@@ -800,6 +805,10 @@
       .game-card {
         padding: 1.7rem;
       }
+
+      .game-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -851,6 +860,12 @@
           <h3 data-i18n="staticBallGameTitle">Saccades</h3>
           <p data-i18n="staticBallGameDesc">React to balls that appear one at a time in different locations to sharpen quick eye movements.</p>
           <span class="insight" data-i18n="staticBallGameInsight">Ideal for practicing rapid refixations and visual scanning.</span>
+        </a>
+        <a href="fusion_quest.html" class="game-card">
+          <span class="game-card-topline" aria-hidden="true"><span class="game-icon">◉</span><span class="game-number">04</span></span>
+          <h3 data-i18n="fusionGameTitle">Fusion Quest</h3>
+          <p data-i18n="fusionGameDesc">Align complementary red and green portal pieces to practice using information from both eyes together.</p>
+          <span class="insight" data-i18n="fusionGameInsight">Adaptive binocular alignment with measurable session feedback.</span>
         </a>
       </div>
     </section>
@@ -1029,6 +1044,9 @@
         staticBallGameTitle: 'Saccades',
         staticBallGameDesc: 'React to balls that appear one at a time in different locations to sharpen quick eye movements.',
         staticBallGameInsight: 'Ideal for practicing rapid refixations and visual scanning.',
+        fusionGameTitle: 'Fusion Quest',
+        fusionGameDesc: 'Align complementary red and green portal pieces to practice using information from both eyes together.',
+        fusionGameInsight: 'Adaptive binocular alignment with measurable session feedback.',
         creditText: 'Built by Tal Bar Nizan & Ori Nizan • ',
         contactLink: 'Contact Us'
       },
@@ -1054,6 +1072,9 @@
         staticBallGameTitle: 'סקדות',
         staticBallGameDesc: 'הגיבו לכדורים שמופיעים אחד אחד במיקומים שונים כדי לחדד תנועות עיניים מהירות.',
         staticBallGameInsight: 'מעולה לתרגול קפיצות מבט מהירות וסריקה חזותית.',
+        fusionGameTitle: 'מסע המיזוג',
+        fusionGameDesc: 'יישרו חלקי שער משלימים באדום ובירוק כדי לתרגל שימוש משותף במידע משתי העיניים.',
+        fusionGameInsight: 'יישור בינוקולרי מסתגל עם משוב מדיד בסיום התרגול.',
         creditText: 'נבנה על ידי טל בר ניצן ואורי ניצן • ',
         contactLink: 'צרו קשר'
       }

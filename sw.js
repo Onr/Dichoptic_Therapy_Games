@@ -3,9 +3,9 @@
  * Provides offline functionality, caching, and performance optimizations
  */
 
-const CACHE_NAME = 'dichoptic-therapy-v1.2.13';
-const STATIC_CACHE = 'static-resources-v1.2.13';
-const DYNAMIC_CACHE = 'dynamic-resources-v1.2.13';
+const CACHE_NAME = 'dichoptic-therapy-v1.2.14';
+const STATIC_CACHE = 'static-resources-v1.2.14';
+const DYNAMIC_CACHE = 'dynamic-resources-v1.2.14';
 
 // Files to cache immediately
 const STATIC_ASSETS = [
@@ -14,6 +14,7 @@ const STATIC_ASSETS = [
   '/memory_game.html',
   '/ball_game.html',
   '/static_ball_game.html',
+  '/fusion_quest.html',
   '/styles.css',
   '/game.js',
   '/favicon.ico',

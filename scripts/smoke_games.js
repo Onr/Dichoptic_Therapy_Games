@@ -1,4 +1,4 @@
-/* Smoke-test the three games in jsdom: init without errors + exercise the
+/* Smoke-test the four games in jsdom: init without errors + exercise the
    new pause / feedback / visibility logic. Run from the repo root. */
 const fs = require('fs');
 const path = require('path');
@@ -124,6 +124,33 @@ console.log('== Saccades (static_ball_game.html) ==');
   Object.defineProperty(w.document, 'hidden', { configurable: true, get: () => true });
   w.document.dispatchEvent(new w.Event('visibilitychange'));
   check('auto-pauses when hidden', g('isPaused') === true);
+  dom.window.close();
+}
+
+console.log('== Fusion Quest (fusion_quest.html) ==');
+{
+  const { dom, errors } = loadGame('fusion_quest.html');
+  const w = dom.window;
+  const d = w.document;
+  check('no script errors on init', errors.length === 0);
+  errors.forEach(e => console.log('   error:', e && e.message || e));
+  check('setup opens before play', d.getElementById('setupOverlay').hidden === false);
+  d.getElementById('startButton').click();
+  check('starts a 12-round session', d.getElementById('setupOverlay').hidden && d.getElementById('roundStat').textContent.trim() === '1 / 12');
+  check('alignment controls enabled', !d.getElementById('leftButton').disabled && !d.getElementById('lockButton').disabled);
+  d.getElementById('pauseButton').click();
+  check('pause disables alignment', !d.getElementById('pauseOverlay').hidden && d.getElementById('leftButton').disabled);
+  d.getElementById('resumeButton').click();
+  check('resume restores alignment', d.getElementById('pauseOverlay').hidden && !d.getElementById('leftButton').disabled);
+  const transform = d.getElementById('greenLayer').style.transform;
+  const offsetMatch = transform.match(/([+-]?\d+)px/);
+  const offset = offsetMatch ? Number(offsetMatch[1]) : NaN;
+  check('round begins with visible separation', Number.isFinite(offset) && Math.abs(offset) >= 34);
+  const step = Number(d.getElementById('stepSize').value);
+  const button = offset > 0 ? d.getElementById('leftButton') : d.getElementById('rightButton');
+  for (let i = 0; i < Math.round(Math.abs(offset) / step); i++) button.click();
+  d.getElementById('lockButton').click();
+  check('aligned portal is accepted', d.getElementById('portal').classList.contains('locked'));
   dom.window.close();
 }
 
