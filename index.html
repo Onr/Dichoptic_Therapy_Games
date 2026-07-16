@@ -128,6 +128,11 @@
       padding: 0.75rem 0;
     }
 
+    header .page-wrapper {
+      padding-top: 0.45rem;
+      padding-bottom: 0.45rem;
+    }
+
     .brand {
       display: flex;
       flex-direction: column;
@@ -361,6 +366,37 @@
       overflow: hidden;
       transform-style: preserve-3d;
       animation: fade-rise 640ms ease-out both;
+    }
+
+    .game-card-topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .game-icon {
+      width: 3.35rem;
+      height: 3.35rem;
+      display: grid;
+      place-items: center;
+      border-radius: 18px;
+      color: #f8fbfd;
+      font-size: 1.55rem;
+      font-weight: 800;
+      background: linear-gradient(145deg, #64879c, #385a70);
+      border: 1px solid rgba(255, 255, 255, 0.42);
+      box-shadow: 0 12px 24px -14px rgba(30, 63, 83, 0.75);
+    }
+
+    .game-number {
+      color: #718695;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
     }
 
     .game-card:nth-child(2) {
@@ -729,9 +765,13 @@
       }
 
       .site-header {
-        flex-direction: column;
-        align-items: flex-start;
+        flex-direction: row;
+        align-items: center;
       }
+
+      .brand span:first-child { font-size: 0.78rem; }
+      .brand span:last-child { font-size: clamp(1.05rem, 5vw, 1.3rem); }
+      #toggle-language { padding: 0.55rem 0.9rem; flex: 0 0 auto; }
 
       .hero,
       .games-section,
@@ -795,16 +835,19 @@
       </div>
       <div class="game-grid">
         <a href="memory_game.html" class="game-card">
+          <span class="game-card-topline" aria-hidden="true"><span class="game-icon">⌗</span><span class="game-number">01</span></span>
           <h3 data-i18n="memoryGameTitle">Scanning</h3>
           <p data-i18n="memoryGameDesc">Match the pairs in this classic memory challenge to boost sustained attention and binocular coordination.</p>
           <span class="insight" data-i18n="memoryGameInsight">Best for building tracking accuracy across the visual field.</span>
         </a>
         <a href="ball_game.html" class="game-card">
+          <span class="game-card-topline" aria-hidden="true"><span class="game-icon">◎</span><span class="game-number">02</span></span>
           <h3 data-i18n="ballGameTitle">Tracking</h3>
           <p data-i18n="ballGameDesc">Follow and click the numbered balls in sequence as they glide around the screen.</p>
           <span class="insight" data-i18n="ballGameInsight">Supports smooth pursuit control and timing.</span>
         </a>
         <a href="static_ball_game.html" class="game-card">
+          <span class="game-card-topline" aria-hidden="true"><span class="game-icon">↗</span><span class="game-number">03</span></span>
           <h3 data-i18n="staticBallGameTitle">Saccades</h3>
           <p data-i18n="staticBallGameDesc">React to balls that appear one at a time in different locations to sharpen quick eye movements.</p>
           <span class="insight" data-i18n="staticBallGameInsight">Ideal for practicing rapid refixations and visual scanning.</span>

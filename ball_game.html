@@ -40,10 +40,10 @@
     }
 
     @keyframes messageShake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-6px); }
-      50% { transform: translateX(6px); }
-      75% { transform: translateX(-4px); }
+      0%, 100% { transform: translateX(-50%); }
+      25% { transform: translateX(calc(-50% - 6px)); }
+      50% { transform: translateX(calc(-50% + 6px)); }
+      75% { transform: translateX(calc(-50% - 4px)); }
     }
     #controls {
       position: absolute;
@@ -263,6 +263,164 @@
         transform: translate(-50%, -50%) scale(0.3);
       }
     }
+
+    /* Shared clinical-arcade theme: quiet chrome keeps attention on the stimuli. */
+    :root {
+      --ui-surface: rgba(17, 27, 45, 0.9);
+      --ui-surface-strong: rgba(23, 37, 60, 0.97);
+      --ui-border: rgba(163, 191, 226, 0.24);
+      --ui-text: #f4f7fb;
+      --ui-muted: #acbad0;
+      --ui-accent: #77aee8;
+      --ui-focus: #ffd166;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      min-height: 100dvh;
+      background: #060a12;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      background:
+        linear-gradient(rgba(139, 174, 218, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(139, 174, 218, 0.025) 1px, transparent 1px),
+        radial-gradient(circle at 50% 0%, rgba(70, 112, 170, 0.15), transparent 45%);
+      background-size: 48px 48px, 48px 48px, auto;
+    }
+
+    #gameCanvas {
+      background: radial-gradient(circle at 50% 45%, #10192a 0%, #080d17 58%, #04070d 100%);
+      box-shadow: none;
+    }
+
+    #message,
+    #controls,
+    .controls-header {
+      background: var(--ui-surface);
+      border-color: var(--ui-border);
+    }
+
+    #message {
+      top: max(16px, env(safe-area-inset-top));
+      left: 50%;
+      right: auto;
+      transform: translateX(-50%);
+      z-index: 4;
+      max-width: min(620px, calc(100vw - 240px));
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-size: clamp(1rem, 2.2vw, 1.25rem);
+      line-height: 1.25;
+      text-align: center;
+      color: var(--ui-text);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.26);
+    }
+
+    #message.error { transform: translateX(-50%); }
+
+    #controls {
+      top: max(16px, env(safe-area-inset-top));
+      left: max(16px, env(safe-area-inset-left));
+      z-index: 4;
+      width: min(270px, calc(100vw - 32px));
+      min-width: 0;
+      overflow: hidden;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.34);
+    }
+
+    .controls-header {
+      color: var(--ui-text);
+      padding: 0.85rem 1rem;
+    }
+
+    .controls-content {
+      max-height: min(72vh, 600px);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      padding: 16px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--ui-accent) transparent;
+    }
+
+    .controls-content.collapsed {
+      max-height: 0;
+      padding: 0 16px;
+      overflow: hidden;
+    }
+
+    .control-group { margin-bottom: 16px; }
+    label { color: var(--ui-muted); }
+
+    button {
+      min-height: 44px;
+      background: linear-gradient(145deg, #5a8dce, #3e64a5);
+      border-color: rgba(190, 212, 240, 0.25);
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(26, 59, 108, 0.3);
+    }
+
+    button:hover {
+      background: linear-gradient(145deg, #6da2df, #4d77b9);
+      box-shadow: 0 10px 24px rgba(32, 72, 128, 0.38);
+    }
+
+    #languageToggle {
+      top: max(16px, env(safe-area-inset-top));
+      right: max(16px, env(safe-area-inset-right));
+      z-index: 4;
+      background: var(--ui-surface-strong);
+    }
+
+    #navButtons {
+      inset-block-end: max(16px, env(safe-area-inset-bottom));
+      inset-inline-start: max(16px, env(safe-area-inset-left));
+      z-index: 4;
+      padding: 6px;
+      border: 1px solid var(--ui-border);
+      border-radius: 16px;
+      background: rgba(9, 15, 26, 0.76);
+      backdrop-filter: blur(12px);
+    }
+
+    #navButtons button { padding: 10px 15px; }
+
+    input[type="range"] {
+      height: 5px;
+      background: linear-gradient(to right, #6f9ed7, #8cc8e8);
+      box-shadow: none;
+    }
+
+    @media (max-width: 720px) {
+      #message {
+        top: max(10px, env(safe-area-inset-top));
+        max-width: calc(100vw - 154px);
+        padding: 9px 12px;
+      }
+
+      #languageToggle {
+        top: max(8px, env(safe-area-inset-top));
+        right: max(8px, env(safe-area-inset-right));
+        padding: 8px 12px;
+        min-height: 40px;
+      }
+
+      #controls {
+        top: auto;
+        bottom: max(70px, calc(env(safe-area-inset-bottom) + 62px));
+        left: max(8px, env(safe-area-inset-left));
+        width: min(250px, calc(100vw - 16px));
+      }
+
+      #controls .controls-content:not(.collapsed) { max-height: 52dvh; }
+      #navButtons { inset-inline-start: max(8px, env(safe-area-inset-left)); }
+    }
   </style>
 </head>
 	<body>
@@ -306,11 +464,11 @@
     </svg>
   </div>
   <div id="controls">
-    <div class="controls-header" onclick="toggleControls()" tabindex="0" role="button" aria-expanded="true" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleControls()}">
+    <div class="controls-header collapsed" onclick="toggleControls()" tabindex="0" role="button" aria-expanded="false" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleControls()}">
       <span id="controlsHeaderText">הגדרות משחק</span>
       <span class="controls-toggle">▼</span>
     </div>
-    <div class="controls-content" id="controls-content">
+    <div class="controls-content collapsed" id="controls-content">
       <div class="control-group">
         <label id="difficultyLabel">קושי:</label>
         <button id="difficultyStill" onclick="setDifficulty(0)">ללא תנועה</button>
@@ -872,6 +1030,7 @@
       if (!header.classList.contains('collapsed')) {
         header.classList.add('collapsed');
         content.classList.add('collapsed');
+        header.setAttribute('aria-expanded', 'false');
       }
     }
 

@@ -92,11 +92,11 @@
   </div>
 
   <div class="controls-container">
-    <div class="controls-header" onclick="toggleControls()" tabindex="0" role="button" aria-expanded="true" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleControls()}">
+    <div class="controls-header collapsed" onclick="toggleControls()" tabindex="0" role="button" aria-expanded="false" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleControls()}">
       <span data-i18n="controls.settings">Game Settings</span>
       <span class="controls-toggle">▼</span>
     </div>
-    <div class="controls-content" id="controls-content">
+    <div class="controls-content collapsed" id="controls-content">
       <section class="controls">
         <fieldset>
           <legend data-i18n="controls.difficultyLegend">Difficulty</legend>

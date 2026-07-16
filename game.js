@@ -321,6 +321,7 @@ if (typeof document !== 'undefined') {
       if (!header.classList.contains('collapsed')) {
         header.classList.add('collapsed');
         content.classList.add('collapsed');
+        header.setAttribute('aria-expanded', 'false');
       }
     }
 
