@@ -135,6 +135,7 @@ console.log('== Fusion Quest (fusion_quest.html) ==');
   check('no script errors on init', errors.length === 0);
   errors.forEach(e => console.log('   error:', e && e.message || e));
   check('setup opens before play', d.getElementById('setupOverlay').hidden === false);
+  check('mobile setup reports ready', !d.getElementById('startButton').disabled && /Both visible/.test(d.getElementById('startButton').textContent));
   d.getElementById('startButton').click();
   check('starts a 12-round session', d.getElementById('setupOverlay').hidden && d.getElementById('roundStat').textContent.trim() === '1 / 12');
   check('alignment controls enabled', !d.getElementById('leftButton').disabled && !d.getElementById('lockButton').disabled);

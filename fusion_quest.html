@@ -418,6 +418,14 @@
       line-height: 1.5;
     }
 
+    .startup-status {
+      margin: 10px 0 0;
+      color: #ffd88a;
+      font-size: 0.82rem;
+      line-height: 1.45;
+      text-align: center;
+    }
+
     .summary-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -564,8 +572,10 @@
       </div>
       <div class="dialog-actions">
         <a class="secondary-button" href="index.html" style="display:grid;place-items:center;text-decoration:none">Not now</a>
-        <button class="primary-button" id="startButton" type="button">Both visible — start</button>
+        <button class="primary-button" id="startButton" type="button" disabled>Loading game…</button>
       </div>
+      <p class="startup-status" id="startupStatus">If this message remains, download the HTML and open it in Safari or Chrome; attachment previews can block games.</p>
+      <noscript><p class="startup-status">JavaScript is disabled here. Download this file and open it in Safari or Chrome to play.</p></noscript>
       <div class="steps">
         <div class="step"><b>1</b><span>Wear your red/green or red/blue anaglyph glasses and sit at your normal clinician-recommended distance.</span></div>
         <div class="step"><b>2</b><span>Confirm that both symbols above are visible. Adjust intensity only to balance their visibility.</span></div>
@@ -609,12 +619,12 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
-    (() => {
+    (function () {
       'use strict';
 
-      const TOTAL_ROUNDS = 12;
-      const SUCCESS_TOLERANCE = 6;
-      const els = {
+      var TOTAL_ROUNDS = 12;
+      var SUCCESS_TOLERANCE = 6;
+      var els = {
         redLayer: document.getElementById('redLayer'), greenLayer: document.getElementById('greenLayer'), portal: document.getElementById('portal'),
         round: document.getElementById('roundStat'), level: document.getElementById('levelStat'), streak: document.getElementById('streakStat'), time: document.getElementById('timeStat'),
         feedback: document.getElementById('feedback'), missionText: document.getElementById('missionText'), left: document.getElementById('leftButton'),
@@ -622,10 +632,10 @@
         setup: document.getElementById('setupOverlay'), pauseOverlay: document.getElementById('pauseOverlay'), summary: document.getElementById('summaryOverlay'),
         start: document.getElementById('startButton'), resume: document.getElementById('resumeButton'), stop: document.getElementById('stopButton'), playAgain: document.getElementById('playAgainButton'),
         redContrast: document.getElementById('redContrast'), greenContrast: document.getElementById('greenContrast'), redOutput: document.getElementById('redOutput'),
-        greenOutput: document.getElementById('greenOutput'), redCal: document.getElementById('redCalTarget'), greenCal: document.getElementById('greenCalTarget'), step: document.getElementById('stepSize'), toast: document.getElementById('toast')
+        greenOutput: document.getElementById('greenOutput'), redCal: document.getElementById('redCalTarget'), greenCal: document.getElementById('greenCalTarget'), step: document.getElementById('stepSize'), toast: document.getElementById('toast'), startupStatus: document.getElementById('startupStatus')
       };
 
-      const state = {
+      var state = {
         running: false, paused: false, transitioning: false, round: 0, level: 1, offset: 0, startOffset: 0,
         step: 5, attemptsThisRound: 0, totalAttempts: 0, completedRounds: 0, firstTrySuccesses: 0, streak: 0, bestStreak: 0,
         maxSeparation: 0, activeMs: 0, lastTick: 0, frame: 0, redContrast: 1, greenContrast: 1
@@ -634,8 +644,8 @@
       function updateCalibration() {
         state.redContrast = Number(els.redContrast.value) / 100;
         state.greenContrast = Number(els.greenContrast.value) / 100;
-        els.redOutput.value = `${els.redContrast.value}%`;
-        els.greenOutput.value = `${els.greenContrast.value}%`;
+        els.redOutput.value = els.redContrast.value + '%';
+        els.greenOutput.value = els.greenContrast.value + '%';
         els.redCal.style.setProperty('--cal-opacity', state.redContrast);
         els.greenCal.style.setProperty('--cal-opacity', state.greenContrast);
         els.redLayer.style.setProperty('--contrast', state.redContrast);
@@ -643,8 +653,9 @@
       }
 
       function formatTime(milliseconds) {
-        const seconds = Math.floor(milliseconds / 1000);
-        return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
+        var seconds = Math.floor(milliseconds / 1000);
+        var remainder = String(seconds % 60);
+        return Math.floor(seconds / 60) + ':' + (remainder.length < 2 ? '0' + remainder : remainder);
       }
 
       function tick(now) {
@@ -659,19 +670,19 @@
       }
 
       function randomOffset() {
-        const base = Math.min(34 + (state.level - 1) * 8, 74);
-        const variation = Math.floor(Math.random() * 15);
-        const sign = Math.random() < 0.5 ? -1 : 1;
+        var base = Math.min(34 + (state.level - 1) * 8, 74);
+        var variation = Math.floor(Math.random() * 15);
+        var sign = Math.random() < 0.5 ? -1 : 1;
         return sign * (base + variation);
       }
 
       function renderPortal() {
         els.redLayer.style.transform = 'translate(-50%, -50%)';
-        els.greenLayer.style.transform = `translate(calc(-50% + ${state.offset}px), -50%)`;
+        els.greenLayer.style.transform = 'translate(calc(-50% + ' + state.offset + 'px), -50%)';
       }
 
       function updateStats() {
-        els.round.textContent = `${state.round} / ${TOTAL_ROUNDS}`;
+        els.round.textContent = state.round + ' / ' + TOTAL_ROUNDS;
         els.level.textContent = String(state.level);
         els.streak.textContent = String(state.streak);
       }
@@ -700,11 +711,23 @@
       }
 
       function resetSession() {
-        Object.assign(state, {
-          running: true, paused: false, transitioning: false, round: 0, level: 1, offset: 0, startOffset: 0,
-          step: Number(els.step.value), attemptsThisRound: 0, totalAttempts: 0, completedRounds: 0, firstTrySuccesses: 0, streak: 0,
-          bestStreak: 0, maxSeparation: 0, activeMs: 0, lastTick: performance.now()
-        });
+        state.running = true;
+        state.paused = false;
+        state.transitioning = false;
+        state.round = 0;
+        state.level = 1;
+        state.offset = 0;
+        state.startOffset = 0;
+        state.step = Number(els.step.value);
+        state.attemptsThisRound = 0;
+        state.totalAttempts = 0;
+        state.completedRounds = 0;
+        state.firstTrySuccesses = 0;
+        state.streak = 0;
+        state.bestStreak = 0;
+        state.maxSeparation = 0;
+        state.activeMs = 0;
+        state.lastTick = performance.now();
         els.time.textContent = '0:00';
         els.setup.hidden = true;
         els.summary.hidden = true;
@@ -726,7 +749,7 @@
         if (!state.running || state.paused || state.transitioning) return;
         state.attemptsThisRound += 1;
         state.totalAttempts += 1;
-        const error = Math.abs(state.offset);
+        var error = Math.abs(state.offset);
 
         if (error <= SUCCESS_TOLERANCE) {
           state.transitioning = true;
@@ -742,7 +765,7 @@
           els.feedback.textContent = 'Portal fused — excellent binocular lock.';
           enableControls(false);
           updateStats();
-          window.setTimeout(() => {
+          window.setTimeout(function () {
             if (!state.running) return;
             if (state.round >= TOTAL_ROUNDS) finishSession(false);
             else beginRound();
@@ -756,7 +779,8 @@
         }
       }
 
-      function setPaused(paused, automatic = false) {
+      function setPaused(paused, automatic) {
+        automatic = automatic || false;
         if (!state.running || state.transitioning) return;
         state.paused = paused;
         state.lastTick = paused ? 0 : performance.now();
@@ -774,47 +798,47 @@
         state.transitioning = false;
         enableControls(false);
         els.pauseOverlay.hidden = true;
-        const completed = state.completedRounds;
-        const accuracy = completed ? Math.round((state.firstTrySuccesses / completed) * 100) : 0;
-        const avgAttempts = completed ? (state.totalAttempts / completed).toFixed(1) : '0';
+        var completed = state.completedRounds;
+        var accuracy = completed ? Math.round((state.firstTrySuccesses / completed) * 100) : 0;
+        var avgAttempts = completed ? (state.totalAttempts / completed).toFixed(1) : '0';
         document.getElementById('summaryLead').textContent = stopped ? 'The session ended early. Stopping when uncomfortable is the correct choice.' : 'You completed all portal alignments.';
-        document.getElementById('summaryRounds').textContent = `${completed} / ${TOTAL_ROUNDS}`;
-        document.getElementById('summaryAccuracy').textContent = `${accuracy}%`;
+        document.getElementById('summaryRounds').textContent = completed + ' / ' + TOTAL_ROUNDS;
+        document.getElementById('summaryAccuracy').textContent = accuracy + '%';
         document.getElementById('summaryAttempts').textContent = avgAttempts;
-        document.getElementById('summaryRange').textContent = `${state.maxSeparation} px`;
+        document.getElementById('summaryRange').textContent = state.maxSeparation + ' px';
         document.getElementById('summaryStreak').textContent = String(state.bestStreak);
         document.getElementById('summaryTime').textContent = formatTime(state.activeMs);
         els.summary.hidden = false;
         els.playAgain.focus();
         try {
           localStorage.setItem('fusionQuestLastSession', JSON.stringify({
-            completed, totalRounds: TOTAL_ROUNDS, firstTryAccuracy: accuracy, averageAttempts: Number(avgAttempts),
+            completed: completed, totalRounds: TOTAL_ROUNDS, firstTryAccuracy: accuracy, averageAttempts: Number(avgAttempts),
             maxSeparationPx: state.maxSeparation, bestStreak: state.bestStreak, activeSeconds: Math.round(state.activeMs / 1000),
             redIntensity: Math.round(state.redContrast * 100), greenIntensity: Math.round(state.greenContrast * 100), recordedAt: new Date().toISOString()
           }));
         } catch (_) { /* Storage can be unavailable in private browsing. */ }
       }
 
-      let toastTimer;
+      var toastTimer;
       function showToast(message) {
         els.toast.textContent = message;
         els.toast.classList.add('show');
         window.clearTimeout(toastTimer);
-        toastTimer = window.setTimeout(() => els.toast.classList.remove('show'), 2400);
+        toastTimer = window.setTimeout(function () { els.toast.classList.remove('show'); }, 2400);
       }
 
       els.redContrast.addEventListener('input', updateCalibration);
       els.greenContrast.addEventListener('input', updateCalibration);
       els.start.addEventListener('click', resetSession);
-      els.playAgain.addEventListener('click', () => { els.summary.hidden = true; els.setup.hidden = false; els.start.focus(); });
-      els.left.addEventListener('click', () => move(-1));
-      els.right.addEventListener('click', () => move(1));
+      els.playAgain.addEventListener('click', function () { els.summary.hidden = true; els.setup.hidden = false; els.start.focus(); });
+      els.left.addEventListener('click', function () { move(-1); });
+      els.right.addEventListener('click', function () { move(1); });
       els.lock.addEventListener('click', lockAlignment);
-      els.pause.addEventListener('click', () => setPaused(!state.paused));
-      els.resume.addEventListener('click', () => setPaused(false));
-      els.stop.addEventListener('click', () => finishSession(true));
+      els.pause.addEventListener('click', function () { setPaused(!state.paused); });
+      els.resume.addEventListener('click', function () { setPaused(false); });
+      els.stop.addEventListener('click', function () { finishSession(true); });
 
-      document.addEventListener('keydown', (event) => {
+      document.addEventListener('keydown', function (event) {
         if (els.setup.hidden && els.summary.hidden && !state.paused) {
           if (event.key === 'ArrowLeft') { event.preventDefault(); move(-1); }
           if (event.key === 'ArrowRight') { event.preventDefault(); move(1); }
@@ -823,12 +847,15 @@
         if (event.key === 'Escape' && state.running) setPaused(!state.paused);
       });
 
-      document.addEventListener('visibilitychange', () => {
+      document.addEventListener('visibilitychange', function () {
         if (document.hidden && state.running && !state.paused) setPaused(true, true);
       });
 
       updateCalibration();
       state.frame = requestAnimationFrame(tick);
+      els.start.disabled = false;
+      els.start.textContent = 'Both visible — start';
+      els.startupStatus.textContent = 'Game ready. Tap the button above to begin.';
     })();
   </script>
 </body>
