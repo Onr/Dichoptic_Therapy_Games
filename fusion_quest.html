@@ -263,6 +263,28 @@
 
     .portal.locked { filter: drop-shadow(0 0 25px rgba(255, 223, 115, 0.72)); }
     .portal.locked .eye-layer { transition-duration: 220ms; }
+    .portal.catch-round .red-layer { transform: translate(-50%, -50%) !important; }
+    .portal.catch-round .green-layer { transform: translate(-50%, -50%) !important; }
+    .portal.catch-round .eye-layer { animation: catchPulse 1.35s ease-in-out infinite alternate; }
+    @keyframes catchPulse { to { filter: brightness(1.22) drop-shadow(0 0 16px currentColor); } }
+
+    .hold-meter {
+      position: absolute;
+      left: 50%;
+      bottom: 42px;
+      z-index: 3;
+      width: min(260px, 72%);
+      height: 10px;
+      transform: translateX(-50%);
+      overflow: hidden;
+      border: 1px solid rgba(255, 223, 115, 0.4);
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      transition: opacity 160ms ease;
+    }
+    .hold-meter.active { opacity: 1; }
+    .hold-fill { width: 0; height: 100%; background: linear-gradient(90deg, #54a8d8, var(--gold)); }
 
     .direction-hint {
       position: absolute;
@@ -405,6 +427,26 @@
       color: white;
       background: #102a40;
     }
+    .rating-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-top: 8px; }
+    .rating-row input { position: absolute; opacity: 0; pointer-events: none; }
+    .rating-row label {
+      min-height: 42px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      color: #dbeaf5;
+      background: #102a40;
+      cursor: pointer;
+      font-weight: 800;
+    }
+    .rating-row input:checked + label { outline: 2px solid var(--gold); color: #081423; background: var(--gold); }
+    .check-row { display: flex; gap: 10px; align-items: start; margin-top: 14px; color: #d6e2ec; line-height: 1.4; }
+    .check-row input { width: 21px; height: 21px; flex: 0 0 auto; accent-color: var(--blue); }
+    .history-list { margin: 12px 0 18px; padding: 0; list-style: none; display: grid; gap: 7px; }
+    .history-list li { padding: 9px 11px; border-radius: 11px; color: #c9d9e6; background: rgba(16, 42, 65, 0.62); font-size: 0.82rem; }
+    .tutorial-visual { margin: 16px auto; min-height: 120px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 18px; background: rgba(4, 14, 25, 0.7); font-size: 3rem; }
+    .tutorial-progress { color: var(--gold); font-size: 0.78rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
     .dialog-actions { display: grid; grid-template-columns: 1fr 1.5fr; gap: 10px; }
 
     .safety-note {
@@ -517,7 +559,7 @@
 
     <section class="statusbar" aria-label="Session status">
       <div class="stat"><span>Round</span><strong id="roundStat">0 / 12</strong></div>
-      <div class="stat"><span>Level</span><strong id="levelStat">1</strong></div>
+      <div class="stat"><span>Direction</span><strong id="levelStat">—</strong></div>
       <div class="stat"><span>Streak</span><strong id="streakStat">0</strong></div>
       <div class="stat"><span>Time</span><strong id="timeStat">0:00</strong></div>
     </section>
@@ -532,6 +574,7 @@
           <div class="eye-layer red-layer" id="redLayer"></div>
           <div class="eye-layer green-layer" id="greenLayer"></div>
         </div>
+        <div class="hold-meter" id="holdMeter" role="progressbar" aria-label="Fusion hold progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="hold-fill" id="holdFill"></div></div>
         <span class="direction-hint">Move the green-eye layer</span>
       </div>
       <div class="round-feedback" id="feedback" role="status" aria-live="polite">Complete the quick setup to begin.</div>
@@ -569,6 +612,34 @@
             <option value="8">Large — 8 px steps</option>
           </select>
         </div>
+        <div class="field">
+          <label for="maxSeparation">Clinician maximum separation <small>(game pixels; not a clinical measurement)</small></label>
+          <select id="maxSeparation">
+            <option value="48">Gentle — 48 px</option>
+            <option value="64" selected>Standard — 64 px</option>
+            <option value="80">Advanced — 80 px</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="holdSeconds">Required stable hold</label>
+          <select id="holdSeconds">
+            <option value="2">2 seconds</option>
+            <option value="3" selected>3 seconds</option>
+            <option value="5">5 seconds</option>
+          </select>
+        </div>
+        <div class="field">
+          <div class="field-row"><span>Comfort before play</span><small>0 comfortable · 5 stop</small></div>
+          <div class="rating-row" id="preComfort">
+            <input type="radio" name="preComfort" id="pre0" value="0" checked><label for="pre0">0</label>
+            <input type="radio" name="preComfort" id="pre1" value="1"><label for="pre1">1</label>
+            <input type="radio" name="preComfort" id="pre2" value="2"><label for="pre2">2</label>
+            <input type="radio" name="preComfort" id="pre3" value="3"><label for="pre3">3</label>
+            <input type="radio" name="preComfort" id="pre4" value="4"><label for="pre4">4</label>
+            <input type="radio" name="preComfort" id="pre5" value="5"><label for="pre5">5</label>
+          </div>
+        </div>
+        <label class="check-row"><input id="showTutorial" type="checkbox" checked><span>Show the short guided tutorial before this session.</span></label>
       </div>
       <div class="dialog-actions">
         <a class="secondary-button" href="index.html" style="display:grid;place-items:center;text-decoration:none">Not now</a>
@@ -585,6 +656,19 @@
     </div>
   </section>
 
+  <section class="overlay" id="tutorialOverlay" role="dialog" aria-modal="true" aria-labelledby="tutorialTitle" hidden>
+    <div class="dialog-card" style="max-width:520px;text-align:center">
+      <div class="tutorial-progress" id="tutorialProgress">Step 1 of 3</div>
+      <h2 id="tutorialTitle">See both pieces</h2>
+      <div class="tutorial-visual" id="tutorialVisual" aria-hidden="true">◐ + ◑</div>
+      <p id="tutorialText">Each eye receives part of the portal. Keep both visible; neither piece is enough by itself.</p>
+      <div class="dialog-actions">
+        <button class="secondary-button" id="tutorialSkip" type="button">Skip</button>
+        <button class="primary-button" id="tutorialNext" type="button">Next</button>
+      </div>
+    </div>
+  </section>
+
   <section class="overlay" id="pauseOverlay" role="dialog" aria-modal="true" aria-labelledby="pauseTitle" hidden>
     <div class="dialog-card" style="max-width:470px;text-align:center">
       <h2 id="pauseTitle">Session paused</h2>
@@ -593,6 +677,22 @@
         <button class="danger-button" id="stopButton" type="button">Stop session</button>
         <button class="primary-button" id="resumeButton" type="button">Resume</button>
       </div>
+    </div>
+  </section>
+
+  <section class="overlay" id="comfortOverlay" role="dialog" aria-modal="true" aria-labelledby="comfortTitle" hidden>
+    <div class="dialog-card" style="max-width:480px;text-align:center">
+      <h2 id="comfortTitle">How do your eyes feel now?</h2>
+      <p>Choose 0 for comfortable or 5 for significant discomfort. This records symptoms; it does not diagnose them.</p>
+      <div class="rating-row" id="postComfort">
+        <input type="radio" name="postComfort" id="post0" value="0" checked><label for="post0">0</label>
+        <input type="radio" name="postComfort" id="post1" value="1"><label for="post1">1</label>
+        <input type="radio" name="postComfort" id="post2" value="2"><label for="post2">2</label>
+        <input type="radio" name="postComfort" id="post3" value="3"><label for="post3">3</label>
+        <input type="radio" name="postComfort" id="post4" value="4"><label for="post4">4</label>
+        <input type="radio" name="postComfort" id="post5" value="5"><label for="post5">5</label>
+      </div>
+      <button class="primary-button" id="comfortContinue" type="button" style="width:100%;margin-top:18px">View summary</button>
     </div>
   </section>
 
@@ -607,7 +707,13 @@
         <div class="summary-item"><span>Largest separation</span><strong id="summaryRange">0 px</strong></div>
         <div class="summary-item"><span>Best streak</span><strong id="summaryStreak">0</strong></div>
         <div class="summary-item"><span>Active time</span><strong id="summaryTime">0:00</strong></div>
+        <div class="summary-item"><span>Stable fusion holds</span><strong id="summaryHolds">0</strong></div>
+        <div class="summary-item"><span>Suppression checks</span><strong id="summaryCatch">0 / 0</strong></div>
+        <div class="summary-item"><span>Comfort change</span><strong id="summaryComfort">0 → 0</strong></div>
+        <div class="summary-item"><span>Directions trained</span><strong id="summaryDirections">0 / 0</strong></div>
       </div>
+      <h3>Recent sessions</h3>
+      <ul class="history-list" id="historyList"><li>No earlier sessions stored on this device.</li></ul>
       <p class="summary-note">“Largest separation” is a game setting measured in screen pixels, not a clinical vergence measurement. Share symptoms and results with your clinician if they use this exercise in your plan.</p>
       <div class="dialog-actions">
         <a class="secondary-button" href="index.html" style="display:grid;place-items:center;text-decoration:none">Home</a>
@@ -629,17 +735,28 @@
         round: document.getElementById('roundStat'), level: document.getElementById('levelStat'), streak: document.getElementById('streakStat'), time: document.getElementById('timeStat'),
         feedback: document.getElementById('feedback'), missionText: document.getElementById('missionText'), left: document.getElementById('leftButton'),
         right: document.getElementById('rightButton'), lock: document.getElementById('lockButton'), pause: document.getElementById('pauseButton'),
-        setup: document.getElementById('setupOverlay'), pauseOverlay: document.getElementById('pauseOverlay'), summary: document.getElementById('summaryOverlay'),
+        setup: document.getElementById('setupOverlay'), tutorial: document.getElementById('tutorialOverlay'), pauseOverlay: document.getElementById('pauseOverlay'), comfort: document.getElementById('comfortOverlay'), summary: document.getElementById('summaryOverlay'),
         start: document.getElementById('startButton'), resume: document.getElementById('resumeButton'), stop: document.getElementById('stopButton'), playAgain: document.getElementById('playAgainButton'),
         redContrast: document.getElementById('redContrast'), greenContrast: document.getElementById('greenContrast'), redOutput: document.getElementById('redOutput'),
-        greenOutput: document.getElementById('greenOutput'), redCal: document.getElementById('redCalTarget'), greenCal: document.getElementById('greenCalTarget'), step: document.getElementById('stepSize'), toast: document.getElementById('toast'), startupStatus: document.getElementById('startupStatus')
+        greenOutput: document.getElementById('greenOutput'), redCal: document.getElementById('redCalTarget'), greenCal: document.getElementById('greenCalTarget'), step: document.getElementById('stepSize'),
+        maxSeparation: document.getElementById('maxSeparation'), holdSeconds: document.getElementById('holdSeconds'), showTutorial: document.getElementById('showTutorial'),
+        holdMeter: document.getElementById('holdMeter'), holdFill: document.getElementById('holdFill'), comfortContinue: document.getElementById('comfortContinue'), historyList: document.getElementById('historyList'),
+        tutorialProgress: document.getElementById('tutorialProgress'), tutorialTitle: document.getElementById('tutorialTitle'), tutorialVisual: document.getElementById('tutorialVisual'), tutorialText: document.getElementById('tutorialText'), tutorialSkip: document.getElementById('tutorialSkip'), tutorialNext: document.getElementById('tutorialNext'),
+        toast: document.getElementById('toast'), startupStatus: document.getElementById('startupStatus')
       };
 
       var state = {
-        running: false, paused: false, transitioning: false, round: 0, level: 1, offset: 0, startOffset: 0,
+        running: false, paused: false, transitioning: false, holding: false, stopped: false, round: 0, level: 1, offset: 0, startOffset: 0, direction: '',
         step: 5, attemptsThisRound: 0, totalAttempts: 0, completedRounds: 0, firstTrySuccesses: 0, streak: 0, bestStreak: 0,
-        maxSeparation: 0, activeMs: 0, lastTick: 0, frame: 0, redContrast: 1, greenContrast: 1
+        maxSeparation: 0, maxAllowed: 64, holdMs: 3000, holdStart: 0, stableHolds: 0, catchCorrect: 0, catchTotal: 0, convergence: 0, divergence: 0, preComfort: 0, postComfort: 0, tutorialStep: 0,
+        activeMs: 0, lastTick: 0, frame: 0, redContrast: 1, greenContrast: 1
       };
+      var CATCH_ROUNDS = { 4: true, 9: true };
+
+      function checkedValue(name) {
+        var item = document.querySelector('input[name="' + name + '"]:checked');
+        return item ? Number(item.value) : 0;
+      }
 
       function updateCalibration() {
         state.redContrast = Number(els.redContrast.value) / 100;
@@ -663,6 +780,7 @@
           if (state.lastTick) state.activeMs += Math.min(now - state.lastTick, 100);
           state.lastTick = now;
           els.time.textContent = formatTime(state.activeMs);
+          if (state.holding) updateHold(now);
         } else {
           state.lastTick = 0;
         }
@@ -670,8 +788,8 @@
       }
 
       function randomOffset() {
-        var base = Math.min(34 + (state.level - 1) * 8, 74);
-        var variation = Math.floor(Math.random() * 15);
+        var base = Math.min(32 + (state.level - 1) * 6, state.maxAllowed);
+        var variation = Math.min(Math.floor(Math.random() * 9), state.maxAllowed - base);
         var sign = Math.random() < 0.5 ? -1 : 1;
         return sign * (base + variation);
       }
@@ -683,7 +801,7 @@
 
       function updateStats() {
         els.round.textContent = state.round + ' / ' + TOTAL_ROUNDS;
-        els.level.textContent = String(state.level);
+        els.level.textContent = CATCH_ROUNDS[state.round] ? 'Check' : state.direction;
         els.streak.textContent = String(state.streak);
       }
 
@@ -698,13 +816,35 @@
         state.round += 1;
         state.attemptsThisRound = 0;
         state.transitioning = false;
-        state.startOffset = randomOffset();
-        state.offset = state.startOffset;
-        state.maxSeparation = Math.max(state.maxSeparation, Math.abs(state.startOffset));
+        state.holding = false;
         els.portal.classList.remove('locked');
+        els.portal.classList.remove('catch-round');
+        els.holdMeter.classList.remove('active');
+        els.holdFill.style.width = '0%';
         els.feedback.className = 'round-feedback';
-        els.feedback.textContent = 'Align the complementary pieces, then lock the portal.';
-        els.missionText.textContent = 'Use the arrows until the red and green pieces form one complete portal.';
+        if (CATCH_ROUNDS[state.round]) {
+          state.catchTotal += 1;
+          state.startOffset = 0;
+          state.offset = 0;
+          state.direction = 'Check';
+          els.portal.classList.add('catch-round');
+          els.feedback.textContent = 'Suppression check: confirm that both colored pieces are visible.';
+          els.missionText.textContent = 'Which portal pieces can you see right now? Answer honestly; there is no penalty.';
+          els.left.textContent = 'Red only';
+          els.right.textContent = 'Green only';
+          els.lock.textContent = 'Both';
+        } else {
+          state.startOffset = randomOffset();
+          state.offset = state.startOffset;
+          state.direction = state.startOffset < 0 ? 'Converge' : 'Diverge';
+          if (state.startOffset < 0) state.convergence += 1; else state.divergence += 1;
+          state.maxSeparation = Math.max(state.maxSeparation, Math.abs(state.startOffset));
+          els.feedback.textContent = 'Align the complementary pieces, then lock the portal.';
+          els.missionText.textContent = 'Use the arrows until one portal appears, then hold the fused view.';
+          els.left.textContent = '←';
+          els.right.textContent = '→';
+          els.lock.textContent = 'Lock & hold';
+        }
         updateStats();
         renderPortal();
         enableControls(true);
@@ -719,6 +859,9 @@
         state.offset = 0;
         state.startOffset = 0;
         state.step = Number(els.step.value);
+        state.maxAllowed = Number(els.maxSeparation.value);
+        state.holdMs = Number(els.holdSeconds.value) * 1000;
+        state.preComfort = checkedValue('preComfort');
         state.attemptsThisRound = 0;
         state.totalAttempts = 0;
         state.completedRounds = 0;
@@ -726,10 +869,18 @@
         state.streak = 0;
         state.bestStreak = 0;
         state.maxSeparation = 0;
+        state.stableHolds = 0;
+        state.catchCorrect = 0;
+        state.catchTotal = 0;
+        state.convergence = 0;
+        state.divergence = 0;
+        state.stopped = false;
         state.activeMs = 0;
         state.lastTick = performance.now();
         els.time.textContent = '0:00';
         els.setup.hidden = true;
+        els.tutorial.hidden = true;
+        els.comfort.hidden = true;
         els.summary.hidden = true;
         els.pauseOverlay.hidden = true;
         els.pause.textContent = 'Ⅱ';
@@ -738,8 +889,9 @@
       }
 
       function move(direction) {
-        if (!state.running || state.paused || state.transitioning) return;
-        state.offset = Math.max(-110, Math.min(110, state.offset + direction * state.step));
+        if (!state.running || state.paused || state.transitioning || state.holding) return;
+        if (CATCH_ROUNDS[state.round]) { recordCatch(false, direction < 0 ? 'red' : 'green'); return; }
+        state.offset = Math.max(-state.maxAllowed, Math.min(state.maxAllowed, state.offset + direction * state.step));
         renderPortal();
         els.feedback.className = 'round-feedback';
         els.feedback.textContent = 'When the shape looks complete, lock the alignment.';
@@ -747,29 +899,26 @@
 
       function lockAlignment() {
         if (!state.running || state.paused || state.transitioning) return;
+        if (CATCH_ROUNDS[state.round]) {
+          recordCatch(true, 'both');
+          return;
+        }
         state.attemptsThisRound += 1;
         state.totalAttempts += 1;
         var error = Math.abs(state.offset);
 
         if (error <= SUCCESS_TOLERANCE) {
-          state.transitioning = true;
           state.offset = 0;
-          state.streak += 1;
-          state.completedRounds += 1;
-          state.bestStreak = Math.max(state.bestStreak, state.streak);
-          if (state.attemptsThisRound === 1) state.firstTrySuccesses += 1;
-          if (state.streak > 0 && state.streak % 2 === 0) state.level = Math.min(6, state.level + 1);
+          state.holding = true;
+          state.holdStart = performance.now();
           renderPortal();
           els.portal.classList.add('locked');
           els.feedback.className = 'round-feedback good';
-          els.feedback.textContent = 'Portal fused — excellent binocular lock.';
+          els.feedback.textContent = 'Keep the fused portal steady…';
+          els.holdMeter.classList.add('active');
+          els.holdFill.style.width = '0%';
           enableControls(false);
-          updateStats();
-          window.setTimeout(function () {
-            if (!state.running) return;
-            if (state.round >= TOTAL_ROUNDS) finishSession(false);
-            else beginRound();
-          }, 850);
+          els.pause.disabled = false;
         } else {
           state.streak = 0;
           if (state.attemptsThisRound >= 3 && state.level > 1) state.level -= 1;
@@ -779,11 +928,70 @@
         }
       }
 
+      function recordCatch(bothVisible, visibleChannel) {
+        if (state.transitioning) return;
+        if (bothVisible) {
+          state.catchCorrect += 1;
+          state.completedRounds += 1;
+          state.streak += 1;
+          state.bestStreak = Math.max(state.bestStreak, state.streak);
+          els.feedback.className = 'round-feedback good';
+          els.feedback.textContent = 'Both-eye visibility recorded.';
+        } else {
+          state.streak = 0;
+          els.feedback.className = 'round-feedback try';
+          els.feedback.textContent = 'Only ' + visibleChannel + ' was visible. This is useful to report; consider pausing to rebalance intensity.';
+        }
+        updateStats();
+        advanceRound(1100);
+      }
+
+      function updateHold(now) {
+        var elapsed = now - state.holdStart;
+        var progress = Math.min(100, Math.round((elapsed / state.holdMs) * 100));
+        els.holdFill.style.width = progress + '%';
+        els.holdMeter.setAttribute('aria-valuenow', String(progress));
+        els.feedback.textContent = 'Keep both pieces fused… ' + Math.max(0, Math.ceil((state.holdMs - elapsed) / 1000)) + 's';
+        if (elapsed >= state.holdMs) completeHold();
+      }
+
+      function completeHold() {
+        if (!state.holding) return;
+        state.holding = false;
+        state.stableHolds += 1;
+        state.completedRounds += 1;
+        state.streak += 1;
+        state.bestStreak = Math.max(state.bestStreak, state.streak);
+        if (state.attemptsThisRound === 1) state.firstTrySuccesses += 1;
+        if (state.streak % 2 === 0) state.level = Math.min(6, state.level + 1);
+        els.feedback.textContent = 'Stable fusion hold complete.';
+        els.holdFill.style.width = '100%';
+        updateStats();
+        advanceRound(650);
+      }
+
+      function advanceRound(delay) {
+        state.transitioning = true;
+        enableControls(false);
+        window.setTimeout(function () {
+          if (!state.running) return;
+          if (state.round >= TOTAL_ROUNDS) finishSession(false);
+          else beginRound();
+        }, delay);
+      }
+
       function setPaused(paused, automatic) {
         automatic = automatic || false;
         if (!state.running || state.transitioning) return;
         state.paused = paused;
         state.lastTick = paused ? 0 : performance.now();
+        if (state.holding) {
+          state.holding = false;
+          els.holdMeter.classList.remove('active');
+          els.holdFill.style.width = '0%';
+          els.portal.classList.remove('locked');
+          showToast('Fusion hold reset after pause');
+        }
         els.pauseOverlay.hidden = !paused;
         els.pause.textContent = paused ? '▶' : 'Ⅱ';
         els.pause.setAttribute('aria-label', paused ? 'Resume game' : 'Pause game');
@@ -796,27 +1004,60 @@
         state.running = false;
         state.paused = false;
         state.transitioning = false;
+        state.holding = false;
+        state.stopped = stopped;
         enableControls(false);
         els.pauseOverlay.hidden = true;
+        els.holdMeter.classList.remove('active');
+        els.comfort.hidden = false;
+        els.comfortContinue.focus();
+      }
+
+      function saveAndShowSummary() {
         var completed = state.completedRounds;
-        var accuracy = completed ? Math.round((state.firstTrySuccesses / completed) * 100) : 0;
-        var avgAttempts = completed ? (state.totalAttempts / completed).toFixed(1) : '0';
-        document.getElementById('summaryLead').textContent = stopped ? 'The session ended early. Stopping when uncomfortable is the correct choice.' : 'You completed all portal alignments.';
+        var accuracy = state.stableHolds ? Math.round((state.firstTrySuccesses / state.stableHolds) * 100) : 0;
+        var avgAttempts = state.stableHolds ? (state.totalAttempts / state.stableHolds).toFixed(1) : '0';
+        state.postComfort = checkedValue('postComfort');
+        document.getElementById('summaryLead').textContent = state.stopped ? 'The session ended early. Stopping when uncomfortable is the correct choice.' : 'You completed the binocular mission.';
         document.getElementById('summaryRounds').textContent = completed + ' / ' + TOTAL_ROUNDS;
         document.getElementById('summaryAccuracy').textContent = accuracy + '%';
         document.getElementById('summaryAttempts').textContent = avgAttempts;
         document.getElementById('summaryRange').textContent = state.maxSeparation + ' px';
         document.getElementById('summaryStreak').textContent = String(state.bestStreak);
         document.getElementById('summaryTime').textContent = formatTime(state.activeMs);
+        document.getElementById('summaryHolds').textContent = String(state.stableHolds);
+        document.getElementById('summaryCatch').textContent = state.catchCorrect + ' / ' + state.catchTotal;
+        document.getElementById('summaryComfort').textContent = state.preComfort + ' → ' + state.postComfort;
+        document.getElementById('summaryDirections').textContent = state.convergence + ' / ' + state.divergence;
+        els.comfort.hidden = true;
         els.summary.hidden = false;
         els.playAgain.focus();
+        var session = {
+          completed: completed, totalRounds: TOTAL_ROUNDS, firstTryAccuracy: accuracy, averageAttempts: Number(avgAttempts),
+          maxSeparationPx: state.maxSeparation, stableHolds: state.stableHolds, catchCorrect: state.catchCorrect, catchTotal: state.catchTotal,
+          convergenceRounds: state.convergence, divergenceRounds: state.divergence, preComfort: state.preComfort, postComfort: state.postComfort,
+          activeSeconds: Math.round(state.activeMs / 1000), recordedAt: new Date().toISOString()
+        };
+        var history = [];
         try {
-          localStorage.setItem('fusionQuestLastSession', JSON.stringify({
-            completed: completed, totalRounds: TOTAL_ROUNDS, firstTryAccuracy: accuracy, averageAttempts: Number(avgAttempts),
-            maxSeparationPx: state.maxSeparation, bestStreak: state.bestStreak, activeSeconds: Math.round(state.activeMs / 1000),
-            redIntensity: Math.round(state.redContrast * 100), greenIntensity: Math.round(state.greenContrast * 100), recordedAt: new Date().toISOString()
-          }));
-        } catch (_) { /* Storage can be unavailable in private browsing. */ }
+          history = JSON.parse(localStorage.getItem('fusionQuestHistory') || '[]');
+          if (!(history instanceof Array)) history = [];
+          history.unshift(session);
+          history = history.slice(0, 5);
+          localStorage.setItem('fusionQuestHistory', JSON.stringify(history));
+          localStorage.setItem('fusionQuestLastSession', JSON.stringify(session));
+        } catch (ignore) { history = [session]; }
+        renderHistory(history);
+      }
+
+      function renderHistory(history) {
+        while (els.historyList.firstChild) els.historyList.removeChild(els.historyList.firstChild);
+        for (var index = 0; index < history.length; index += 1) {
+          var item = document.createElement('li');
+          var sessionDate = new Date(history[index].recordedAt);
+          item.textContent = sessionDate.toLocaleDateString() + ' · ' + history[index].completed + '/' + history[index].totalRounds + ' rounds · ' + history[index].stableHolds + ' holds · comfort ' + history[index].preComfort + '→' + history[index].postComfort;
+          els.historyList.appendChild(item);
+        }
       }
 
       var toastTimer;
@@ -827,9 +1068,44 @@
         toastTimer = window.setTimeout(function () { els.toast.classList.remove('show'); }, 2400);
       }
 
+      function requestStart() {
+        if (checkedValue('preComfort') >= 5) {
+          els.startupStatus.textContent = 'A comfort rating of 5 means stop. Do not begin; rest and follow your clinician’s guidance.';
+          return;
+        }
+        els.setup.hidden = true;
+        if (els.showTutorial.checked) {
+          state.tutorialStep = 0;
+          els.tutorial.hidden = false;
+          renderTutorial();
+        } else resetSession();
+      }
+
+      function renderTutorial() {
+        var titles = ['See both pieces', 'Align, then hold', 'Watch for check rounds'];
+        var visuals = ['◐ + ◑', '← ◎ →', '◆ + ＋'];
+        var texts = [
+          'Each eye receives part of the portal. Keep both visible; neither piece is enough by itself.',
+          'Move the green piece until one portal appears. Lock it, then keep the image steady while the hold bar fills.',
+          'On a suppression check, do not use the arrows. Confirm both colored pieces only when you can see both.'
+        ];
+        els.tutorialProgress.textContent = 'Step ' + (state.tutorialStep + 1) + ' of 3';
+        els.tutorialTitle.textContent = titles[state.tutorialStep];
+        els.tutorialVisual.textContent = visuals[state.tutorialStep];
+        els.tutorialText.textContent = texts[state.tutorialStep];
+        els.tutorialNext.textContent = state.tutorialStep === 2 ? 'Begin mission' : 'Next';
+      }
+
+      function nextTutorial() {
+        if (state.tutorialStep >= 2) resetSession();
+        else { state.tutorialStep += 1; renderTutorial(); }
+      }
+
       els.redContrast.addEventListener('input', updateCalibration);
       els.greenContrast.addEventListener('input', updateCalibration);
-      els.start.addEventListener('click', resetSession);
+      els.start.addEventListener('click', requestStart);
+      els.tutorialNext.addEventListener('click', nextTutorial);
+      els.tutorialSkip.addEventListener('click', resetSession);
       els.playAgain.addEventListener('click', function () { els.summary.hidden = true; els.setup.hidden = false; els.start.focus(); });
       els.left.addEventListener('click', function () { move(-1); });
       els.right.addEventListener('click', function () { move(1); });
@@ -837,9 +1113,10 @@
       els.pause.addEventListener('click', function () { setPaused(!state.paused); });
       els.resume.addEventListener('click', function () { setPaused(false); });
       els.stop.addEventListener('click', function () { finishSession(true); });
+      els.comfortContinue.addEventListener('click', saveAndShowSummary);
 
       document.addEventListener('keydown', function (event) {
-        if (els.setup.hidden && els.summary.hidden && !state.paused) {
+        if (els.setup.hidden && els.tutorial.hidden && els.comfort.hidden && els.summary.hidden && !state.paused) {
           if (event.key === 'ArrowLeft') { event.preventDefault(); move(-1); }
           if (event.key === 'ArrowRight') { event.preventDefault(); move(1); }
           if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); lockAlignment(); }
@@ -854,8 +1131,8 @@
       updateCalibration();
       state.frame = requestAnimationFrame(tick);
       els.start.disabled = false;
-      els.start.textContent = 'Both visible — start';
-      els.startupStatus.textContent = 'Game ready. Tap the button above to begin.';
+      els.start.textContent = 'Both visible — continue';
+      els.startupStatus.textContent = 'Game ready. Tap the button above to continue.';
     })();
   </script>
 </body>

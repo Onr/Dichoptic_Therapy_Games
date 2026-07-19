@@ -137,6 +137,10 @@ console.log('== Fusion Quest (fusion_quest.html) ==');
   check('setup opens before play', d.getElementById('setupOverlay').hidden === false);
   check('mobile setup reports ready', !d.getElementById('startButton').disabled && /Both visible/.test(d.getElementById('startButton').textContent));
   d.getElementById('startButton').click();
+  check('guided tutorial opens', !d.getElementById('tutorialOverlay').hidden && /Step 1/.test(d.getElementById('tutorialProgress').textContent));
+  d.getElementById('tutorialNext').click();
+  check('tutorial advances', /Step 2/.test(d.getElementById('tutorialProgress').textContent));
+  d.getElementById('tutorialSkip').click();
   check('starts a 12-round session', d.getElementById('setupOverlay').hidden && d.getElementById('roundStat').textContent.trim() === '1 / 12');
   check('alignment controls enabled', !d.getElementById('leftButton').disabled && !d.getElementById('lockButton').disabled);
   d.getElementById('pauseButton').click();
@@ -146,12 +150,13 @@ console.log('== Fusion Quest (fusion_quest.html) ==');
   const transform = d.getElementById('greenLayer').style.transform;
   const offsetMatch = transform.match(/([+-]?\d+)px/);
   const offset = offsetMatch ? Number(offsetMatch[1]) : NaN;
-  check('round begins with visible separation', Number.isFinite(offset) && Math.abs(offset) >= 34);
+  check('round begins with visible separation', Number.isFinite(offset) && Math.abs(offset) >= 32);
   const step = Number(d.getElementById('stepSize').value);
   const button = offset > 0 ? d.getElementById('leftButton') : d.getElementById('rightButton');
   for (let i = 0; i < Math.round(Math.abs(offset) / step); i++) button.click();
   d.getElementById('lockButton').click();
   check('aligned portal is accepted', d.getElementById('portal').classList.contains('locked'));
+  check('stable fusion hold begins', d.getElementById('holdMeter').classList.contains('active'));
   dom.window.close();
 }
 
