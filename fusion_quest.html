@@ -148,13 +148,13 @@
       overflow: hidden;
       border-radius: 24px;
       display: grid;
-      grid-template-rows: auto 1fr auto;
+      grid-template-rows: auto auto 1fr auto;
       min-height: 0;
     }
 
     .mission {
       z-index: 2;
-      padding: 14px 18px 8px;
+      padding: 14px 18px 4px;
       text-align: center;
     }
     .mission h1 {
@@ -167,6 +167,33 @@
       color: var(--muted);
       font-size: clamp(0.78rem, 2.4vw, 0.95rem);
     }
+
+    .gate-path {
+      z-index: 2;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 7px;
+      padding: 6px 12px 8px;
+    }
+    .gate-dot {
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      border: 1px solid rgba(146, 191, 228, 0.42);
+      background: rgba(20, 44, 70, 0.85);
+      transition: background 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+    }
+    .gate-dot.check { border-radius: 4px; transform: rotate(45deg) scale(0.92); }
+    .gate-dot.current {
+      border-color: var(--gold);
+      background: rgba(74, 60, 18, 0.95);
+      box-shadow: 0 0 9px rgba(255, 209, 102, 0.65);
+    }
+    .gate-dot.done { border-color: rgba(255, 209, 102, 0.7); }
+    .gate-dot.done.s1 { background: #8a6d3b; }
+    .gate-dot.done.s2 { background: #d8b25e; }
+    .gate-dot.done.s3 { background: var(--gold); box-shadow: 0 0 9px rgba(255, 209, 102, 0.85); }
 
     .space {
       position: relative;
@@ -206,8 +233,10 @@
     .portal {
       position: absolute;
       inset: 0;
-      transition: filter 180ms ease;
+      opacity: 1;
+      transition: filter 180ms ease, opacity 280ms ease;
     }
+    .portal.fading { opacity: 0; }
 
     .eye-layer {
       --contrast: 1;
@@ -219,7 +248,7 @@
       border-radius: 50%;
       transform: translate(-50%, -50%);
       opacity: var(--contrast);
-      transition: transform 110ms ease-out, opacity 150ms ease;
+      transition: opacity 150ms ease, border-radius 300ms ease;
       mix-blend-mode: screen;
       filter: drop-shadow(0 0 12px currentColor);
     }
@@ -231,6 +260,11 @@
       inset: 0;
       border-radius: inherit;
     }
+
+    /* Each gate uses a different portal silhouette for a sense of journey. */
+    .portal.shape-diamond .eye-layer { border-radius: 20%; }
+    .portal.shape-leaf .eye-layer { border-radius: 54% 16% 54% 16%; }
+    .portal.shape-moon .eye-layer { border-radius: 58% 42% 46% 54% / 48% 56% 44% 52%; }
 
     .red-layer { color: var(--red); }
     .green-layer { color: var(--green); }
@@ -262,11 +296,51 @@
     }
 
     .portal.locked { filter: drop-shadow(0 0 25px rgba(255, 223, 115, 0.72)); }
-    .portal.locked .eye-layer { transition-duration: 220ms; }
     .portal.catch-round .red-layer { transform: translate(-50%, -50%) !important; }
     .portal.catch-round .green-layer { transform: translate(-50%, -50%) !important; }
     .portal.catch-round .eye-layer { animation: catchPulse 1.35s ease-in-out infinite alternate; }
     @keyframes catchPulse { to { filter: brightness(1.22) drop-shadow(0 0 16px currentColor); } }
+
+    .burst {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      z-index: 2;
+      width: clamp(116px, 28vw, 190px);
+      aspect-ratio: 1;
+      border: 3px solid rgba(255, 209, 102, 0.85);
+      border-radius: 50%;
+      transform: translate(-50%, -50%) scale(0.55);
+      opacity: 0;
+      pointer-events: none;
+    }
+    .burst.show { animation: burstRing 750ms ease-out; }
+    @keyframes burstRing {
+      0% { opacity: 0.95; transform: translate(-50%, -50%) scale(0.55); }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(1.85); }
+    }
+
+    .star-pop {
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      z-index: 3;
+      transform: translate(-50%, -10%);
+      color: var(--gold);
+      font-size: 1.7rem;
+      font-weight: 900;
+      letter-spacing: 0.16em;
+      text-shadow: 0 0 16px rgba(255, 209, 102, 0.85);
+      opacity: 0;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    .star-pop.show { animation: starPop 950ms ease-out; }
+    @keyframes starPop {
+      0% { opacity: 0; transform: translate(-50%, -10%); }
+      25% { opacity: 1; }
+      100% { opacity: 0; transform: translate(-50%, -130%); }
+    }
 
     .hold-meter {
       position: absolute;
@@ -338,6 +412,14 @@
     button:disabled { opacity: 0.45; cursor: not-allowed; }
     button:not(:disabled):active { transform: translateY(1px) scale(0.99); }
 
+    /* Check rounds recolor the whole dock so the changed button meanings are obvious. */
+    .control-dock.check-mode .move-button,
+    .control-dock.check-mode .lock-button {
+      font-size: 0.95rem;
+      border-color: rgba(206, 160, 255, 0.5);
+      background: linear-gradient(145deg, #4d3a76, #342650);
+    }
+
     .overlay {
       position: fixed;
       inset: 0;
@@ -364,6 +446,13 @@
     }
     .dialog-card h2 { margin: 0 0 8px; font-size: clamp(1.45rem, 5vw, 2rem); }
     .dialog-card > p { margin: 0 0 18px; color: var(--muted); line-height: 1.55; }
+    .goal-line {
+      margin: -6px 0 16px;
+      color: var(--gold);
+      font-weight: 800;
+      font-size: 0.86rem;
+      letter-spacing: 0.05em;
+    }
     .steps { display: grid; gap: 10px; margin: 0 0 18px; }
     .step {
       display: grid;
@@ -448,6 +537,7 @@
     .tutorial-visual { margin: 16px auto; min-height: 120px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 18px; background: rgba(4, 14, 25, 0.7); font-size: 3rem; }
     .tutorial-progress { color: var(--gold); font-size: 0.78rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
     .dialog-actions { display: grid; grid-template-columns: 1fr 1.5fr; gap: 10px; }
+    .dialog-actions.triple { grid-template-columns: 1fr 1.15fr 1.5fr; }
 
     .safety-note {
       margin-top: 15px;
@@ -468,11 +558,36 @@
       text-align: center;
     }
 
+    .summary-hero {
+      margin: 4px 0 16px;
+      padding: 16px 12px 14px;
+      border: 1px solid rgba(255, 209, 102, 0.28);
+      border-radius: 18px;
+      background: radial-gradient(circle at 50% 0%, rgba(94, 74, 18, 0.35), rgba(16, 42, 65, 0.55) 70%);
+      text-align: center;
+    }
+    .summary-stars {
+      font-size: 2.1rem;
+      font-weight: 900;
+      color: var(--gold);
+      text-shadow: 0 0 18px rgba(255, 209, 102, 0.55);
+    }
+    .summary-headline { margin: 6px 0 3px; font-size: 1.06rem; font-weight: 800; color: #ffe9b0; }
+    .summary-meta { color: var(--muted); font-size: 0.82rem; }
+    .summary-path {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 7px;
+      margin: 13px 0 2px;
+    }
+    .summary-encourage { margin: 10px 0 0; color: #cfdeeb; font-size: 0.9rem; line-height: 1.45; }
+
     .summary-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 10px;
-      margin: 18px 0;
+      margin: 14px 0 18px;
     }
     .summary-item {
       padding: 14px;
@@ -483,6 +598,7 @@
     .summary-item span { display: block; color: var(--muted); font-size: 0.76rem; }
     .summary-item strong { display: block; margin-top: 3px; font-size: 1.25rem; }
     .summary-note { font-size: 0.8rem; color: var(--muted); }
+    .details-heading { margin: 0 0 4px; font-size: 1rem; color: #d6e2ec; }
 
     .toast {
       position: fixed;
@@ -515,6 +631,7 @@
       .stat span { letter-spacing: 0.03em; }
       .play-card { border-radius: 19px; }
       .space { min-height: 210px; }
+      .gate-dot { width: 13px; height: 13px; }
       .overlay { place-items: start center; }
       .dialog-card {
         max-height: none;
@@ -530,7 +647,8 @@
         padding: 10px 6px max(10px, env(safe-area-inset-bottom));
         background: linear-gradient(180deg, rgba(8, 20, 35, 0), #081423 16px);
       }
-      .dialog-actions { grid-template-columns: 1fr; }
+      .dialog-actions,
+      .dialog-actions.triple { grid-template-columns: 1fr; }
       .summary-grid { gap: 8px; }
     }
 
@@ -543,7 +661,7 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
     }
   </style>
 </head>
@@ -558,9 +676,9 @@
     </header>
 
     <section class="statusbar" aria-label="Session status">
-      <div class="stat"><span>Round</span><strong id="roundStat">0 / 12</strong></div>
+      <div class="stat"><span>Gate</span><strong id="roundStat">0 / 12</strong></div>
       <div class="stat"><span>Direction</span><strong id="levelStat">—</strong></div>
-      <div class="stat"><span>Streak</span><strong id="streakStat">0</strong></div>
+      <div class="stat"><span>Stars</span><strong id="streakStat">0</strong></div>
       <div class="stat"><span>Time</span><strong id="timeStat">0:00</strong></div>
     </section>
 
@@ -569,18 +687,21 @@
         <h1 id="missionTitle">Bring both portal halves together</h1>
         <p id="missionText">Use the arrows until the red and green pieces form one complete portal.</p>
       </div>
+      <div class="gate-path" id="gatePath" aria-label="Gate progress" role="img"></div>
       <div class="space" id="space">
         <div class="portal" id="portal" aria-hidden="true">
           <div class="eye-layer red-layer" id="redLayer"></div>
           <div class="eye-layer green-layer" id="greenLayer"></div>
         </div>
+        <div class="burst" id="burst" aria-hidden="true"></div>
+        <div class="star-pop" id="starPop" aria-hidden="true"></div>
         <div class="hold-meter" id="holdMeter" role="progressbar" aria-label="Fusion hold progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="hold-fill" id="holdFill"></div></div>
         <span class="direction-hint">Move the green-eye layer</span>
       </div>
       <div class="round-feedback" id="feedback" role="status" aria-live="polite">Complete the quick setup to begin.</div>
     </section>
 
-    <section class="control-dock" aria-label="Alignment controls">
+    <section class="control-dock" id="controlDock" aria-label="Alignment controls">
       <button class="move-button" id="leftButton" type="button" aria-label="Move green target left" disabled>←</button>
       <button class="lock-button" id="lockButton" type="button" disabled>Lock alignment</button>
       <button class="move-button" id="rightButton" type="button" aria-label="Move green target right" disabled>→</button>
@@ -590,7 +711,8 @@
   <section class="overlay" id="setupOverlay" role="dialog" aria-modal="true" aria-labelledby="setupTitle">
     <div class="dialog-card">
       <h2 id="setupTitle">Prepare your portal</h2>
-      <p>This prototype gives each eye complementary target pieces. Aligning the complete shape requires information from both channels.</p>
+      <p class="goal-line">12 gates · about 3 minutes · earn up to 32 ★</p>
+      <p>Each eye receives complementary portal pieces. Opening every gate requires information from both channels. Your settings are remembered for next time.</p>
       <div class="calibration" aria-label="Visibility calibration">
         <div class="calibration-targets" aria-hidden="true">
           <div class="cal-target red" id="redCalTarget">＋</div>
@@ -639,6 +761,7 @@
             <input type="radio" name="preComfort" id="pre5" value="5"><label for="pre5">5</label>
           </div>
         </div>
+        <label class="check-row"><input id="enableFeedback" type="checkbox"><span>Gentle success sounds and phone vibration.</span></label>
         <label class="check-row"><input id="showTutorial" type="checkbox" checked><span>Show the short guided tutorial before this session.</span></label>
       </div>
       <div class="dialog-actions">
@@ -650,7 +773,7 @@
       <div class="steps">
         <div class="step"><b>1</b><span>Wear your red/green or red/blue anaglyph glasses and sit at your normal clinician-recommended distance.</span></div>
         <div class="step"><b>2</b><span>Confirm that both symbols above are visible. Adjust intensity only to balance their visibility.</span></div>
-        <div class="step"><b>3</b><span>During play, tap the arrows, then tap Lock alignment when the portal looks complete.</span></div>
+        <div class="step"><b>3</b><span>During play, tap the arrows, lock the portal, then keep it steady with small taps while the hold bar fills.</span></div>
       </div>
       <div class="safety-note">Stop immediately if you develop new or worsening double vision, eye pain, severe headache, nausea, or dizziness. This exercise is not a diagnostic tool or a substitute for professional care.</div>
     </div>
@@ -699,24 +822,34 @@
   <section class="overlay" id="summaryOverlay" role="dialog" aria-modal="true" aria-labelledby="summaryTitle" hidden>
     <div class="dialog-card">
       <h2 id="summaryTitle">Mission complete</h2>
-      <p id="summaryLead">Your session summary is ready.</p>
+      <div class="summary-hero">
+        <div class="summary-stars" id="summaryStars">★ 0 / 32</div>
+        <div class="summary-headline" id="summaryHeadline">Session complete</div>
+        <div class="summary-meta" id="summaryMeta"></div>
+        <div class="summary-path" id="summaryPath" aria-label="Stars earned per gate" role="img"></div>
+        <p class="summary-encourage" id="summaryEncourage"></p>
+      </div>
+      <h3 class="details-heading">Session details</h3>
       <div class="summary-grid">
-        <div class="summary-item"><span>Rounds aligned</span><strong id="summaryRounds">0 / 12</strong></div>
+        <div class="summary-item"><span>Gates opened</span><strong id="summaryRounds">0 / 12</strong></div>
         <div class="summary-item"><span>First-try accuracy</span><strong id="summaryAccuracy">0%</strong></div>
         <div class="summary-item"><span>Average attempts</span><strong id="summaryAttempts">0</strong></div>
         <div class="summary-item"><span>Largest separation</span><strong id="summaryRange">0 px</strong></div>
-        <div class="summary-item"><span>Best streak</span><strong id="summaryStreak">0</strong></div>
+        <div class="summary-item"><span>Hold steadiness</span><strong id="summarySteadiness">—</strong></div>
+        <div class="summary-item"><span>Hold breaks</span><strong id="summaryBreaks">0</strong></div>
         <div class="summary-item"><span>Active time</span><strong id="summaryTime">0:00</strong></div>
         <div class="summary-item"><span>Stable fusion holds</span><strong id="summaryHolds">0</strong></div>
         <div class="summary-item"><span>Suppression checks</span><strong id="summaryCatch">0 / 0</strong></div>
         <div class="summary-item"><span>Comfort change</span><strong id="summaryComfort">0 → 0</strong></div>
         <div class="summary-item"><span>Directions trained</span><strong id="summaryDirections">0 / 0</strong></div>
+        <div class="summary-item"><span>Best streak</span><strong id="summaryStreak">0</strong></div>
       </div>
-      <h3>Recent sessions</h3>
+      <h3 class="details-heading">Recent sessions</h3>
       <ul class="history-list" id="historyList"><li>No earlier sessions stored on this device.</li></ul>
       <p class="summary-note">“Largest separation” is a game setting measured in screen pixels, not a clinical vergence measurement. Share symptoms and results with your clinician if they use this exercise in your plan.</p>
-      <div class="dialog-actions">
+      <div class="dialog-actions triple">
         <a class="secondary-button" href="index.html" style="display:grid;place-items:center;text-decoration:none">Home</a>
+        <button class="secondary-button" id="settingsButton" type="button">Settings</button>
         <button class="primary-button" id="playAgainButton" type="button">Play again</button>
       </div>
     </div>
@@ -730,17 +863,28 @@
 
       var TOTAL_ROUNDS = 12;
       var SUCCESS_TOLERANCE = 6;
+      var HOLD_BAND = 6;
+      var HOLD_BREAK = 14;
+      var CATCH_ROUNDS = { 4: true, 9: true };
+      var MAX_STARS = 32;
+      var SHAPES = ['', 'shape-diamond', 'shape-leaf', 'shape-moon'];
+      var SHAPE_NAMES = ['Ring', 'Diamond', 'Leaf', 'Moon'];
+      var SETTINGS_KEY = 'fusionQuestSettings';
+      var META_KEY = 'fusionQuestMeta';
+
       var els = {
         redLayer: document.getElementById('redLayer'), greenLayer: document.getElementById('greenLayer'), portal: document.getElementById('portal'),
         round: document.getElementById('roundStat'), level: document.getElementById('levelStat'), streak: document.getElementById('streakStat'), time: document.getElementById('timeStat'),
-        feedback: document.getElementById('feedback'), missionText: document.getElementById('missionText'), left: document.getElementById('leftButton'),
-        right: document.getElementById('rightButton'), lock: document.getElementById('lockButton'), pause: document.getElementById('pauseButton'),
+        feedback: document.getElementById('feedback'), missionTitle: document.getElementById('missionTitle'), missionText: document.getElementById('missionText'), left: document.getElementById('leftButton'),
+        right: document.getElementById('rightButton'), lock: document.getElementById('lockButton'), pause: document.getElementById('pauseButton'), dock: document.getElementById('controlDock'),
         setup: document.getElementById('setupOverlay'), tutorial: document.getElementById('tutorialOverlay'), pauseOverlay: document.getElementById('pauseOverlay'), comfort: document.getElementById('comfortOverlay'), summary: document.getElementById('summaryOverlay'),
-        start: document.getElementById('startButton'), resume: document.getElementById('resumeButton'), stop: document.getElementById('stopButton'), playAgain: document.getElementById('playAgainButton'),
+        start: document.getElementById('startButton'), resume: document.getElementById('resumeButton'), stop: document.getElementById('stopButton'), playAgain: document.getElementById('playAgainButton'), settings: document.getElementById('settingsButton'),
         redContrast: document.getElementById('redContrast'), greenContrast: document.getElementById('greenContrast'), redOutput: document.getElementById('redOutput'),
         greenOutput: document.getElementById('greenOutput'), redCal: document.getElementById('redCalTarget'), greenCal: document.getElementById('greenCalTarget'), step: document.getElementById('stepSize'),
-        maxSeparation: document.getElementById('maxSeparation'), holdSeconds: document.getElementById('holdSeconds'), showTutorial: document.getElementById('showTutorial'),
+        maxSeparation: document.getElementById('maxSeparation'), holdSeconds: document.getElementById('holdSeconds'), showTutorial: document.getElementById('showTutorial'), enableFeedback: document.getElementById('enableFeedback'),
         holdMeter: document.getElementById('holdMeter'), holdFill: document.getElementById('holdFill'), comfortContinue: document.getElementById('comfortContinue'), historyList: document.getElementById('historyList'),
+        gatePath: document.getElementById('gatePath'), burst: document.getElementById('burst'), starPop: document.getElementById('starPop'),
+        summaryStars: document.getElementById('summaryStars'), summaryHeadline: document.getElementById('summaryHeadline'), summaryMeta: document.getElementById('summaryMeta'), summaryPath: document.getElementById('summaryPath'), summaryEncourage: document.getElementById('summaryEncourage'),
         tutorialProgress: document.getElementById('tutorialProgress'), tutorialTitle: document.getElementById('tutorialTitle'), tutorialVisual: document.getElementById('tutorialVisual'), tutorialText: document.getElementById('tutorialText'), tutorialSkip: document.getElementById('tutorialSkip'), tutorialNext: document.getElementById('tutorialNext'),
         toast: document.getElementById('toast'), startupStatus: document.getElementById('startupStatus')
       };
@@ -749,9 +893,90 @@
         running: false, paused: false, transitioning: false, holding: false, stopped: false, round: 0, level: 1, offset: 0, startOffset: 0, direction: '',
         step: 5, attemptsThisRound: 0, totalAttempts: 0, completedRounds: 0, firstTrySuccesses: 0, streak: 0, bestStreak: 0,
         maxSeparation: 0, maxAllowed: 64, holdMs: 3000, holdStart: 0, stableHolds: 0, catchCorrect: 0, catchTotal: 0, convergence: 0, divergence: 0, preComfort: 0, postComfort: 0, tutorialStep: 0,
-        activeMs: 0, lastTick: 0, frame: 0, redContrast: 1, greenContrast: 1
+        activeMs: 0, lastTick: 0, frame: 0, redContrast: 1, greenContrast: 1,
+        feedbackOn: false, gateStars: [], sessionStars: 0, roundBreaks: 0, holdBreaks: 0,
+        holdLastFrame: 0, holdBandMs: 0, driftV: 0, driftUntil: 0, steadySum: 0
       };
-      var CATCH_ROUNDS = { 4: true, 9: true };
+
+      /* ---------- persistence ---------- */
+
+      function readJson(key) {
+        try {
+          var raw = localStorage.getItem(key);
+          return raw ? JSON.parse(raw) : null;
+        } catch (ignore) { return null; }
+      }
+
+      function writeJson(key, value) {
+        try { localStorage.setItem(key, JSON.stringify(value)); } catch (ignore) {}
+      }
+
+      function saveSettings() {
+        writeJson(SETTINGS_KEY, {
+          red: els.redContrast.value, green: els.greenContrast.value, step: els.step.value,
+          maxSeparation: els.maxSeparation.value, holdSeconds: els.holdSeconds.value,
+          feedback: els.enableFeedback.checked, tutorialSeen: true
+        });
+      }
+
+      function loadSettings() {
+        var s = readJson(SETTINGS_KEY);
+        if (!s) return;
+        if (s.red) els.redContrast.value = s.red;
+        if (s.green) els.greenContrast.value = s.green;
+        if (s.step) els.step.value = s.step;
+        if (s.maxSeparation) els.maxSeparation.value = s.maxSeparation;
+        if (s.holdSeconds) els.holdSeconds.value = s.holdSeconds;
+        els.enableFeedback.checked = !!s.feedback;
+        if (s.tutorialSeen) els.showTutorial.checked = false;
+      }
+
+      /* ---------- gentle audio + vibration (opt-in) ---------- */
+
+      var audioCtx = null;
+      function getAudio() {
+        if (!state.feedbackOn) return null;
+        if (!audioCtx) {
+          var AC = window.AudioContext || window.webkitAudioContext;
+          if (AC) { try { audioCtx = new AC(); } catch (ignore) { audioCtx = null; } }
+        }
+        if (audioCtx && audioCtx.state === 'suspended') { try { audioCtx.resume(); } catch (ignore) {} }
+        return audioCtx;
+      }
+
+      function playTone(freq, startDelay, duration) {
+        var ctx = getAudio();
+        if (!ctx) return;
+        try {
+          var osc = ctx.createOscillator();
+          var gain = ctx.createGain();
+          var t = ctx.currentTime + startDelay;
+          osc.type = 'sine';
+          osc.frequency.value = freq;
+          gain.gain.setValueAtTime(0.0001, t);
+          gain.gain.exponentialRampToValueAtTime(0.09, t + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.0001, t + duration);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(t);
+          osc.stop(t + duration + 0.05);
+        } catch (ignore) {}
+      }
+
+      function vibrate(pattern) {
+        if (state.feedbackOn && navigator.vibrate) { try { navigator.vibrate(pattern); } catch (ignore) {} }
+      }
+
+      function feedbackLock() { playTone(523.25, 0, 0.1); vibrate(20); }
+      function feedbackComplete(stars) {
+        playTone(523.25, 0, 0.12);
+        playTone(659.25, 0.09, 0.12);
+        if (stars >= 3) playTone(783.99, 0.18, 0.18);
+        vibrate([25, 40, 25]);
+      }
+      function feedbackBreak() { playTone(233.08, 0, 0.16); vibrate(50); }
+
+      /* ---------- helpers ---------- */
 
       function checkedValue(name) {
         var item = document.querySelector('input[name="' + name + '"]:checked');
@@ -802,7 +1027,7 @@
       function updateStats() {
         els.round.textContent = state.round + ' / ' + TOTAL_ROUNDS;
         els.level.textContent = CATCH_ROUNDS[state.round] ? 'Check' : state.direction;
-        els.streak.textContent = String(state.streak);
+        els.streak.textContent = String(state.sessionStars);
       }
 
       function enableControls(enabled) {
@@ -812,23 +1037,72 @@
         els.pause.disabled = !state.running;
       }
 
+      /* ---------- gate path (journey) ---------- */
+
+      function renderGatePath(container, currentRound) {
+        while (container.firstChild) container.removeChild(container.firstChild);
+        for (var gate = 1; gate <= TOTAL_ROUNDS; gate += 1) {
+          var dot = document.createElement('span');
+          dot.className = 'gate-dot';
+          if (CATCH_ROUNDS[gate]) dot.className += ' check';
+          var stars = state.gateStars[gate - 1];
+          if (typeof stars === 'number') dot.className += ' done s' + Math.min(3, Math.max(1, stars));
+          else if (gate === currentRound) dot.className += ' current';
+          container.appendChild(dot);
+        }
+      }
+
+      function shapeIndex(round) {
+        return (round - 1) % SHAPES.length;
+      }
+
+      function applyShape(round) {
+        for (var index = 0; index < SHAPES.length; index += 1) {
+          if (SHAPES[index]) els.portal.classList.remove(SHAPES[index]);
+        }
+        var cls = SHAPES[shapeIndex(round)];
+        if (cls) els.portal.classList.add(cls);
+      }
+
+      /* ---------- celebration ---------- */
+
+      function celebrate(stars) {
+        var starText = '';
+        for (var count = 0; count < stars; count += 1) starText += '★';
+        els.starPop.textContent = starText;
+        els.burst.classList.remove('show');
+        els.starPop.classList.remove('show');
+        void els.burst.offsetWidth;
+        els.burst.classList.add('show');
+        els.starPop.classList.add('show');
+        feedbackComplete(stars);
+      }
+
+      /* ---------- rounds ---------- */
+
       function beginRound() {
         state.round += 1;
         state.attemptsThisRound = 0;
+        state.roundBreaks = 0;
         state.transitioning = false;
         state.holding = false;
         els.portal.classList.remove('locked');
         els.portal.classList.remove('catch-round');
+        els.portal.classList.remove('fading');
+        els.dock.classList.remove('check-mode');
         els.holdMeter.classList.remove('active');
         els.holdFill.style.width = '0%';
         els.feedback.className = 'round-feedback';
+        applyShape(state.round);
         if (CATCH_ROUNDS[state.round]) {
           state.catchTotal += 1;
           state.startOffset = 0;
           state.offset = 0;
           state.direction = 'Check';
           els.portal.classList.add('catch-round');
-          els.feedback.textContent = 'Suppression check: confirm that both colored pieces are visible.';
+          els.dock.classList.add('check-mode');
+          els.missionTitle.textContent = 'Gate ' + state.round + ' — Vision check';
+          els.feedback.textContent = 'Check gate: the buttons below have changed. Answer what you actually see.';
           els.missionText.textContent = 'Which portal pieces can you see right now? Answer honestly; there is no penalty.';
           els.left.textContent = 'Red only';
           els.right.textContent = 'Green only';
@@ -839,18 +1113,20 @@
           state.direction = state.startOffset < 0 ? 'Converge' : 'Diverge';
           if (state.startOffset < 0) state.convergence += 1; else state.divergence += 1;
           state.maxSeparation = Math.max(state.maxSeparation, Math.abs(state.startOffset));
+          els.missionTitle.textContent = 'Gate ' + state.round + ' — ' + SHAPE_NAMES[shapeIndex(state.round)] + ' portal';
           els.feedback.textContent = 'Align the complementary pieces, then lock the portal.';
           els.missionText.textContent = 'Use the arrows until one portal appears, then hold the fused view.';
           els.left.textContent = '←';
           els.right.textContent = '→';
           els.lock.textContent = 'Lock & hold';
         }
+        renderGatePath(els.gatePath, state.round);
         updateStats();
         renderPortal();
         enableControls(true);
       }
 
-      function resetSession() {
+      function resetSession(carryPreComfort) {
         state.running = true;
         state.paused = false;
         state.transitioning = false;
@@ -861,7 +1137,8 @@
         state.step = Number(els.step.value);
         state.maxAllowed = Number(els.maxSeparation.value);
         state.holdMs = Number(els.holdSeconds.value) * 1000;
-        state.preComfort = checkedValue('preComfort');
+        state.feedbackOn = els.enableFeedback.checked;
+        state.preComfort = typeof carryPreComfort === 'number' ? carryPreComfort : checkedValue('preComfort');
         state.attemptsThisRound = 0;
         state.totalAttempts = 0;
         state.completedRounds = 0;
@@ -876,6 +1153,10 @@
         state.divergence = 0;
         state.stopped = false;
         state.activeMs = 0;
+        state.gateStars = [];
+        state.sessionStars = 0;
+        state.holdBreaks = 0;
+        state.steadySum = 0;
         state.lastTick = performance.now();
         els.time.textContent = '0:00';
         els.setup.hidden = true;
@@ -885,12 +1166,18 @@
         els.pauseOverlay.hidden = true;
         els.pause.textContent = 'Ⅱ';
         els.pause.setAttribute('aria-label', 'Pause game');
+        saveSettings();
         beginRound();
       }
 
       function move(direction) {
-        if (!state.running || state.paused || state.transitioning || state.holding) return;
+        if (!state.running || state.paused || state.transitioning) return;
         if (CATCH_ROUNDS[state.round]) { recordCatch(false, direction < 0 ? 'red' : 'green'); return; }
+        if (state.holding) {
+          state.offset += direction * Math.max(2, Math.round(state.step / 2));
+          renderPortal();
+          return;
+        }
         state.offset = Math.max(-state.maxAllowed, Math.min(state.maxAllowed, state.offset + direction * state.step));
         renderPortal();
         els.feedback.className = 'round-feedback';
@@ -898,7 +1185,7 @@
       }
 
       function lockAlignment() {
-        if (!state.running || state.paused || state.transitioning) return;
+        if (!state.running || state.paused || state.transitioning || state.holding) return;
         if (CATCH_ROUNDS[state.round]) {
           recordCatch(true, 'both');
           return;
@@ -911,14 +1198,22 @@
           state.offset = 0;
           state.holding = true;
           state.holdStart = performance.now();
+          state.holdLastFrame = 0;
+          state.holdBandMs = 0;
+          state.driftV = 0;
+          state.driftUntil = 0;
           renderPortal();
           els.portal.classList.add('locked');
           els.feedback.className = 'round-feedback good';
-          els.feedback.textContent = 'Keep the fused portal steady…';
+          els.feedback.textContent = 'Hold steady — tap the arrows to correct any drift…';
           els.holdMeter.classList.add('active');
           els.holdFill.style.width = '0%';
-          enableControls(false);
+          els.lock.disabled = true;
+          els.lock.textContent = 'Hold steady…';
+          els.left.disabled = false;
+          els.right.disabled = false;
           els.pause.disabled = false;
+          feedbackLock();
         } else {
           state.streak = 0;
           if (state.attemptsThisRound >= 3 && state.level > 1) state.level -= 1;
@@ -930,32 +1225,64 @@
 
       function recordCatch(bothVisible, visibleChannel) {
         if (state.transitioning) return;
+        state.gateStars[state.round - 1] = 1;
+        state.sessionStars += 1;
         if (bothVisible) {
           state.catchCorrect += 1;
           state.completedRounds += 1;
           state.streak += 1;
           state.bestStreak = Math.max(state.bestStreak, state.streak);
           els.feedback.className = 'round-feedback good';
-          els.feedback.textContent = 'Both-eye visibility recorded.';
+          els.feedback.textContent = 'Both-eye visibility recorded. Honest answers make training work.';
         } else {
           state.streak = 0;
           els.feedback.className = 'round-feedback try';
           els.feedback.textContent = 'Only ' + visibleChannel + ' was visible. This is useful to report; consider pausing to rebalance intensity.';
         }
+        renderGatePath(els.gatePath, state.round);
         updateStats();
         advanceRound(1100);
       }
 
+      /* ---------- active fusion hold ---------- */
+
       function updateHold(now) {
         var elapsed = now - state.holdStart;
+        var dt = state.holdLastFrame ? Math.min(now - state.holdLastFrame, 80) : 0;
+        state.holdLastFrame = now;
+
+        if (now >= state.driftUntil) {
+          state.driftV = (Math.random() < 0.5 ? -1 : 1) * (5 + Math.random() * 5);
+          state.driftUntil = now + 650 + Math.random() * 700;
+        }
+        state.offset += state.driftV * (dt / 1000);
+        renderPortal();
+        if (Math.abs(state.offset) <= HOLD_BAND) state.holdBandMs += dt;
+
+        if (Math.abs(state.offset) >= HOLD_BREAK) { breakHold(); return; }
+
         var progress = Math.min(100, Math.round((elapsed / state.holdMs) * 100));
         els.holdFill.style.width = progress + '%';
         els.holdMeter.setAttribute('aria-valuenow', String(progress));
         els.feedback.textContent = 'Keep both pieces fused… ' + Math.max(0, Math.ceil((state.holdMs - elapsed) / 1000)) + 's';
-        if (elapsed >= state.holdMs) completeHold();
+        if (elapsed >= state.holdMs) completeHold(elapsed);
       }
 
-      function completeHold() {
+      function breakHold() {
+        state.holding = false;
+        state.holdBreaks += 1;
+        state.roundBreaks += 1;
+        els.portal.classList.remove('locked');
+        els.holdMeter.classList.remove('active');
+        els.holdFill.style.width = '0%';
+        els.lock.textContent = 'Lock & hold';
+        els.feedback.className = 'round-feedback try';
+        els.feedback.textContent = 'The portal drifted apart — bring it back together and lock again.';
+        enableControls(true);
+        feedbackBreak();
+      }
+
+      function completeHold(elapsed) {
         if (!state.holding) return;
         state.holding = false;
         state.stableHolds += 1;
@@ -964,15 +1291,32 @@
         state.bestStreak = Math.max(state.bestStreak, state.streak);
         if (state.attemptsThisRound === 1) state.firstTrySuccesses += 1;
         if (state.streak % 2 === 0) state.level = Math.min(6, state.level + 1);
-        els.feedback.textContent = 'Stable fusion hold complete.';
+
+        var steadiness = elapsed > 0 ? Math.min(1, state.holdBandMs / elapsed) : 0;
+        state.steadySum += steadiness;
+        var stars = 1;
+        if (state.attemptsThisRound === 1 && state.roundBreaks === 0) stars += 1;
+        if (steadiness >= 0.8) stars += 1;
+        state.gateStars[state.round - 1] = stars;
+        state.sessionStars += stars;
+
+        els.feedback.className = 'round-feedback good';
+        els.feedback.textContent = stars >= 3 ? 'Perfect gate — flawless lock and a steady hold!' : (stars === 2 ? 'Gate open — strong fusion work.' : 'Gate open. Every hold builds the skill.');
         els.holdFill.style.width = '100%';
+        els.lock.textContent = 'Lock & hold';
+        renderGatePath(els.gatePath, state.round);
         updateStats();
-        advanceRound(650);
+        celebrate(stars);
+        advanceRound(900);
       }
 
       function advanceRound(delay) {
         state.transitioning = true;
         enableControls(false);
+        window.setTimeout(function () {
+          if (!state.running) return;
+          els.portal.classList.add('fading');
+        }, Math.max(0, delay - 300));
         window.setTimeout(function () {
           if (!state.running) return;
           if (state.round >= TOTAL_ROUNDS) finishSession(false);
@@ -990,6 +1334,7 @@
           els.holdMeter.classList.remove('active');
           els.holdFill.style.width = '0%';
           els.portal.classList.remove('locked');
+          els.lock.textContent = 'Lock & hold';
           showToast('Fusion hold reset after pause');
         }
         els.pauseOverlay.hidden = !paused;
@@ -1013,16 +1358,58 @@
         els.comfortContinue.focus();
       }
 
+      /* ---------- summary, personal bests, streaks ---------- */
+
+      function dayKey(offsetDays) {
+        var d = new Date(Date.now() - offsetDays * 86400000);
+        return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+      }
+
+      function updateMeta() {
+        var meta = readJson(META_KEY) || {};
+        var bestBefore = Number(meta.bestStars) || 0;
+        var streakDays = Number(meta.streakDays) || 0;
+        var today = dayKey(0);
+        if (meta.lastDay !== today) {
+          streakDays = meta.lastDay === dayKey(1) ? streakDays + 1 : 1;
+        }
+        var newBest = !state.stopped && state.sessionStars > bestBefore && bestBefore > 0;
+        var best = Math.max(bestBefore, state.stopped ? 0 : state.sessionStars);
+        writeJson(META_KEY, { bestStars: best, streakDays: streakDays, lastDay: today });
+        return { bestBefore: bestBefore, best: best, streakDays: streakDays, newBest: newBest };
+      }
+
       function saveAndShowSummary() {
         var completed = state.completedRounds;
         var accuracy = state.stableHolds ? Math.round((state.firstTrySuccesses / state.stableHolds) * 100) : 0;
         var avgAttempts = state.stableHolds ? (state.totalAttempts / state.stableHolds).toFixed(1) : '0';
+        var steadiness = state.stableHolds ? Math.round((state.steadySum / state.stableHolds) * 100) : 0;
         state.postComfort = checkedValue('postComfort');
-        document.getElementById('summaryLead').textContent = state.stopped ? 'The session ended early. Stopping when uncomfortable is the correct choice.' : 'You completed the binocular mission.';
+        var meta = updateMeta();
+
+        els.summaryStars.textContent = '★ ' + state.sessionStars + ' / ' + MAX_STARS;
+        var headline;
+        if (state.stopped) headline = 'Good call stopping early — comfort comes first.';
+        else if (meta.newBest) headline = 'New personal best!';
+        else if (state.sessionStars >= MAX_STARS * 0.85) headline = 'Outstanding fusion control!';
+        else if (meta.streakDays >= 2) headline = meta.streakDays + ' days in a row — great consistency!';
+        else headline = 'Mission complete — well done!';
+        els.summaryHeadline.textContent = headline;
+        els.summaryMeta.textContent = 'Personal best ' + meta.best + ' ★ · ' + meta.streakDays + '-day streak';
+        renderGatePath(els.summaryPath, 0);
+        var encourage;
+        if (state.stopped) encourage = 'Stopping when your eyes need a break is part of training well. Rest, and come back when you feel ready.';
+        else if (steadiness >= 80) encourage = 'Your fused holds were rock steady. Tomorrow, one more session keeps the constellation growing.';
+        else if (state.holdBreaks > 0) encourage = 'Drifting portals are normal — each small correction you made is exactly the skill this trains.';
+        else encourage = 'Every gate you open builds the habit. A short session tomorrow is worth more than a long one next week.';
+        els.summaryEncourage.textContent = encourage;
+
         document.getElementById('summaryRounds').textContent = completed + ' / ' + TOTAL_ROUNDS;
         document.getElementById('summaryAccuracy').textContent = accuracy + '%';
         document.getElementById('summaryAttempts').textContent = avgAttempts;
-        document.getElementById('summaryRange').textContent = state.maxSeparation + ' px';
+        document.getElementById('summaryRange').textContent = Math.round(state.maxSeparation) + ' px';
+        document.getElementById('summarySteadiness').textContent = state.stableHolds ? steadiness + '%' : '—';
+        document.getElementById('summaryBreaks').textContent = String(state.holdBreaks);
         document.getElementById('summaryStreak').textContent = String(state.bestStreak);
         document.getElementById('summaryTime').textContent = formatTime(state.activeMs);
         document.getElementById('summaryHolds').textContent = String(state.stableHolds);
@@ -1031,11 +1418,16 @@
         document.getElementById('summaryDirections').textContent = state.convergence + ' / ' + state.divergence;
         els.comfort.hidden = true;
         els.summary.hidden = false;
-        els.playAgain.focus();
+        // Focus without scrolling so the star celebration at the top stays in view.
+        try { els.playAgain.focus({ preventScroll: true }); } catch (ignore) { els.playAgain.focus(); }
+        els.summary.scrollTop = 0;
+        var summaryCard = els.summary.querySelector('.dialog-card');
+        if (summaryCard) summaryCard.scrollTop = 0;
         var session = {
           completed: completed, totalRounds: TOTAL_ROUNDS, firstTryAccuracy: accuracy, averageAttempts: Number(avgAttempts),
-          maxSeparationPx: state.maxSeparation, stableHolds: state.stableHolds, catchCorrect: state.catchCorrect, catchTotal: state.catchTotal,
+          maxSeparationPx: Math.round(state.maxSeparation), stableHolds: state.stableHolds, catchCorrect: state.catchCorrect, catchTotal: state.catchTotal,
           convergenceRounds: state.convergence, divergenceRounds: state.divergence, preComfort: state.preComfort, postComfort: state.postComfort,
+          stars: state.sessionStars, maxStars: MAX_STARS, steadinessPct: steadiness, holdBreaks: state.holdBreaks,
           activeSeconds: Math.round(state.activeMs / 1000), recordedAt: new Date().toISOString()
         };
         var history = [];
@@ -1055,7 +1447,8 @@
         for (var index = 0; index < history.length; index += 1) {
           var item = document.createElement('li');
           var sessionDate = new Date(history[index].recordedAt);
-          item.textContent = sessionDate.toLocaleDateString() + ' · ' + history[index].completed + '/' + history[index].totalRounds + ' rounds · ' + history[index].stableHolds + ' holds · comfort ' + history[index].preComfort + '→' + history[index].postComfort;
+          var starsPart = typeof history[index].stars === 'number' ? history[index].stars + '★ · ' : '';
+          item.textContent = sessionDate.toLocaleDateString() + ' · ' + starsPart + history[index].completed + '/' + history[index].totalRounds + ' gates · ' + history[index].stableHolds + ' holds · comfort ' + history[index].preComfort + '→' + history[index].postComfort;
           els.historyList.appendChild(item);
         }
       }
@@ -1067,6 +1460,8 @@
         window.clearTimeout(toastTimer);
         toastTimer = window.setTimeout(function () { els.toast.classList.remove('show'); }, 2400);
       }
+
+      /* ---------- flow ---------- */
 
       function requestStart() {
         if (checkedValue('preComfort') >= 5) {
@@ -1081,13 +1476,32 @@
         } else resetSession();
       }
 
+      function playAgainNow() {
+        if (state.postComfort >= 5) {
+          els.summary.hidden = true;
+          els.setup.hidden = false;
+          els.startupStatus.textContent = 'You rated your comfort 5 after the last session. Please rest before playing again.';
+          els.start.focus();
+          return;
+        }
+        // The post-session comfort rating was collected moments ago; reuse it as the
+        // pre-session rating so a returning player restarts in one tap.
+        resetSession(state.postComfort);
+      }
+
+      function openSettings() {
+        els.summary.hidden = true;
+        els.setup.hidden = false;
+        els.start.focus();
+      }
+
       function renderTutorial() {
-        var titles = ['See both pieces', 'Align, then hold', 'Watch for check rounds'];
+        var titles = ['See both pieces', 'Align, lock, stay steady', 'Watch for check gates'];
         var visuals = ['◐ + ◑', '← ◎ →', '◆ + ＋'];
         var texts = [
           'Each eye receives part of the portal. Keep both visible; neither piece is enough by itself.',
-          'Move the green piece until one portal appears. Lock it, then keep the image steady while the hold bar fills.',
-          'On a suppression check, do not use the arrows. Confirm both colored pieces only when you can see both.'
+          'Move the green piece until one portal appears, then lock it. During the hold the portal drifts slightly — tap the arrows to keep it fused while the bar fills.',
+          'On a check gate the buttons change color and meaning. Do not align anything; simply answer which colored pieces you can really see.'
         ];
         els.tutorialProgress.textContent = 'Step ' + (state.tutorialStep + 1) + ' of 3';
         els.tutorialTitle.textContent = titles[state.tutorialStep];
@@ -1105,8 +1519,9 @@
       els.greenContrast.addEventListener('input', updateCalibration);
       els.start.addEventListener('click', requestStart);
       els.tutorialNext.addEventListener('click', nextTutorial);
-      els.tutorialSkip.addEventListener('click', resetSession);
-      els.playAgain.addEventListener('click', function () { els.summary.hidden = true; els.setup.hidden = false; els.start.focus(); });
+      els.tutorialSkip.addEventListener('click', function () { resetSession(); });
+      els.playAgain.addEventListener('click', playAgainNow);
+      els.settings.addEventListener('click', openSettings);
       els.left.addEventListener('click', function () { move(-1); });
       els.right.addEventListener('click', function () { move(1); });
       els.lock.addEventListener('click', lockAlignment);
@@ -1128,11 +1543,13 @@
         if (document.hidden && state.running && !state.paused) setPaused(true, true);
       });
 
+      loadSettings();
       updateCalibration();
+      renderGatePath(els.gatePath, 0);
       state.frame = requestAnimationFrame(tick);
       els.start.disabled = false;
-      els.start.textContent = 'Both visible — continue';
-      els.startupStatus.textContent = 'Game ready. Tap the button above to continue.';
+      els.start.textContent = 'Both visible — start';
+      els.startupStatus.textContent = 'Game ready. Tap the button above to start.';
     })();
   </script>
 </body>

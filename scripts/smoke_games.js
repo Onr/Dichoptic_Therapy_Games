@@ -157,6 +157,16 @@ console.log('== Fusion Quest (fusion_quest.html) ==');
   d.getElementById('lockButton').click();
   check('aligned portal is accepted', d.getElementById('portal').classList.contains('locked'));
   check('stable fusion hold begins', d.getElementById('holdMeter').classList.contains('active'));
+  // V3: journey, remembered settings, and active drift-correction holds
+  check('gate path renders 12 dots', d.getElementById('gatePath').querySelectorAll('.gate-dot').length === 12);
+  check('sound/vibration opt-in exists and is off by default', d.getElementById('enableFeedback') && !w.eval("JSON.parse(localStorage.getItem('fusionQuestSettings')).feedback"));
+  check('settings remembered after start', w.eval("localStorage.getItem('fusionQuestSettings') !== null"));
+  check('arrows stay active during the hold', !d.getElementById('leftButton').disabled && d.getElementById('lockButton').disabled);
+  w.__runFrames(12);
+  const heldTransform = d.getElementById('greenLayer').style.transform;
+  check('portal drifts during the hold', d.getElementById('portal').classList.contains('locked') === false || !/\+ 0px/.test(heldTransform));
+  d.getElementById('leftButton').click();
+  check('arrow taps correct drift during hold', d.getElementById('greenLayer').style.transform !== heldTransform);
   dom.window.close();
 }
 
