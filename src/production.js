@@ -270,7 +270,9 @@ class ProductionInit {
     const ariaLive = document.createElement('div');
     ariaLive.setAttribute('aria-live', 'polite');
     ariaLive.setAttribute('aria-atomic', 'true');
-    ariaLive.style.cssText = 'position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden;';
+    // Clip-based visually-hidden pattern: the old left:-10000px offset made the
+    // page ~10000px wide in RTL (Hebrew), forcing horizontal scroll on mobile.
+    ariaLive.style.cssText = 'position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;';
     ariaLive.id = 'aria-announcements';
     document.body.appendChild(ariaLive);
 
