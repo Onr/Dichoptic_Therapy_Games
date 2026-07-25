@@ -153,6 +153,18 @@
       color: var(--ink-strong);
     }
 
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .header-actions .cta-button {
+      padding: 0.65rem 1.15rem;
+      font-size: 0.92rem;
+    }
+
     #toggle-language {
       background: linear-gradient(145deg, #4f7389, #36586c);
       border: 1px solid #355669;
@@ -777,6 +789,7 @@
       .brand span:first-child { font-size: 0.78rem; }
       .brand span:last-child { font-size: clamp(1.05rem, 5vw, 1.3rem); }
       #toggle-language { padding: 0.55rem 0.9rem; flex: 0 0 auto; }
+      .header-actions .cta-button { padding: 0.55rem 0.9rem; font-size: 0.85rem; }
 
       .hero,
       .games-section,
@@ -820,7 +833,10 @@
           <span data-i18n="brandTagline">Vision Therapy Toolkit</span>
           <span data-i18n="brandTitle">Diplopia Practice Hub</span>
         </div>
-        <button id="toggle-language" type="button" aria-label="Switch language" data-i18n="languageButton">עברית</button>
+        <div class="header-actions">
+          <a id="progress-link" class="cta-button secondary" href="progress.html" data-i18n="progressLink">My Progress</a>
+          <button id="toggle-language" type="button" aria-label="Switch language" data-i18n="languageButton">עברית</button>
+        </div>
       </div>
     </div>
   </header>
@@ -1029,6 +1045,7 @@
         brandTitle: 'Diplopia Practice Hub',
         languageButton: 'עברית',
         languageButtonLabel: 'Switch to Hebrew',
+        progressLink: 'My Progress',
         heroHeading: 'Therapist-guided practice for binocular diplopia',
         heroLead: 'Understand double vision, follow evidence-based guidance, and reinforce your rehabilitation with short, engaging games.',
         primaryCta: 'Start practicing',
@@ -1057,6 +1074,7 @@
         brandTitle: 'מרכז תרגול דיפלופיה',
         languageButton: 'English',
         languageButtonLabel: 'החלפה לאנגלית',
+        progressLink: 'ההתקדמות שלי',
         heroHeading: 'תרגול מודרך לדיפלופיה בינוקולרית',
         heroLead: 'הכירו את כפל הראייה, קבלו הנחיות מבוססות מחקר, וחזקו את השיקום בעזרת משחקים קצרים ומהנים.',
         primaryCta: 'התחילו לתרגל',

@@ -543,6 +543,18 @@ if (typeof document !== 'undefined') {
       // Update leaderboard first
       updateLeaderboard();
 
+      // Record for the cross-game progress dashboard
+      if (window.DTGProgress) {
+        window.DTGProgress.record({
+          game: 'memory',
+          gameLabel: 'Memory Game (Scanning)',
+          difficulty: game.difficulty,
+          score: game.score,
+          duration: game.timer,
+          extra: { moves: game.moves }
+        });
+      }
+
       // Show game over alert using production alert system
       if (window.AlertSystem) {
         window.AlertSystem.gameOver(

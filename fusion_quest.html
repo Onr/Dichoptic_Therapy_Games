@@ -1336,6 +1336,29 @@
         try { localStorage.setItem(key, JSON.stringify(value)); } catch (ignore) {}
       }
 
+      /* Writes one entry into the shared cross-game progress log
+         (localStorage key dtg_progress_v1, read by progress.html) so
+         Fusion Quest sessions show up alongside the other games even
+         though this page has no external script dependencies. */
+      function recordProgress(session) {
+        try {
+          var all = readJson('dtg_progress_v1');
+          if (!(all instanceof Array)) all = [];
+          all.unshift({
+            id: Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
+            game: 'fusion_quest',
+            gameLabel: 'Fusion Quest',
+            date: new Date().toISOString(),
+            difficulty: null,
+            score: typeof session.stars === 'number' ? session.stars : null,
+            accuracy: typeof session.firstTryAccuracy === 'number' ? session.firstTryAccuracy : null,
+            duration: typeof session.activeSeconds === 'number' ? session.activeSeconds : null,
+            extra: { completed: session.completed, totalRounds: session.totalRounds, maxStars: session.maxStars }
+          });
+          writeJson('dtg_progress_v1', all.slice(0, 500));
+        } catch (ignore) {}
+      }
+
       function saveSettings() {
         writeJson(SETTINGS_KEY, {
           red: els.redContrast.value, green: els.greenContrast.value, step: els.step.value,
@@ -1877,6 +1900,7 @@
           localStorage.setItem('fusionQuestLastSession', JSON.stringify(session));
         } catch (ignore) { history = [session]; }
         renderHistory(history);
+        recordProgress(session);
       }
 
       function renderHistory(history) {

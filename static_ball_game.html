@@ -899,6 +899,15 @@
         });
       }
 
+      if (window.DTGProgress) {
+        window.DTGProgress.record({
+          game: 'static_ball',
+          gameLabel: 'Static Ball Game (Saccades)',
+          duration: completionTime,
+          extra: { clicks: clickCount }
+        });
+      }
+
       // Set bar to 100% and celebration effects
       colorBarFill.style.width = '100%';
       colorBarEl.setAttribute('aria-valuenow', '100');
@@ -1295,6 +1304,7 @@
   <script src="src/utils/health.js"></script>
   <script src="src/utils/userCounter.js"></script>
   <script src="src/utils/adminPanel.js"></script>
+  <script src="src/utils/progressTracker.js"></script>
   <script src="src/production.js"></script>
 </body>
 </html>
