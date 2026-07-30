@@ -191,9 +191,19 @@
     /* Keyboard focus visibility for accessibility */
     button:focus-visible,
     input[type="range"]:focus-visible,
-    .controls-header:focus-visible {
+    .controls-header:focus-visible,
+    canvas:focus-visible {
       outline: 3px solid #ffd166;
       outline-offset: 2px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      button:hover { transform: none; }
     }
 
 	    #languageToggle {
@@ -503,8 +513,9 @@
       </div>
     </div>
   </div>
-  <canvas id="gameCanvas"></canvas>
+  <canvas id="gameCanvas" tabindex="0" role="application" aria-label="Tracking game canvas. Find the numbered balls in order."></canvas>
 
+  <script src="src/utils/gameHelpers.js"></script>
   <script>
     const BALL_COUNTS = [7, 14, 21, 35];
     let BALL_RADIUS   = 60;
@@ -732,31 +743,7 @@
       toggleColorBtn.textContent = t.toggleColor[rightColor];
     }
 
-    function applyColorTransforms(color, brightness, contrast) {
-      let r, g, b;
-      if (color === 'red') {
-        r = 255; g = 0; b = 0;
-      } else if (color === 'blue') {
-        r = 0; g = 0; b = 255;
-      } else {
-        r = 0; g = 128; b = 0;
-      }
-
-      r = r * (brightness / 100);
-      g = g * (brightness / 100);
-      b = b * (brightness / 100);
-
-      const factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
-      r = factor * (r - 128) + 128;
-      g = factor * (g - 128) + 128;
-      b = factor * (b - 128) + 128;
-
-      r = Math.max(0, Math.min(255, r));
-      g = Math.max(0, Math.min(255, g));
-      b = Math.max(0, Math.min(255, b));
-
-      return `rgb(${r},${g},${b})`;
-    }
+    const applyColorTransforms = window.GameHelpers.applyColorTransforms;
 
     function setDifficulty(newSpeed) {
       SPEED = newSpeed;
@@ -1007,8 +994,10 @@
       if (isPaused || gameFinished) { return; }
       e.preventDefault();
       const rect = canvas.getBoundingClientRect();
-      const mx = (e.clientX || e.touches[0].clientX) - rect.left;
-      const my = (e.clientY || e.touches[0].clientY) - rect.top;
+      const point = window.GameHelpers.getPointerCoordinates(e, rect);
+      if (!point) { return; }
+      const mx = point.x;
+      const my = point.y;
 
       for (let ball of balls) {
         if (!ball.clicked) {
@@ -1046,6 +1035,20 @@
 
     canvas.addEventListener('mousedown', handlePointerDown);
     canvas.addEventListener('touchstart', handlePointerDown, { passive: false });
+    canvas.addEventListener('keydown', (event) => {
+      if ((event.key === 'Enter' || event.key === ' ') && !isPaused && !gameFinished) {
+        event.preventDefault();
+        const ball = balls.find(item => item.num === nextNumber && !item.clicked);
+        if (ball) {
+          const rect = canvas.getBoundingClientRect();
+          handlePointerDown({
+            preventDefault() {},
+            clientX: rect.left + ball.x,
+            clientY: rect.top + ball.y
+          });
+        }
+      }
+    });
 
     ['input', 'change'].forEach(eventName => {
       redBrightnessSlider.addEventListener(eventName, () => !animationFrameId && loop());
@@ -1093,6 +1096,7 @@
   <script src="src/utils/userCounter.js"></script>
   <script src="src/utils/adminPanel.js"></script>
   <script src="src/utils/progressTracker.js"></script>
+  <script src="src/utils/registerServiceWorker.js"></script>
   <script src="src/production.js"></script>
 </body>
 </html>

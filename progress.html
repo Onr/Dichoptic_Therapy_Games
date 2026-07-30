@@ -3,6 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+  try {
+    if (localStorage.getItem('language') === 'he') {
+      document.documentElement.lang = 'he';
+      document.documentElement.dir = 'rtl';
+    }
+  } catch (_) {}
+</script>
 <link rel="icon" href="favicon.ico" type="image/x-icon">
 <link rel="manifest" href="manifest.json">
 <title>My Progress — Diplopia Vision Therapy Practice Hub</title>
@@ -156,7 +164,17 @@
   .section-title { font-size: 1.15rem; font-weight: 700; color: var(--ink-strong); margin: 0 0 1rem; }
 
   .chart-card { margin-bottom: 1.5rem; }
+  .chart-heading-row { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap; }
+  .chart-heading-row .section-title { margin-bottom: 0; }
+  .chart-controls { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+  .chart-controls label { font-size: 0.82rem; color: var(--ink-soft); }
+  .chart-controls select {
+    font: inherit; font-size: 0.82rem; color: var(--ink-body); background: var(--surface-muted);
+    border: 1px solid var(--border); border-radius: 10px; padding: 0.4rem 0.55rem;
+  }
+  .chart-note { margin: 0.75rem 0 0; color: var(--ink-soft); font-size: 0.8rem; line-height: 1.45; }
   canvas#progressChart { width: 100%; height: 220px; display: block; }
+  canvas#performanceChart { width: 100%; height: 220px; display: block; margin-top: 0.8rem; }
   .chart-legend { display: flex; flex-wrap: wrap; gap: 0.9rem; margin-top: 0.9rem; font-size: 0.85rem; color: var(--ink-soft); }
   .chart-legend span { display: inline-flex; align-items: center; gap: 0.4rem; }
   .swatch { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
@@ -168,12 +186,18 @@
   tr:last-child td { border-bottom: none; }
 
   .actions-row { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1.25rem; }
+  .file-input { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); }
+  .status-message { min-height: 1.4em; color: var(--accent-strong); margin-top: 0.75rem; font-size: 0.9rem; }
 
   footer { text-align: center; padding: 1.5rem; color: var(--ink-soft); font-size: 0.85rem; }
   footer a { color: var(--accent-strong); }
 
   html[dir="rtl"] th, html[dir="rtl"] td { text-align: right; }
   html[dir="rtl"] .summary-card { border-left: none; border-right: 5px solid var(--game-accent, var(--accent)); }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
+  }
 
   @media (max-width: 640px) {
     .page-wrapper { padding: 1rem 1rem 2.5rem; }
@@ -214,9 +238,37 @@
     <div id="summaryGrid" class="summary-grid"></div>
 
     <div class="card chart-card">
-      <div class="section-title" data-i18n="chartHeading">Sessions over time</div>
+      <div class="chart-heading-row">
+        <div class="section-title" data-i18n="chartHeading">Sessions over time</div>
+        <div class="chart-controls">
+          <label for="chartRange" data-i18n="rangeLabel">Range</label>
+          <select id="chartRange">
+            <option value="14" data-i18n="range14">14 days</option>
+            <option value="30" data-i18n="range30">30 days</option>
+            <option value="90" data-i18n="range90">90 days</option>
+          </select>
+        </div>
+      </div>
       <canvas id="progressChart" width="900" height="220" role="img" aria-label="Chart of therapy sessions per day"></canvas>
       <div id="chartLegend" class="chart-legend"></div>
+    </div>
+
+    <div class="card chart-card">
+      <div class="chart-heading-row">
+        <div class="section-title" data-i18n="performanceHeading">Performance trend</div>
+        <div class="chart-controls">
+          <label for="trendGame" data-i18n="gameFilter">Game</label>
+          <select id="trendGame"></select>
+          <label for="trendMetric" data-i18n="metricFilter">Measure</label>
+          <select id="trendMetric">
+            <option value="score" data-i18n="metricScore">Score</option>
+            <option value="accuracy" data-i18n="metricAccuracy">Accuracy</option>
+            <option value="duration" data-i18n="metricDuration">Duration</option>
+          </select>
+        </div>
+      </div>
+      <canvas id="performanceChart" width="900" height="220" role="img" aria-label="Performance values over completed sessions"></canvas>
+      <p class="chart-note" data-i18n="trendCaution">Use trends as a conversation aid. Difficulty, calibration and symptoms can change results; this is not a clinical assessment.</p>
     </div>
 
     <div class="card table-card">
@@ -238,8 +290,12 @@
 
     <div class="actions-row">
       <button id="downloadCsv" class="btn btn-primary" type="button" data-i18n="downloadCsv">Download CSV</button>
+      <button id="downloadBackup" class="btn btn-secondary" type="button" data-i18n="downloadBackup">Download backup</button>
+      <button id="importBackup" class="btn btn-secondary" type="button" data-i18n="importBackup">Import backup</button>
+      <input id="backupFile" class="file-input" type="file" accept="application/json,.json">
       <button id="clearData" class="btn btn-danger" type="button" data-i18n="clearData">Clear my data</button>
     </div>
+    <div id="statusMessage" class="status-message" role="status" aria-live="polite"></div>
   </div>
 </main>
 
@@ -261,13 +317,19 @@
       emptyBody: 'Play any game to the end and it will show up here automatically. Progress is stored only on this device, in this browser.',
       emptyCta: 'Choose a game',
       chartHeading: 'Sessions over time',
+      rangeLabel: 'Range', range14: '14 days', range30: '30 days', range90: '90 days',
+      performanceHeading: 'Performance trend', gameFilter: 'Game', metricFilter: 'Measure',
+      metricScore: 'Score', metricAccuracy: 'Accuracy', metricDuration: 'Duration',
+      trendCaution: 'Use trends as a conversation aid. Difficulty, calibration and symptoms can change results; this is not a clinical assessment.',
       tableHeading: 'Recent sessions',
       colDate: 'Date', colGame: 'Game', colDifficulty: 'Difficulty', colScore: 'Score', colAccuracy: 'Accuracy', colDuration: 'Duration',
       downloadCsv: 'Download CSV',
+      downloadBackup: 'Download backup', importBackup: 'Import backup',
+      importSuccess: 'Backup imported successfully.', importError: 'That file is not a valid progress backup.',
       clearData: 'Clear my data',
       clearConfirm: 'This will permanently delete all saved progress from this browser. Continue?',
       footerNote: 'Stored only in this browser. Not a substitute for medical evaluation.',
-      totalSessions: 'Sessions', lastPlayed: 'Last played', avgScore: 'Avg score', avgAccuracy: 'Avg accuracy',
+      totalSessions: 'Sessions', lastPlayed: 'Last played', avgScore: 'Avg score', avgAccuracy: 'Avg accuracy', recentChange: 'Recent change', needMore: 'More sessions needed',
       never: 'Never', dash: '—',
       gameLabels: { memory: 'Scanning', ball: 'Tracking', static_ball: 'Saccades', fusion_quest: 'Fusion Quest' }
     },
@@ -282,13 +344,19 @@
       emptyBody: 'שחקו במשחק כלשהו עד הסוף וההתקדמות תופיע כאן אוטומטית. המידע נשמר רק במכשיר ובדפדפן הזה.',
       emptyCta: 'בחרו משחק',
       chartHeading: 'תרגולים לאורך זמן',
+      rangeLabel: 'טווח', range14: '14 ימים', range30: '30 ימים', range90: '90 ימים',
+      performanceHeading: 'מגמת ביצועים', gameFilter: 'משחק', metricFilter: 'מדד',
+      metricScore: 'ניקוד', metricAccuracy: 'דיוק', metricDuration: 'משך',
+      trendCaution: 'המגמות הן כלי עזר לשיחה. רמת הקושי, הכיול והתסמינים עשויים להשפיע על התוצאות; זו אינה הערכה קלינית.',
       tableHeading: 'תרגולים אחרונים',
       colDate: 'תאריך', colGame: 'משחק', colDifficulty: 'רמה', colScore: 'ניקוד', colAccuracy: 'דיוק', colDuration: 'משך',
       downloadCsv: 'הורדת CSV',
+      downloadBackup: 'הורדת גיבוי', importBackup: 'ייבוא גיבוי',
+      importSuccess: 'הגיבוי יובא בהצלחה.', importError: 'הקובץ אינו גיבוי התקדמות תקין.',
       clearData: 'מחיקת הנתונים שלי',
       clearConfirm: 'פעולה זו תמחק לצמיתות את כל ההתקדמות השמורה בדפדפן זה. להמשיך?',
       footerNote: 'המידע נשמר רק בדפדפן זה. אינו תחליף לבדיקה רפואית.',
-      totalSessions: 'תרגולים', lastPlayed: 'שיחקתם לאחרונה', avgScore: 'ניקוד ממוצע', avgAccuracy: 'דיוק ממוצע',
+      totalSessions: 'תרגולים', lastPlayed: 'שיחקתם לאחרונה', avgScore: 'ניקוד ממוצע', avgAccuracy: 'דיוק ממוצע', recentChange: 'שינוי לאחרונה', needMore: 'נדרשים תרגולים נוספים',
       never: 'מעולם לא', dash: '—',
       gameLabels: { memory: 'סריקה', ball: 'מעקב', static_ball: 'סקדות', fusion_quest: 'מסע המיזוג' }
     }
@@ -305,11 +373,19 @@
     return translations[currentLang][key] || key;
   }
 
+  function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, (character) => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[character]);
+  }
+
   function formatDuration(seconds) {
     if (seconds === null || seconds === undefined) return t('dash');
     const s = Math.round(seconds);
-    if (s < 60) return s + 's';
-    return Math.floor(s / 60) + 'm ' + (s % 60) + 's';
+    const sec = currentLang === 'he' ? 'שנ׳' : 's';
+    const min = currentLang === 'he' ? 'דק׳' : 'm';
+    if (s < 60) return s + sec;
+    return Math.floor(s / 60) + min + ' ' + (s % 60) + sec;
   }
 
   function formatDate(iso) {
@@ -348,15 +424,30 @@
       const last = sessions[0];
       const avgScore = average(sessions.map((s) => s.score));
       const avgAccuracy = average(sessions.map((s) => s.accuracy));
+      const metric = sessions.filter((s) => typeof s.accuracy === 'number').length >= 4
+        ? 'accuracy'
+        : sessions.filter((s) => typeof s.score === 'number').length >= 4 ? 'score' : null;
+      let changeText = t('needMore');
+      if (metric) {
+        const values = sessions.filter((s) => typeof s[metric] === 'number').slice(0, 6).map((s) => s[metric]);
+        if (values.length >= 4) {
+          const split = Math.ceil(values.length / 2);
+          const recent = average(values.slice(0, split));
+          const earlier = average(values.slice(split));
+          const delta = Math.round((recent - earlier) * 10) / 10;
+          changeText = (delta > 0 ? '↑ +' : delta < 0 ? '↓ ' : '→ ') + delta + (metric === 'accuracy' ? '%' : '');
+        }
+      }
       const card = document.createElement('div');
       card.className = 'summary-card';
       card.style.setProperty('--game-accent', `var(--game-${game})`);
       card.innerHTML =
-        '<h3>' + label + '</h3>' +
+        '<h3>' + escapeHtml(label) + '</h3>' +
         '<div class="stat-row"><span>' + t('totalSessions') + '</span><strong>' + sessions.length + '</strong></div>' +
-        '<div class="stat-row"><span>' + t('lastPlayed') + '</span><strong>' + formatDate(last.date) + '</strong></div>' +
+        '<div class="stat-row"><span>' + t('lastPlayed') + '</span><strong>' + escapeHtml(formatDate(last.date)) + '</strong></div>' +
         (avgScore !== null ? '<div class="stat-row"><span>' + t('avgScore') + '</span><strong>' + avgScore + '</strong></div>' : '') +
-        (avgAccuracy !== null ? '<div class="stat-row"><span>' + t('avgAccuracy') + '</span><strong>' + avgAccuracy + '%</strong></div>' : '');
+        (avgAccuracy !== null ? '<div class="stat-row"><span>' + t('avgAccuracy') + '</span><strong>' + avgAccuracy + '%</strong></div>' : '') +
+        '<div class="stat-row"><span>' + t('recentChange') + '</span><strong>' + escapeHtml(changeText) + '</strong></div>';
       grid.appendChild(card);
     });
   }
@@ -368,12 +459,12 @@
       const tr = document.createElement('tr');
       const label = t('gameLabels')[r.game] || r.game;
       tr.innerHTML =
-        '<td>' + formatDate(r.date) + '</td>' +
-        '<td>' + label + '</td>' +
-        '<td>' + (r.difficulty || t('dash')) + '</td>' +
-        '<td>' + (r.score === null || r.score === undefined ? t('dash') : r.score) + '</td>' +
-        '<td>' + (r.accuracy === null || r.accuracy === undefined ? t('dash') : r.accuracy + '%') + '</td>' +
-        '<td>' + formatDuration(r.duration) + '</td>';
+        '<td>' + escapeHtml(formatDate(r.date)) + '</td>' +
+        '<td>' + escapeHtml(label) + '</td>' +
+        '<td>' + escapeHtml(r.difficulty || t('dash')) + '</td>' +
+        '<td>' + escapeHtml(r.score === null || r.score === undefined ? t('dash') : r.score) + '</td>' +
+        '<td>' + escapeHtml(r.accuracy === null || r.accuracy === undefined ? t('dash') : r.accuracy + '%') + '</td>' +
+        '<td>' + escapeHtml(formatDuration(r.duration)) + '</td>';
       tbody.appendChild(tr);
     });
   }
@@ -393,10 +484,11 @@
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, cssWidth, cssHeight);
 
-    // Build the last 14 days x per-game counts
+    // Build the selected time window x per-game counts.
     const days = [];
     const today = new Date();
-    for (let i = 13; i >= 0; i -= 1) {
+    const rangeDays = Number(document.getElementById('chartRange').value) || 14;
+    for (let i = rangeDays - 1; i >= 0; i -= 1) {
       const d = new Date(today);
       d.setDate(d.getDate() - i);
       days.push(d.toISOString().slice(0, 10));
@@ -446,7 +538,8 @@
         ctx.fillRect(x, stackY - barH, barWidth, barH);
         stackY -= barH;
       });
-      if (index % 2 === 0) {
+      const labelEvery = Math.max(1, Math.ceil(days.length / 7));
+      if (index % labelEvery === 0) {
         ctx.fillStyle = 'rgba(91, 99, 112, 0.7)';
         ctx.font = '10px Poppins, sans-serif';
         ctx.textAlign = 'center';
@@ -461,9 +554,79 @@
       const hasAny = all.some((r) => r.game === game);
       if (!hasAny) return;
       const item = document.createElement('span');
-      item.innerHTML = '<span class="swatch" style="background:' + colors[game] + '"></span>' + (t('gameLabels')[game] || game);
+      item.innerHTML = '<span class="swatch" style="background:' + colors[game] + '"></span>' + escapeHtml(t('gameLabels')[game] || game);
       legend.appendChild(item);
     });
+  }
+
+  function renderPerformanceChart(all) {
+    const gameSelect = document.getElementById('trendGame');
+    const metricSelect = document.getElementById('trendMetric');
+    const previousGame = gameSelect.value;
+    const games = GAME_ORDER.filter((game) => all.some((record) => record.game === game));
+    gameSelect.innerHTML = '';
+    games.forEach((game) => {
+      const option = document.createElement('option');
+      option.value = game;
+      option.textContent = t('gameLabels')[game] || game;
+      gameSelect.appendChild(option);
+    });
+    if (games.includes(previousGame)) gameSelect.value = previousGame;
+    const game = gameSelect.value || games[0];
+    const metric = metricSelect.value;
+    const points = all.filter((record) => record.game === game && typeof record[metric] === 'number')
+      .slice(0, 30).reverse();
+    const canvas = document.getElementById('performanceChart');
+    const ctx = canvas.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    const cssWidth = canvas.clientWidth || 900;
+    const cssHeight = 220;
+    canvas.width = cssWidth * dpr;
+    canvas.height = cssHeight * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, cssWidth, cssHeight);
+    if (!points.length) {
+      ctx.fillStyle = 'rgba(91, 99, 112, 0.8)';
+      ctx.font = '14px Poppins, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(t('needMore'), cssWidth / 2, cssHeight / 2);
+      return;
+    }
+    const values = points.map((point) => point[metric]);
+    let min = Math.min.apply(null, values);
+    let max = Math.max.apply(null, values);
+    if (min === max) { min -= 1; max += 1; }
+    const pad = { top: 20, right: 24, bottom: 30, left: 44 };
+    const plotW = cssWidth - pad.left - pad.right;
+    const plotH = cssHeight - pad.top - pad.bottom;
+    const color = getComputedStyle(document.documentElement).getPropertyValue('--game-' + game).trim() || '#4f7288';
+    ctx.strokeStyle = 'rgba(91, 99, 112, 0.25)';
+    ctx.beginPath();
+    ctx.moveTo(pad.left, pad.top + plotH);
+    ctx.lineTo(pad.left + plotW, pad.top + plotH);
+    ctx.stroke();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    points.forEach((point, index) => {
+      const x = pad.left + (points.length === 1 ? plotW / 2 : index * plotW / (points.length - 1));
+      const y = pad.top + plotH - ((point[metric] - min) / (max - min)) * plotH;
+      if (index === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+    points.forEach((point, index) => {
+      const x = pad.left + (points.length === 1 ? plotW / 2 : index * plotW / (points.length - 1));
+      const y = pad.top + plotH - ((point[metric] - min) / (max - min)) * plotH;
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(x, y, 4, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.fillStyle = 'rgba(91, 99, 112, 0.8)';
+    ctx.font = '11px Poppins, sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(String(Math.round(max * 10) / 10), pad.left - 6, pad.top + 4);
+    ctx.fillText(String(Math.round(min * 10) / 10), pad.left - 6, pad.top + plotH);
   }
 
   function render() {
@@ -480,6 +643,7 @@
     renderSummary(records);
     renderTable(records);
     renderChart(records);
+    renderPerformanceChart(records);
   }
 
   function applyLanguage(lang) {
@@ -497,6 +661,9 @@
   toggleLanguageButton.addEventListener('click', () => {
     applyLanguage(currentLang === 'en' ? 'he' : 'en');
   });
+  document.getElementById('chartRange').addEventListener('change', () => renderChart(records));
+  document.getElementById('trendGame').addEventListener('change', () => renderPerformanceChart(records));
+  document.getElementById('trendMetric').addEventListener('change', () => renderPerformanceChart(records));
 
   document.getElementById('downloadCsv').addEventListener('click', () => {
     if (!window.DTGProgress) return;
@@ -521,14 +688,56 @@
     }
   });
 
+  function downloadText(contents, filename, type) {
+    const blob = new Blob([contents], { type });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  document.getElementById('downloadBackup').addEventListener('click', () => {
+    if (!window.DTGProgress) return;
+    const stamp = new Date().toISOString().slice(0, 10);
+    downloadText(window.DTGProgress.exportJSON(records), 'dichoptic-progress-backup-' + stamp + '.json', 'application/json');
+  });
+
+  document.getElementById('importBackup').addEventListener('click', () => document.getElementById('backupFile').click());
+  document.getElementById('backupFile').addEventListener('change', (event) => {
+    const file = event.target.files && event.target.files[0];
+    if (!file || !window.DTGProgress) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        window.DTGProgress.importJSON(reader.result, false);
+        document.getElementById('statusMessage').textContent = t('importSuccess');
+        render();
+      } catch (_) {
+        document.getElementById('statusMessage').textContent = t('importError');
+      }
+      event.target.value = '';
+    };
+    reader.readAsText(file);
+  });
+
   let initialLang = 'en';
   try { if (localStorage.getItem(LANG_KEY) === 'he') initialLang = 'he'; } catch (ignore) {}
   applyLanguage(initialLang);
 
-  window.addEventListener('resize', () => { if (records.length) renderChart(records); });
+  window.addEventListener('resize', () => {
+    if (records.length) {
+      renderChart(records);
+      renderPerformanceChart(records);
+    }
+  });
 </script>
 
 <script src="src/utils/userCounter.js"></script>
 <script src="src/utils/adminPanel.js"></script>
+<script src="src/utils/registerServiceWorker.js"></script>
 </body>
 </html>

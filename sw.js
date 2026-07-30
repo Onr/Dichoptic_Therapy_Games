@@ -3,35 +3,42 @@
  * Provides offline functionality, caching, and performance optimizations
  */
 
-const CACHE_NAME = 'dichoptic-therapy-v1.2.21';
-const STATIC_CACHE = 'static-resources-v1.2.21';
-const DYNAMIC_CACHE = 'dynamic-resources-v1.2.21';
+const CACHE_NAME = 'dichoptic-therapy-v1.3.0';
+const STATIC_CACHE = 'static-resources-v1.3.0';
+const DYNAMIC_CACHE = 'dynamic-resources-v1.3.0';
+const SCOPE_URL = new URL('./', self.location.href);
 
 // Files to cache immediately
-const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/memory_game.html',
-  '/ball_game.html',
-  '/static_ball_game.html',
-  '/fusion_quest.html',
-  '/progress.html',
-  '/styles.css',
-  '/game.js',
-  '/favicon.ico',
-  '/manifest.json',
-  '/src/production.js',
-  '/src/utils/logger.js',
-  '/src/utils/alerts.js',
-  '/src/utils/performance.js',
-  '/src/utils/health.js',
-  '/src/utils/errorHandler.js',
-  '/src/utils/environment.js',
-  '/src/utils/userCounter.js',
-  '/src/utils/adminPanel.js',
-  '/src/utils/progressTracker.js',
-  '/assets/anaglyph-glasses.jpg'
+const STATIC_ASSET_PATHS = [
+  './',
+  'index.html',
+  'memory_game.html',
+  'ball_game.html',
+  'static_ball_game.html',
+  'fusion_quest.html',
+  'progress.html',
+  'styles.css',
+  'game.js',
+  'favicon.ico',
+  'assets/icons/icon-192.png',
+  'assets/icons/icon-512.png',
+  'manifest.json',
+  'src/production.js',
+  'src/utils/logger.js',
+  'src/utils/alerts.js',
+  'src/utils/performance.js',
+  'src/utils/health.js',
+  'src/utils/errorHandler.js',
+  'src/utils/environment.js',
+  'src/utils/userCounter.js',
+  'src/utils/adminPanel.js',
+  'src/utils/progressTracker.js',
+  'src/utils/gameHelpers.js',
+  'src/utils/fusionScoring.js',
+  'src/utils/registerServiceWorker.js',
+  'assets/anaglyph-glasses.jpg'
 ];
+const STATIC_ASSETS = STATIC_ASSET_PATHS.map((path) => new URL(path, SCOPE_URL).href);
 
 // Network-first resources (analytics, etc.)
 const NETWORK_FIRST = [
@@ -167,7 +174,7 @@ function getOfflineFallback(request) {
   const url = new URL(request.url);
   
   if (request.destination === 'document') {
-    return caches.match('/index.html');
+    return caches.match(new URL('index.html', SCOPE_URL).href);
   }
   
   if (request.destination === 'image') {
@@ -187,7 +194,7 @@ function getOfflineFallback(request) {
 function isStaticAsset(url) {
   try {
     const path = new URL(url).pathname;
-    return STATIC_ASSETS.some(asset => path === asset);
+    return STATIC_ASSETS.some(asset => path === new URL(asset).pathname);
   } catch {
     return false;
   }

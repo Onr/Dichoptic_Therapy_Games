@@ -101,4 +101,39 @@ describe('ProgressTracker', () => {
     const csv = tracker.toCSV();
     expect(csv.split('\r\n')).toHaveLength(3);
   });
+
+  test('toCSV() includes rich extra fields in stable columns', () => {
+    const csv = tracker.toCSV([{
+      date: '2026-01-01', game: 'fusion_quest', gameLabel: 'Fusion Quest',
+      difficulty: null, score: 20, accuracy: 75, duration: 180,
+      extra: { stableHolds: 8, preComfort: 1, postComfort: 2 }
+    }]);
+    expect(csv.split('\r\n')[0]).toBe(
+      'date,game,gameLabel,difficulty,score,accuracy,duration,extra.postComfort,extra.preComfort,extra.stableHolds'
+    );
+    expect(csv.split('\r\n')[1]).toContain(',2,1,8');
+  });
+
+  test('exportJSON/importJSON round-trips records and removes duplicates', () => {
+    tracker.record({ game: 'memory', score: 10 });
+    const backup = tracker.exportJSON();
+    expect(JSON.parse(backup).format).toBe('dtg-progress');
+    expect(tracker.importJSON(backup, false)).toBe(1);
+    expect(tracker.getAll()).toHaveLength(1);
+  });
+
+  test('importJSON rejects malformed and foreign files without changing data', () => {
+    tracker.record({ game: 'ball', score: 2 });
+    expect(() => tracker.importJSON('{bad')).toThrow('invalid-json');
+    expect(() => tracker.importJSON('{"records":[]}')).toThrow('invalid-format');
+    expect(tracker.getAll()).toHaveLength(1);
+  });
+
+  test('importJSON rejects unknown game ids', () => {
+    const foreign = JSON.stringify({
+      format: 'dtg-progress', version: 1,
+      records: [{ game: '<img src=x>', date: new Date().toISOString() }]
+    });
+    expect(() => tracker.importJSON(foreign)).toThrow('invalid-record');
+  });
 });

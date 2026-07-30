@@ -3,6 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+    try {
+      if (localStorage.getItem('language') === 'he') {
+        document.documentElement.lang = 'he';
+        document.documentElement.dir = 'rtl';
+      }
+    } catch (_) {}
+  </script>
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <link rel="manifest" href="manifest.json">
   <title>Diplopia Vision Therapy Practice Hub</title>
@@ -433,7 +441,7 @@
     }
 
     .game-card::after {
-      content: "Play Now →";
+      content: attr(data-cta);
       display: inline-block;
       margin-top: auto;
       font-weight: 700;
@@ -859,25 +867,25 @@
         <p data-i18n="gamesIntro">Blend clinical guidance with playful repetitions. Short daily sessions may help coordinate eye movements and reduce double vision for some types of stable binocular diplopia under clinician guidance.</p>
       </div>
       <div class="game-grid">
-        <a href="memory_game.html" class="game-card">
+        <a href="memory_game.html" class="game-card" data-cta="Play Now →">
           <span class="game-card-topline" aria-hidden="true"><span class="game-icon">⌗</span><span class="game-number">01</span></span>
           <h3 data-i18n="memoryGameTitle">Scanning</h3>
           <p data-i18n="memoryGameDesc">Match the pairs in this classic memory challenge to boost sustained attention and binocular coordination.</p>
           <span class="insight" data-i18n="memoryGameInsight">Best for building tracking accuracy across the visual field.</span>
         </a>
-        <a href="ball_game.html" class="game-card">
+        <a href="ball_game.html" class="game-card" data-cta="Play Now →">
           <span class="game-card-topline" aria-hidden="true"><span class="game-icon">◎</span><span class="game-number">02</span></span>
           <h3 data-i18n="ballGameTitle">Tracking</h3>
           <p data-i18n="ballGameDesc">Follow and click the numbered balls in sequence as they glide around the screen.</p>
           <span class="insight" data-i18n="ballGameInsight">Supports smooth pursuit control and timing.</span>
         </a>
-        <a href="static_ball_game.html" class="game-card">
+        <a href="static_ball_game.html" class="game-card" data-cta="Play Now →">
           <span class="game-card-topline" aria-hidden="true"><span class="game-icon">↗</span><span class="game-number">03</span></span>
           <h3 data-i18n="staticBallGameTitle">Saccades</h3>
           <p data-i18n="staticBallGameDesc">React to balls that appear one at a time in different locations to sharpen quick eye movements.</p>
           <span class="insight" data-i18n="staticBallGameInsight">Ideal for practicing rapid refixations and visual scanning.</span>
         </a>
-        <a href="fusion_quest.html" class="game-card">
+        <a href="fusion_quest.html" class="game-card" data-cta="Play Now →">
           <span class="game-card-topline" aria-hidden="true"><span class="game-icon">◉</span><span class="game-number">04</span></span>
           <h3 data-i18n="fusionGameTitle">Fusion Quest</h3>
           <p data-i18n="fusionGameDesc">Align complementary red and green portal pieces to practice using information from both eyes together.</p>
@@ -1065,7 +1073,8 @@
         fusionGameDesc: 'Align complementary red and green portal pieces to practice using information from both eyes together.',
         fusionGameInsight: 'Adaptive binocular alignment with measurable session feedback.',
         creditText: 'Built by Tal Bar Nizan & Ori Nizan • ',
-        contactLink: 'Contact Us'
+        contactLink: 'Contact Us',
+        playNow: 'Play Now →'
       },
       he: {
         documentTitle: 'מרכז תרגול לדיפלופיה',
@@ -1094,7 +1103,8 @@
         fusionGameDesc: 'יישרו חלקי שער משלימים באדום ובירוק כדי לתרגל שימוש משותף במידע משתי העיניים.',
         fusionGameInsight: 'יישור בינוקולרי מסתגל עם משוב מדיד בסיום התרגול.',
         creditText: 'נבנה על ידי טל בר ניצן ואורי ניצן • ',
-        contactLink: 'צרו קשר'
+        contactLink: 'צרו קשר',
+        playNow: 'שחקו עכשיו ←'
       }
     };
 
@@ -1133,6 +1143,10 @@
       document.querySelectorAll('.lang-section').forEach(section => {
         section.hidden = section.getAttribute('data-lang') !== lang;
       });
+      document.querySelectorAll('.game-card').forEach(card => {
+        card.setAttribute('data-cta', translations[lang].playNow);
+      });
+      try { localStorage.setItem('language', lang); } catch (_) {}
     }
 
     if (toggleLanguageButton) {
@@ -1142,10 +1156,15 @@
       });
     }
 
-    switchLanguage('en');
+    let initialLanguage = document.documentElement.lang === 'he' ? 'he' : 'en';
+    try {
+      if (localStorage.getItem('language') === 'he') initialLanguage = 'he';
+    } catch (_) {}
+    switchLanguage(initialLanguage);
   </script>
 
   <script src="src/utils/userCounter.js"></script>
   <script src="src/utils/adminPanel.js"></script>
+  <script src="src/utils/registerServiceWorker.js"></script>
 </body>
 </html>

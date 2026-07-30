@@ -114,7 +114,7 @@ class ProductionInit {
     await this.loadSystem('Service Worker', async () => {
       if (window.EnvironmentConfig.isFeatureEnabled('enableServiceWorker') && 'serviceWorker' in navigator) {
         try {
-          const registration = await navigator.serviceWorker.register('/sw.js');
+          const registration = await navigator.serviceWorker.register('./sw.js');
           this.systems.push({
             name: 'ServiceWorker',
             instance: registration,

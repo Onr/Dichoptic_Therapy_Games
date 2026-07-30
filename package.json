@@ -1,7 +1,7 @@
 {
   "name": "dichoptic_therapy_games",
-  "version": "1.2.0",
-  "description": "Production-ready browser-based therapeutic memory card game designed for dichoptic treatment of diplopia or amblyopia using red-green anaglyph glasses. Features comprehensive logging, monitoring, error handling, and production-grade reliability.",
+  "version": "1.3.0",
+  "description": "Bilingual static browser games for clinician-guided dichoptic vision practice, with private local progress tracking.",
   "main": "game.js",
   "scripts": {
     "test": "jest",
@@ -10,13 +10,11 @@
     "lint": "eslint src/ game.js --ext .js",
     "lint:fix": "eslint src/ game.js --ext .js --fix",
     "build": "npm run lint && npm test",
-    "start": "npm run setup && npm run serve",
+    "start": "npm run serve",
     "serve": "http-server -p 8080 -c-1",
-    "setup": "node -e \"console.log('Running production setup...')\" && npm run build",
     "analyze": "npm run test:coverage && npm run lint",
     "security-audit": "npm audit --audit-level moderate",
-    "production-check": "npm run build && npm run security-audit",
-    "deploy-prep": "npm run production-check && npm run analyze"
+    "production-check": "npm run build && node scripts/smoke_games.js && npm run security-audit"
   },
   "keywords": [
     "dichoptic therapy",
@@ -43,12 +41,17 @@
     "not dead",
     "not ie <= 11"
   ],
+  "overrides": {
+    "brace-expansion": "5.0.9"
+  },
   "devDependencies": {
-    "@types/jest": "^29.5.5",
-    "eslint": "^8.50.0",
+    "@eslint/js": "^10.0.1",
+    "@types/jest": "^30.0.0",
+    "eslint": "^10.8.0",
+    "globals": "^17.8.0",
     "http-server": "^14.1.1",
-    "jest": "^29.7.0",
-    "jest-environment-jsdom": "^30.0.5"
+    "jest": "^30.4.2",
+    "jest-environment-jsdom": "^30.4.1"
   },
   "jest": {
     "testEnvironment": "jsdom",

@@ -619,12 +619,12 @@
       </div>
     </div>
   </div>
-  <canvas id="gameCanvas"></canvas>
+  <canvas id="gameCanvas" tabindex="0" role="application" aria-label="Saccades game canvas. Activate the highlighted target."></canvas>
 
   <!-- Completion Modal -->
-  <div id="completionModal">
+  <div id="completionModal" role="dialog" aria-modal="true" aria-labelledby="completionModalTitle">
     <div class="modal-content">
-      <div class="modal-title">🎉 מעולה! 🎉</div>
+      <div class="modal-title" id="completionModalTitle">🎉 מעולה! 🎉</div>
       <div class="modal-message">מילאת את מד המהירות!</div>
       <div class="modal-time" id="completionTime">0.00s</div>
       <div class="modal-message" id="completionRank">מקום חדש בלוח התוצאות!</div>
@@ -634,14 +634,15 @@
   </div>
 
   <!-- Leaderboard Modal -->
-  <div id="leaderboardModal">
+  <div id="leaderboardModal" role="dialog" aria-modal="true" aria-labelledby="leaderboardModalTitle">
     <div class="leaderboard-content">
-      <div class="leaderboard-title">🏆 לוח התוצאות 🏆</div>
+      <div class="leaderboard-title" id="leaderboardModalTitle">🏆 לוח התוצאות 🏆</div>
       <div id="leaderboardList"></div>
       <button class="modal-button" onclick="closeLeaderboard()" style="width: 100%; margin-top: 20px;">סגור</button>
     </div>
   </div>
 
+  <script src="src/utils/gameHelpers.js"></script>
   <script>
     let BALL_RADIUS = 60;
     const MAX_COLOR_BAR = 200; // Made longer to fill
@@ -791,33 +792,7 @@
       }
     };
 
-    function applyColorTransforms(color, brightness, contrast) {
-      let r, g, b;
-      if (color === 'red') {
-        r = 255; g = 0; b = 0;
-      } else if (color === 'blue') {
-        r = 0; g = 0; b = 255;
-    } else {
-        r = 0; g = 128; b = 0;
-      }
-
-      // Apply brightness
-      r = r * (brightness / 100);
-      g = g * (brightness / 100);
-      b = b * (brightness / 100);
-
-      // Apply contrast
-      const factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
-      r = factor * (r - 128) + 128;
-      g = factor * (g - 128) + 128;
-      b = factor * (b - 128) + 128;
-
-      r = Math.max(0, Math.min(255, r));
-      g = Math.max(0, Math.min(255, g));
-      b = Math.max(0, Math.min(255, b));
-
-      return `rgb(${r},${g},${b})`;
-    }
+    const applyColorTransforms = window.GameHelpers.applyColorTransforms;
 
     function createNewBall() {
       return {
@@ -916,11 +891,13 @@
       colorBarLabel.textContent = translations[currentLanguage].completed;
       colorBarLabel.style.color = '#00ff00';
       
-      // Add screen flash effect
-      document.body.style.background = 'linear-gradient(135deg, #00ff00 0%, #00cc00 100%)';
-      setTimeout(() => {
-        document.body.style.background = 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)';
-      }, 200);
+      // Avoid the full-screen flash when reduced motion is requested.
+      if (!window.matchMedia || !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.body.style.background = 'linear-gradient(135deg, #00ff00 0%, #00cc00 100%)';
+        setTimeout(() => {
+          document.body.style.background = 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)';
+        }, 200);
+      }
       
       // Save time and show modal with slight delay for effect
       saveCompletionTime(completionTime);
@@ -930,7 +907,7 @@
     }
 
     function saveCompletionTime(time) {
-      let times = JSON.parse(localStorage.getItem('colorBarTimes') || '[]');
+      let times = getSavedTimes();
       const locale = currentLanguage === 'he' ? 'he-IL' : 'en-US';
       const newEntry = {
         time: time,
@@ -951,7 +928,7 @@
       timeElement.textContent = time.toFixed(2) + 's';
       
       // Check rank
-      const times = JSON.parse(localStorage.getItem('colorBarTimes') || '[]');
+      const times = getSavedTimes();
       const rank = times.findIndex(entry => entry.time === time) + 1;
       
       if (rank === 1) {
@@ -969,11 +946,13 @@
       }
       
       modal.style.display = 'flex';
+      modal.querySelector('button').focus();
     }
 
     function closeCompletionModal() {
       document.getElementById('completionModal').style.display = 'none';
       initGame(); // Start new game
+      canvas.focus();
     }
 
     function initGame() {
@@ -1110,8 +1089,10 @@
       if (isPaused || !isGameActive) { return; }
       e.preventDefault(); // Prevent default touch behavior
       const rect = canvas.getBoundingClientRect();
-      const mx = (e.clientX || e.touches[0].clientX) - rect.left;
-      const my = (e.clientY || e.touches[0].clientY) - rect.top;
+      const point = window.GameHelpers.getPointerCoordinates(e, rect);
+      if (!point) { return; }
+      const mx = point.x;
+      const my = point.y;
 
       if (currentBall) {
         const dx = mx - currentBall.x;
@@ -1142,7 +1123,7 @@
     function showLeaderboard() {
       const modal = document.getElementById('leaderboardModal');
       const listElement = document.getElementById('leaderboardList');
-      const times = JSON.parse(localStorage.getItem('colorBarTimes') || '[]');
+      const times = getSavedTimes();
       
       if (times.length === 0) {
         listElement.innerHTML = `<div style="text-align: center; color: #ccc; padding: 20px;">${translations[currentLanguage].noResults}</div>`;
@@ -1163,11 +1144,38 @@
       }
       
       modal.style.display = 'flex';
+      modal.querySelector('button').focus();
     }
 
     function closeLeaderboard() {
       document.getElementById('leaderboardModal').style.display = 'none';
+      canvas.focus();
     }
+
+    function getSavedTimes() {
+      const parsed = window.GameHelpers.safeJSONParse(localStorage.getItem('colorBarTimes'), []);
+      return Array.isArray(parsed)
+        ? parsed.filter(entry => entry && Number.isFinite(Number(entry.time)))
+        : [];
+    }
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key !== 'Tab') return;
+      const modal = [document.getElementById('completionModal'), document.getElementById('leaderboardModal')]
+        .find(item => item.style.display === 'flex');
+      if (!modal) return;
+      const controls = modal.querySelectorAll('button');
+      if (!controls.length) return;
+      const first = controls[0];
+      const last = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    });
 
     ['input', 'change'].forEach(eventName => {
         redBrightnessSlider.addEventListener(eventName, drawGame);
@@ -1269,6 +1277,17 @@
     document.getElementById('toggleColor').addEventListener('click', toggleRightColor);
     document.getElementById('showLeaderboard').addEventListener('click', showLeaderboard);
     document.getElementById('languageToggle').addEventListener('click', toggleLanguage);
+    canvas.addEventListener('keydown', (event) => {
+      if ((event.key === 'Enter' || event.key === ' ') && isGameActive && !isPaused && currentBall) {
+        event.preventDefault();
+        const rect = canvas.getBoundingClientRect();
+        handlePointerDown({
+          preventDefault() {},
+          clientX: rect.left + currentBall.x,
+          clientY: rect.top + currentBall.y
+        });
+      }
+    });
 
     // Non-destructive resize: re-size the canvas, recompute ball size, and
     // clamp the current ball back into view WITHOUT resetting the game/timer.
@@ -1305,6 +1324,7 @@
   <script src="src/utils/userCounter.js"></script>
   <script src="src/utils/adminPanel.js"></script>
   <script src="src/utils/progressTracker.js"></script>
+  <script src="src/utils/registerServiceWorker.js"></script>
   <script src="src/production.js"></script>
 </body>
 </html>

@@ -37,7 +37,11 @@ function mockCanvas(window) {
 }
 
 function loadGame(file, { withCanvas } = { withCanvas: true }) {
+  const gameHelpers = fs.readFileSync('src/utils/gameHelpers.js', 'utf8');
+  const fusionScoring = fs.readFileSync('src/utils/fusionScoring.js', 'utf8');
   const html = fs.readFileSync(file, 'utf8')
+    .replace('<script src="src/utils/gameHelpers.js"></script>', '<script>' + gameHelpers + '</scr' + 'ipt>')
+    .replace('<script src="src/utils/fusionScoring.js"></script>', '<script>' + fusionScoring + '</scr' + 'ipt>')
     // Drop external production utils; they are optional (window.X guards).
     .replace(/<script src="src\/[^"]+"><\/script>/g, '');
   const virtualConsole = new (require(path.join(process.cwd(), 'node_modules', 'jsdom')).VirtualConsole)();
@@ -65,6 +69,11 @@ console.log('== Tracking (ball_game.html) ==');
   errors.forEach(e => console.log('   error:', e && e.message || e));
   check('pause button labelled', /השהה|Pause/.test(w.document.getElementById('pauseButton').textContent));
   const g = expr => w.eval(expr);
+  check('green contrast produces a visible change',
+    g("applyColorTransforms('green', 100, 50)") !== g("applyColorTransforms('green', 100, 100)"));
+  let zeroEdgeSafe = true;
+  try { g('handlePointerDown({ preventDefault(){}, clientX: 0, clientY: 0 })'); } catch (_) { zeroEdgeSafe = false; }
+  check('canvas x=0 input does not crash', zeroEdgeSafe);
   const ballsBefore = g('JSON.stringify(balls.map(b => [b.x, b.y]))');
   g('togglePause()');
   check('pause sets aria-pressed', w.document.getElementById('pauseButton').getAttribute('aria-pressed') === 'true');
@@ -107,6 +116,11 @@ console.log('== Saccades (static_ball_game.html) ==');
   check('no script errors on init', errors.length === 0);
   errors.forEach(e => console.log('   error:', e && e.message || e));
   const g = expr => w.eval(expr);
+  check('green contrast produces a visible change',
+    g("applyColorTransforms('green', 100, 50)") !== g("applyColorTransforms('green', 100, 100)"));
+  let zeroEdgeSafe = true;
+  try { g('handlePointerDown({ preventDefault(){}, clientX: 0, clientY: 0 })'); } catch (_) { zeroEdgeSafe = false; }
+  check('canvas x=0 input does not crash', zeroEdgeSafe);
   check('togglePause defined', g("typeof togglePause") === 'function');
   check('pause button labelled', /השהה|Pause/.test(w.document.getElementById('pauseButton').textContent));
   const clicksBefore = g('clickCount');
@@ -136,6 +150,10 @@ console.log('== Fusion Quest (fusion_quest.html) ==');
   errors.forEach(e => console.log('   error:', e && e.message || e));
   check('setup opens before play', d.getElementById('setupOverlay').hidden === false);
   check('mobile setup reports ready', !d.getElementById('startButton').disabled && /Both visible/.test(d.getElementById('startButton').textContent));
+  d.getElementById('pre5').click();
+  check('comfort 5 disables session start', d.getElementById('startButton').disabled);
+  d.getElementById('pre0').click();
+  check('lower comfort re-enables session start', !d.getElementById('startButton').disabled);
   d.getElementById('startButton').click();
   check('guided tutorial opens', !d.getElementById('tutorialOverlay').hidden && /Step 1/.test(d.getElementById('tutorialProgress').textContent));
   d.getElementById('tutorialNext').click();
@@ -167,6 +185,7 @@ console.log('== Fusion Quest (fusion_quest.html) ==');
   check('portal drifts during the hold', d.getElementById('portal').classList.contains('locked') === false || !/\+ 0px/.test(heldTransform));
   d.getElementById('leftButton').click();
   check('arrow taps correct drift during hold', d.getElementById('greenLayer').style.transform !== heldTransform);
+  check('suppression check does not award a star', w.FusionScoring.catchStars(false) === 0);
   dom.window.close();
 }
 

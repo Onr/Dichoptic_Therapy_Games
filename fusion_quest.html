@@ -3,6 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <script src="src/utils/fusionScoring.js"></script>
+  <script>
+    try {
+      if (localStorage.getItem('language') === 'he') {
+        document.documentElement.lang = 'he';
+        document.documentElement.dir = 'rtl';
+      }
+    } catch (_) {}
+  </script>
   <meta name="theme-color" content="#07111f">
   <meta name="description" content="A therapist-guided dichoptic alignment exercise using complementary red and green targets.">
   <title>Fusion Quest — Dichoptic Alignment Practice</title>
@@ -1007,6 +1016,9 @@
           ariaControls: 'Alignment controls',
           ariaMoveLeft: 'Move green target left',
           ariaMoveRight: 'Move green target right',
+          ariaRedOnly: 'I see only the red target',
+          ariaGreenOnly: 'I see only the green target',
+          ariaBoth: 'I see both red and green targets',
           btnLock: 'Lock & hold',
           btnHolding: 'Hold steady…',
           setupTitle: 'Prepare your portal',
@@ -1148,6 +1160,9 @@
           ariaControls: 'בקרות יישור',
           ariaMoveLeft: 'הזזת המטרה הירוקה שמאלה',
           ariaMoveRight: 'הזזת המטרה הירוקה ימינה',
+          ariaRedOnly: 'אני רואה רק את המטרה האדומה',
+          ariaGreenOnly: 'אני רואה רק את המטרה הירוקה',
+          ariaBoth: 'אני רואה את המטרה האדומה והירוקה',
           btnLock: 'נעלו והחזיקו',
           btnHolding: 'החזיקו יציב…',
           setupTitle: 'הכינו את השער שלכם',
@@ -1353,7 +1368,19 @@
             score: typeof session.stars === 'number' ? session.stars : null,
             accuracy: typeof session.firstTryAccuracy === 'number' ? session.firstTryAccuracy : null,
             duration: typeof session.activeSeconds === 'number' ? session.activeSeconds : null,
-            extra: { completed: session.completed, totalRounds: session.totalRounds, maxStars: session.maxStars }
+            extra: {
+              completed: session.completed,
+              totalRounds: session.totalRounds,
+              maxStars: session.maxStars,
+              stableHolds: session.stableHolds,
+              steadinessPct: session.steadinessPct,
+              holdBreaks: session.holdBreaks,
+              catchCorrect: session.catchCorrect,
+              catchTotal: session.catchTotal,
+              preComfort: session.preComfort,
+              postComfort: session.postComfort,
+              maxSeparationPx: session.maxSeparationPx
+            }
           });
           writeJson('dtg_progress_v1', all.slice(0, 500));
         } catch (ignore) {}
@@ -1538,12 +1565,18 @@
           els.left.textContent = t('btnRedOnly');
           els.right.textContent = t('btnGreenOnly');
           els.lock.textContent = t('btnBoth');
+          els.left.setAttribute('aria-label', t('ariaRedOnly'));
+          els.right.setAttribute('aria-label', t('ariaGreenOnly'));
+          els.lock.setAttribute('aria-label', t('ariaBoth'));
         } else {
           els.missionTitle.textContent = tf('gateTitle', { n: state.round, shape: t(SHAPE_KEYS[shapeIndex(state.round)]) });
           els.missionText.textContent = t('alignMission');
           els.left.textContent = '←';
           els.right.textContent = '→';
           els.lock.textContent = state.holding ? t('btnHolding') : t('btnLock');
+          els.left.setAttribute('aria-label', t('ariaMoveLeft'));
+          els.right.setAttribute('aria-label', t('ariaMoveRight'));
+          els.lock.removeAttribute('aria-label');
         }
       }
 
@@ -1683,9 +1716,10 @@
 
       function recordCatch(bothVisible, visibleChannel) {
         if (state.transitioning) return;
-        state.gateStars[state.round - 1] = 1;
-        state.sessionStars += 1;
+        var awardedStars = window.FusionScoring.catchStars(bothVisible);
         if (bothVisible) {
+          state.gateStars[state.round - 1] = awardedStars;
+          state.sessionStars += awardedStars;
           state.catchCorrect += 1;
           state.completedRounds += 1;
           state.streak += 1;
@@ -1941,6 +1975,14 @@
         } else resetSession();
       }
 
+      function updatePreComfortGate() {
+        if (!startReady) return;
+        var mustStop = checkedValue('preComfort') >= 5;
+        els.start.disabled = mustStop;
+        startupKey = mustStop ? 'statusComfort5' : 'statusReady';
+        els.startupStatus.textContent = t(startupKey);
+      }
+
       function playAgainNow() {
         if (state.postComfort >= 5) {
           els.summary.hidden = true;
@@ -2021,6 +2063,7 @@
 
       els.redContrast.addEventListener('input', updateCalibration);
       els.greenContrast.addEventListener('input', updateCalibration);
+      document.getElementById('preComfort').addEventListener('change', updatePreComfortGate);
       els.start.addEventListener('click', requestStart);
       els.tutorialNext.addEventListener('click', nextTutorial);
       els.tutorialSkip.addEventListener('click', function () { resetSession(); });
@@ -2035,6 +2078,24 @@
       els.comfortContinue.addEventListener('click', saveAndShowSummary);
 
       document.addEventListener('keydown', function (event) {
+        if (event.key === 'Tab') {
+          var overlays = [els.setup, els.tutorial, els.pauseOverlay, els.comfort, els.summary];
+          var activeOverlay = overlays.find(function (overlay) { return !overlay.hidden; });
+          if (activeOverlay) {
+            var focusable = activeOverlay.querySelectorAll('button:not([disabled]), a[href], input:not([disabled]), select:not([disabled])');
+            if (focusable.length) {
+              var first = focusable[0];
+              var last = focusable[focusable.length - 1];
+              if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault();
+                last.focus();
+              } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault();
+                first.focus();
+              }
+            }
+          }
+        }
         if (els.setup.hidden && els.tutorial.hidden && els.comfort.hidden && els.summary.hidden && !state.paused) {
           if (event.key === 'ArrowLeft') { event.preventDefault(); move(-1); }
           if (event.key === 'ArrowRight') { event.preventDefault(); move(1); }
@@ -2054,8 +2115,10 @@
       startReady = true;
       startupKey = 'statusReady';
       els.start.disabled = false;
+      updatePreComfortGate();
       applyLanguage();
     })();
   </script>
+  <script src="src/utils/registerServiceWorker.js"></script>
 </body>
 </html>

@@ -2,20 +2,25 @@
   "name": "Diplopia Vision Therapy Practice Hub",
   "short_name": "Diplopia Hub",
   "description": "Learn about diplopia and explore guided binocular vision therapy exercises.",
+  "id": "./",
   "start_url": "index.html",
+  "scope": "./",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#1e3c72",
   "theme_color": "#2a5298",
   "icons": [
     {
-      "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
+      "src": "assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "favicon_big.ico",
+      "src": "assets/icons/icon-512.png",
       "sizes": "512x512",
-      "type": "image/x-icon"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }

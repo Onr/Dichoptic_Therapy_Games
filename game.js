@@ -265,7 +265,7 @@ if (typeof document !== 'undefined') {
       } else if (gridSize <= 8) {
         cardSize = Math.max(30, cardSize);
       } else {
-        cardSize = Math.max(22, cardSize);
+        cardSize = Math.max(36, cardSize);
       }
 
       return { cardSize, cardGap };
@@ -289,6 +289,7 @@ if (typeof document !== 'undefined') {
       game.cardSymbols.forEach(({ symbol, eye }, index) => {
         const card = document.createElement('div');
         card.classList.add('card');
+        card.setAttribute('role', 'button');
         card.dataset.index = index;
         card.tabIndex = 0;
         card.setAttribute('aria-label', `${translations[game.currentLanguage].card} ${index + 1}`);
@@ -387,6 +388,10 @@ if (typeof document !== 'undefined') {
    * Disables the two matched cards.
    */
     function disableCards() {
+      game.firstCard.tabIndex = -1;
+      game.secondCard.tabIndex = -1;
+      game.firstCard.setAttribute('aria-disabled', 'true');
+      game.secondCard.setAttribute('aria-disabled', 'true');
       game.firstCard.removeEventListener('click', flipCard);
       game.secondCard.removeEventListener('click', flipCard);
       resetBoardState();
@@ -644,12 +649,23 @@ if (typeof document !== 'undefined') {
     /**
    * Updates the leaderboard with the new score.
    */
+    function getLeaderboard() {
+      const empty = { easy: [], medium: [], hard: [] };
+      try {
+        const parsed = JSON.parse(localStorage.getItem('leaderboard'));
+        if (!parsed || typeof parsed !== 'object') {return empty;}
+        Object.keys(empty).forEach(level => {
+          if (!Array.isArray(parsed[level])) {parsed[level] = [];}
+          parsed[level] = parsed[level].filter(Number.isFinite);
+        });
+        return parsed;
+      } catch (_) {
+        return empty;
+      }
+    }
+
     function updateLeaderboard() {
-      const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || {
-        easy: [],
-        medium: [],
-        hard: []
-      };
+      const leaderboard = getLeaderboard();
 
       const scores = leaderboard[game.difficulty];
       scores.push(game.score);
@@ -664,11 +680,7 @@ if (typeof document !== 'undefined') {
    * Displays the leaderboard.
    */
     function displayLeaderboard() {
-      const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || {
-        easy: [],
-        medium: [],
-        hard: []
-      };
+      const leaderboard = getLeaderboard();
 
       leaderboardEasy.querySelector('ol').innerHTML = leaderboard.easy.map(score => `<li>${score}</li>`).join('');
       leaderboardMedium.querySelector('ol').innerHTML = leaderboard.medium.map(score => `<li>${score}</li>`).join('');
