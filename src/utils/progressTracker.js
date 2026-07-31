@@ -2,8 +2,7 @@
  * Shared cross-game progress tracking.
  * Every game writes one record per completed session to a single
  * localStorage key so progress.html can build a combined summary/CSV
- * across Memory (Scanning), Ball Tracking, Static Ball (Saccades) and
- * Fusion Quest without any backend.
+ * across all practice games without any backend.
  */
 
 class ProgressTracker {
@@ -120,7 +119,7 @@ class ProgressTracker {
     if (!payload || payload.format !== 'dtg-progress' || payload.version !== 1 || !Array.isArray(payload.records)) {
       throw new Error('invalid-format');
     }
-    const validGames = ['memory', 'ball', 'static_ball', 'fusion_quest'];
+    const validGames = ['memory', 'ball', 'static_ball', 'fusion_quest', 'binocular_invaders'];
     const valid = payload.records.filter((record) => (
       record && typeof record === 'object' && validGames.includes(record.game)
       && typeof record.date === 'string' && !isNaN(new Date(record.date).getTime())

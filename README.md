@@ -12,6 +12,8 @@ Live site: <https://onr.github.io/Dichoptic_Therapy_Games/>
 - Tracking: numbered moving targets.
 - Saccades: single targets appearing across the visual field.
 - Fusion Quest: complementary-eye alignment and stable-hold practice.
+- Binocular Invaders: short dichoptic action practice using complementary
+  target shapes and cores, with contrast calibration and visibility checks.
 - My Progress: combined local history, performance trends, CSV export, and
   JSON backup/import.
 
@@ -43,7 +45,7 @@ Then open <http://localhost:8080/>.
 
 - `index.html`: bilingual landing page
 - `memory_game.html`, `ball_game.html`, `static_ball_game.html`,
-  `fusion_quest.html`: activities
+  `fusion_quest.html`, `space_invaders.html`: activities
 - `progress.html`: combined local dashboard
 - `src/utils/progressTracker.js`: shared progress schema and export/import
 - `sw.js`: offline cache, scoped for GitHub Pages subdirectory hosting

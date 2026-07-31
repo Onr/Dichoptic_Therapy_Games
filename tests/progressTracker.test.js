@@ -136,4 +136,13 @@ describe('ProgressTracker', () => {
     });
     expect(() => tracker.importJSON(foreign)).toThrow('invalid-record');
   });
+
+  test('importJSON accepts Binocular Invaders records', () => {
+    const backup = JSON.stringify({
+      format: 'dtg-progress', version: 1,
+      records: [{ id: 'invaders-1', game: 'binocular_invaders', date: new Date().toISOString(), score: 900 }]
+    });
+    expect(tracker.importJSON(backup, false)).toBe(1);
+    expect(tracker.getAll()[0].game).toBe('binocular_invaders');
+  });
 });

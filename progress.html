@@ -41,6 +41,7 @@
     --game-ball: #d99a3d;
     --game-static_ball: #5f9e6f;
     --game-fusion_quest: #a4568f;
+    --game-binocular_invaders: #3c87b6;
   }
 
   * { box-sizing: border-box; }
@@ -312,7 +313,7 @@
       backLink: '← All games',
       languageButton: 'עברית',
       introHeading: 'Your combined progress',
-      introBody: 'Every session you complete in Scanning, Tracking, Saccades and Fusion Quest is saved privately in this browser. Nothing is uploaded anywhere. Use the button below to download a CSV you can share with your clinician.',
+      introBody: 'Every session you complete in any of the five practice games is saved privately in this browser. Nothing is uploaded anywhere. Use the button below to download a CSV you can share with your clinician.',
       emptyTitle: 'No sessions yet',
       emptyBody: 'Play any game to the end and it will show up here automatically. Progress is stored only on this device, in this browser.',
       emptyCta: 'Choose a game',
@@ -331,7 +332,7 @@
       footerNote: 'Stored only in this browser. Not a substitute for medical evaluation.',
       totalSessions: 'Sessions', lastPlayed: 'Last played', avgScore: 'Avg score', avgAccuracy: 'Avg accuracy', recentChange: 'Recent change', needMore: 'More sessions needed',
       never: 'Never', dash: '—',
-      gameLabels: { memory: 'Scanning', ball: 'Tracking', static_ball: 'Saccades', fusion_quest: 'Fusion Quest' }
+      gameLabels: { memory: 'Scanning', ball: 'Tracking', static_ball: 'Saccades', fusion_quest: 'Fusion Quest', binocular_invaders: 'Binocular Invaders' }
     },
     he: {
       pageTitle: 'ההתקדמות שלי',
@@ -339,7 +340,7 @@
       backLink: '→ כל המשחקים',
       languageButton: 'English',
       introHeading: 'ההתקדמות המשולבת שלך',
-      introBody: 'כל תרגול שאתם משלימים בסריקה, מעקב, סקדות ומסע המיזוג נשמר באופן פרטי בדפדפן הזה בלבד. שום מידע לא נשלח לשום מקום. הורידו קובץ CSV לשיתוף עם המטפל/ת שלכם.',
+      introBody: 'כל תרגול שאתם משלימים באחד מחמשת המשחקים נשמר באופן פרטי בדפדפן הזה בלבד. שום מידע לא נשלח לשום מקום. הורידו קובץ CSV לשיתוף עם המטפל/ת שלכם.',
       emptyTitle: 'עדיין אין תרגולים',
       emptyBody: 'שחקו במשחק כלשהו עד הסוף וההתקדמות תופיע כאן אוטומטית. המידע נשמר רק במכשיר ובדפדפן הזה.',
       emptyCta: 'בחרו משחק',
@@ -358,12 +359,12 @@
       footerNote: 'המידע נשמר רק בדפדפן זה. אינו תחליף לבדיקה רפואית.',
       totalSessions: 'תרגולים', lastPlayed: 'שיחקתם לאחרונה', avgScore: 'ניקוד ממוצע', avgAccuracy: 'דיוק ממוצע', recentChange: 'שינוי לאחרונה', needMore: 'נדרשים תרגולים נוספים',
       never: 'מעולם לא', dash: '—',
-      gameLabels: { memory: 'סריקה', ball: 'מעקב', static_ball: 'סקדות', fusion_quest: 'מסע המיזוג' }
+      gameLabels: { memory: 'סריקה', ball: 'מעקב', static_ball: 'סקדות', fusion_quest: 'מסע המיזוג', binocular_invaders: 'פולשי הראייה הבינוקולרית' }
     }
   };
 
   const LANG_KEY = 'language';
-  const GAME_ORDER = ['memory', 'ball', 'static_ball', 'fusion_quest'];
+  const GAME_ORDER = ['memory', 'ball', 'static_ball', 'fusion_quest', 'binocular_invaders'];
   let currentLang = 'en';
   let records = [];
 
@@ -524,7 +525,8 @@
       memory: getComputedStyle(document.documentElement).getPropertyValue('--game-memory').trim(),
       ball: getComputedStyle(document.documentElement).getPropertyValue('--game-ball').trim(),
       static_ball: getComputedStyle(document.documentElement).getPropertyValue('--game-static_ball').trim(),
-      fusion_quest: getComputedStyle(document.documentElement).getPropertyValue('--game-fusion_quest').trim()
+      fusion_quest: getComputedStyle(document.documentElement).getPropertyValue('--game-fusion_quest').trim(),
+      binocular_invaders: getComputedStyle(document.documentElement).getPropertyValue('--game-binocular_invaders').trim()
     };
 
     days.forEach((d, index) => {

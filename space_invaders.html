@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <script>
+    try { if (localStorage.getItem('language') === 'he') { document.documentElement.lang = 'he'; document.documentElement.dir = 'rtl'; } } catch (_) {}
+  </script>
+  <title>Binocular Invaders — Vision Practice</title>
+  <meta name="description" content="A short clinician-guided dichoptic action game using complementary red and green or blue targets.">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="favicon.ico">
+  <link rel="manifest" href="manifest.json">
+  <style>
+    :root { color-scheme: dark; --night:#050914; --panel:#0d1728; --line:#263d5b; --gold:#f4c95d; --red:#ff3548; --cyan:#25e6ff; --green:#39ff72; --text:#f2f7ff; --muted:#b7c4d7; --focus:#ffe08a; }
+    * { box-sizing:border-box; }
+    html,body { margin:0; min-height:100%; overflow-x:hidden; }
+    body { font-family:system-ui,-apple-system,"Segoe UI",sans-serif; color:var(--text); background:radial-gradient(circle at 50% -20%,#18345d 0,#091426 34%,var(--night) 75%); }
+    body::before { content:""; position:fixed; inset:0; pointer-events:none; opacity:.35; background-image:radial-gradient(circle,#fff 0 1px,transparent 1.4px); background-size:53px 47px; mask-image:linear-gradient(#000,transparent 80%); }
+    button,select,input { font:inherit; }
+    button,a,select,input { -webkit-tap-highlight-color:transparent; }
+    button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible { outline:3px solid var(--focus); outline-offset:3px; }
+    [hidden] { display:none !important; }
+    .shell { width:min(1050px,100%); margin:auto; padding:12px clamp(10px,3vw,28px) 28px; position:relative; }
+    header { display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:56px; }
+    .brand { color:var(--gold); font-weight:800; letter-spacing:.06em; text-transform:uppercase; font-size:clamp(.8rem,2vw,1rem); }
+    .header-actions { display:flex; gap:8px; }
+    .btn,.icon-btn { border:1px solid #486489; border-radius:999px; min-height:46px; color:var(--text); background:linear-gradient(145deg,#1a3151,#0b1729); font-weight:750; cursor:pointer; box-shadow:inset 0 1px rgba(255,255,255,.12),0 8px 24px rgba(0,0,0,.25); }
+    .btn { padding:10px 20px; }
+    .icon-btn { padding:8px 15px; }
+    .btn.primary { color:#111a28; border-color:#ffe89b; background:linear-gradient(145deg,#ffe18a,#dca934); }
+    .btn.danger { border-color:#a84b58; background:#35131b; }
+    .btn:disabled { opacity:.42; cursor:not-allowed; box-shadow:none; }
+    .game-head { display:flex; align-items:end; justify-content:space-between; gap:12px; margin:8px 0 12px; }
+    h1 { margin:0; font-size:clamp(1.45rem,5vw,2.4rem); line-height:1.1; }
+    .subtitle { margin:.35rem 0 0; color:var(--muted); font-size:.92rem; }
+    .stats { display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+    .stat { min-width:78px; padding:7px 11px; border:1px solid var(--line); border-radius:12px; background:rgba(8,17,31,.82); text-align:center; }
+    .stat span { display:block; color:var(--muted); font-size:.68rem; text-transform:uppercase; letter-spacing:.08em; }
+    .stat strong { color:var(--gold); font-size:1.05rem; }
+    .arena-frame { border:1px solid #345276; border-radius:22px; padding:clamp(7px,1.7vw,14px); background:linear-gradient(160deg,rgba(23,48,78,.86),rgba(4,9,18,.94)); box-shadow:0 20px 60px rgba(0,0,0,.48),inset 0 0 35px rgba(37,230,255,.05); }
+    .canvas-wrap { position:relative; width:100%; aspect-ratio:8/5; max-height:65vh; border-radius:14px; overflow:hidden; background:#02050b; border:1px solid #314d70; }
+    canvas { width:100%; height:100%; display:block; touch-action:none; }
+    .status { position:absolute; inset-inline:12px; top:10px; margin:auto; width:max-content; max-width:calc(100% - 24px); min-height:28px; padding:5px 12px; text-align:center; border-radius:999px; background:rgba(3,8,16,.78); color:#d9e7f7; font-size:.78rem; pointer-events:none; }
+    .controls { display:grid; grid-template-columns:1fr minmax(120px,1.1fr) 1fr; gap:10px; margin-top:12px; direction:ltr; }
+    .control { min-height:58px; border:1px solid #436487; border-radius:16px; color:var(--text); background:linear-gradient(145deg,#162e4d,#091529); font-size:1.35rem; font-weight:900; cursor:pointer; touch-action:none; }
+    .control.fire { color:#111827; border-color:#ffe48c; background:linear-gradient(145deg,#ffe58c,#dda82f); font-size:1rem; }
+    .control[disabled] { opacity:.42; }
+    .help { margin:10px 4px 0; color:var(--muted); text-align:center; font-size:.78rem; }
+    .overlay { position:fixed; z-index:20; inset:0; display:grid; place-items:center; padding:16px; background:rgba(1,5,12,.8); backdrop-filter:blur(9px); overflow:auto; }
+    .dialog { width:min(670px,100%); max-height:calc(100vh - 32px); overflow:auto; border:1px solid #436188; border-radius:24px; padding:clamp(18px,4vw,30px); background:linear-gradient(155deg,#142a47,#081323 70%); box-shadow:0 28px 90px #000; }
+    .dialog h2 { margin:0 0 8px; color:var(--gold); font-size:clamp(1.35rem,4vw,1.9rem); }
+    .dialog p { color:var(--muted); line-height:1.55; }
+    .notice { padding:12px 14px; border:1px solid #4a6687; border-radius:14px; background:rgba(3,10,20,.48); color:#d9e6f4; font-size:.88rem; line-height:1.5; }
+    .setup-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; margin:16px 0; }
+    .field { display:grid; gap:7px; }
+    .field label,.field legend { color:#d8e5f3; font-size:.86rem; font-weight:700; }
+    select { width:100%; min-height:46px; color:var(--text); border:1px solid #49688e; border-radius:12px; padding:8px 12px; background:#0b1a2e; }
+    input[type=range] { width:100%; accent-color:var(--gold); min-height:30px; }
+    fieldset { min-width:0; margin:0; padding:0; border:0; }
+    .calibration { grid-column:1/-1; display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:14px; border:1px solid #365475; border-radius:16px; background:#02060c; }
+    .cal-target { display:grid; place-items:center; min-height:74px; border-radius:12px; font-size:2rem; font-weight:900; border:2px solid currentColor; }
+    .comfort { display:flex; gap:7px; flex-wrap:wrap; margin-top:8px; }
+    .comfort input { position:absolute; opacity:0; pointer-events:none; }
+    .comfort label { display:grid; place-items:center; min-width:44px; min-height:44px; border:1px solid #4c6789; border-radius:12px; background:#0a192c; cursor:pointer; font-weight:800; }
+    .comfort input:checked+label { color:#111827; background:var(--gold); border-color:#fff0b5; }
+    .comfort input:focus-visible+label { outline:3px solid var(--focus); outline-offset:2px; }
+    .dialog-actions { display:flex; justify-content:flex-end; align-items:center; gap:10px; flex-wrap:wrap; margin-top:18px; }
+    .stop-message { color:#ffb5bd !important; min-height:1.4em; margin:6px 0 0 !important; font-weight:700; }
+    .tutorial-list { padding-inline-start:22px; color:var(--muted); line-height:1.65; }
+    .eye-key { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:14px 0; }
+    .eye-key div { border:1px solid currentColor; border-radius:13px; padding:12px; text-align:center; font-weight:750; }
+    .check-options { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:16px; }
+    .check-options button { min-height:58px; }
+    .summary-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin:16px 0; }
+    .summary-grid div { padding:12px 7px; text-align:center; border:1px solid #34516f; border-radius:13px; background:#071426; }
+    .summary-grid strong { display:block; color:var(--gold); font-size:1.25rem; }
+    .summary-grid span { color:var(--muted); font-size:.75rem; }
+    @media(max-width:680px){ .shell{padding-top:7px}.game-head{align-items:start;flex-direction:column}.stats{justify-content:start}.subtitle{display:none}.setup-grid{grid-template-columns:1fr}.calibration{grid-column:auto}.canvas-wrap{max-height:none}.controls{gap:7px}.control{min-height:54px}.summary-grid{grid-template-columns:1fr 1fr}.check-options{grid-template-columns:1fr}.dialog-actions .btn{flex:1}.header-actions .icon-btn{font-size:.8rem;padding:7px 11px}.brand{font-size:.72rem} }
+    @media(prefers-reduced-motion:reduce){ *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important} }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <a class="brand" href="index.html" data-i18n="hub">Vision Practice Hub</a>
+      <div class="header-actions">
+        <button id="languageButton" class="icon-btn" type="button">עברית</button>
+        <button id="pauseButton" class="icon-btn" type="button" disabled data-i18n="pause">Pause</button>
+      </div>
+    </header>
+    <main>
+      <div class="game-head">
+        <div><h1 data-i18n="title">Binocular Invaders</h1><p class="subtitle" data-i18n="subtitle">Coordinate both eyes to find and clear each target core.</p></div>
+        <div class="stats" aria-live="polite">
+          <div class="stat"><span data-i18n="time">Time</span><strong id="timeStat">2:00</strong></div>
+          <div class="stat"><span data-i18n="score">Score</span><strong id="scoreStat">0</strong></div>
+          <div class="stat"><span data-i18n="wave">Wave</span><strong id="waveStat">1</strong></div>
+          <div class="stat"><span data-i18n="accuracy">Accuracy</span><strong id="accuracyStat">—</strong></div>
+        </div>
+      </div>
+      <section class="arena-frame" aria-label="Binocular Invaders play area">
+        <div class="canvas-wrap"><canvas id="gameCanvas" width="800" height="500" role="img" aria-label="Space targets game"></canvas><div id="status" class="status" role="status" data-i18n="readyStatus">Calibrate both colors before starting.</div></div>
+        <div class="controls">
+          <button id="leftButton" class="control" type="button" aria-label="Move left" disabled>◀</button>
+          <button id="fireButton" class="control fire" type="button" disabled data-i18n="fire">FIRE · Space</button>
+          <button id="rightButton" class="control" type="button" aria-label="Move right" disabled>▶</button>
+        </div>
+        <p class="help" data-i18n="controlHelp">Keyboard: ← → or A D to move · Space to fire · P to pause</p>
+      </section>
+    </main>
+  </div>
+
+  <div id="setupOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="setupTitle">
+    <div class="dialog">
+      <h2 id="setupTitle" data-i18n="setupTitle">Prepare your practice</h2>
+      <p data-i18n="setupIntro">Wear your red/green or red/blue glasses. Adjust until both symbols are clear and similarly noticeable—neither should disappear.</p>
+      <div class="notice" data-i18n="safety">Use only with clinician guidance for a stable, diagnosed condition. Stop for pain, nausea, headache, or worsening double vision.</div>
+      <div class="setup-grid">
+        <div class="field"><label for="difficulty" data-i18n="difficulty">Pace</label><select id="difficulty"><option value="calm" data-i18n="calm">Calm</option><option value="standard" data-i18n="standard">Standard</option><option value="challenge" data-i18n="challenge">Challenge</option></select></div>
+        <div class="field"><label for="duration" data-i18n="duration">Session length</label><select id="duration"><option value="120" data-i18n="twoMin">2 minutes</option><option value="180" data-i18n="threeMin">3 minutes</option><option value="300" data-i18n="fiveMin">5 minutes</option></select></div>
+        <div class="field"><label for="companionColor" data-i18n="filterColor">Other filter color</label><select id="companionColor"><option value="green" data-i18n="green">Green</option><option value="cyan" data-i18n="blueCyan">Blue / cyan</option></select></div>
+        <div class="field"><label for="redContrast"><span data-i18n="redContrast">Red visibility</span> <output id="redValue">80%</output></label><input id="redContrast" type="range" min="25" max="100" value="80"></div>
+        <div class="field"><label for="companionContrast"><span data-i18n="otherContrast">Green/blue visibility</span> <output id="companionValue">80%</output></label><input id="companionContrast" type="range" min="25" max="100" value="80"></div>
+        <div class="calibration" aria-label="Color visibility check"><div id="redTarget" class="cal-target">R ✦</div><div id="companionTarget" class="cal-target">G ●</div></div>
+      </div>
+      <fieldset><legend data-i18n="comfortBefore">Discomfort before starting (0 none – 5 stop)</legend><div id="preComfort" class="comfort"></div><p id="preStop" class="stop-message"></p></fieldset>
+      <div class="dialog-actions"><a class="btn" href="index.html" data-i18n="back">All games</a><button id="startButton" class="btn primary" type="button" data-i18n="start">Start practice</button></div>
+    </div>
+  </div>
+
+  <div id="tutorialOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="tutorialTitle" hidden>
+    <div class="dialog">
+      <h2 id="tutorialTitle" data-i18n="tutorialTitle">Use both color channels</h2>
+      <div class="eye-key"><div id="redKey" style="color:var(--red)" data-i18n="redSees">Red shows the invader shape</div><div id="companionKey" style="color:var(--cyan)" data-i18n="otherSees">Green/blue shows its target core</div></div>
+      <ol class="tutorial-list"><li data-i18n="tutorial1">Keep your head still and look near the center marker.</li><li data-i18n="tutorial2">Move the split-color ship under a target.</li><li data-i18n="tutorial3">Fire at the colored core. There are no lives and no rapid flashing.</li></ol>
+      <div class="dialog-actions"><button id="tutorialBack" class="btn" type="button" data-i18n="adjust">Adjust settings</button><button id="tutorialStart" class="btn primary" type="button" data-i18n="begin">Begin</button></div>
+    </div>
+  </div>
+
+  <div id="pauseOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="pauseTitle" hidden><div class="dialog"><h2 id="pauseTitle" data-i18n="paused">Practice paused</h2><p data-i18n="pauseAdvice">Rest your eyes. Resume only when comfortable.</p><div class="dialog-actions"><button id="endButton" class="btn danger" type="button" data-i18n="end">End session</button><button id="resumeButton" class="btn primary" type="button" data-i18n="resume">Resume</button></div></div></div>
+
+  <div id="checkOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="checkTitle" hidden><div class="dialog"><h2 id="checkTitle" data-i18n="checkTitle">Quick visibility check</h2><p data-i18n="checkPrompt">Just before the wave cleared, what could you see?</p><div class="check-options"><button class="btn primary" type="button" data-check="both" data-i18n="both">Both shape and core</button><button class="btn" type="button" data-check="red" data-i18n="redOnly">Red shape only</button><button class="btn" type="button" data-check="companion" data-i18n="otherOnly">Green/blue core only</button><button class="btn" type="button" data-check="unsure" data-i18n="unsure">Not sure</button></div><p id="checkFeedback" class="stop-message"></p></div></div>
+
+  <div id="summaryOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="summaryTitle" hidden><div class="dialog"><h2 id="summaryTitle" data-i18n="summaryTitle">Practice complete</h2><p data-i18n="summaryIntro">Nice steady work. Results describe game performance, not a clinical measurement.</p><div class="summary-grid"><div><strong id="finalScore">0</strong><span data-i18n="score">Score</span></div><div><strong id="finalAccuracy">0%</strong><span data-i18n="accuracy">Accuracy</span></div><div><strong id="finalHits">0</strong><span data-i18n="targets">Targets</span></div><div><strong id="finalWaves">1</strong><span data-i18n="waves">Waves</span></div></div><fieldset><legend data-i18n="comfortAfter">Discomfort now (0 none – 5 stop)</legend><div id="postComfort" class="comfort"></div></fieldset><div class="dialog-actions"><button id="playAgain" class="btn" type="button" data-i18n="again">Practice again</button><button id="saveButton" class="btn primary" type="button" data-i18n="saveProgress">Save & view progress</button></div></div></div>
+
+  <script src="src/utils/invadersEngine.js"></script>
+  <script src="src/utils/progressTracker.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    const I18N = {
+      en:{hub:'Vision Practice Hub',title:'Binocular Invaders',subtitle:'Coordinate both eyes to find and clear each target core.',pause:'Pause',time:'Time',score:'Score',wave:'Wave',accuracy:'Accuracy',readyStatus:'Calibrate both colors before starting.',fire:'FIRE · Space',controlHelp:'Keyboard: ← → or A D to move · Space to fire · P to pause',setupTitle:'Prepare your practice',setupIntro:'Wear your red/green or red/blue glasses. Adjust until both symbols are clear and similarly noticeable—neither should disappear.',safety:'Use only with clinician guidance for a stable, diagnosed condition. Stop for pain, nausea, headache, or worsening double vision.',difficulty:'Pace',calm:'Calm',standard:'Standard',challenge:'Challenge',duration:'Session length',twoMin:'2 minutes',threeMin:'3 minutes',fiveMin:'5 minutes',filterColor:'Other filter color',green:'Green',blueCyan:'Blue / cyan',redContrast:'Red visibility',otherContrast:'Green/blue visibility',comfortBefore:'Discomfort before starting (0 none – 5 stop)',back:'All games',start:'Start practice',stopStart:'Discomfort 5 means stop. Rest and follow your clinician’s advice.',tutorialTitle:'Use both color channels',redSees:'Red shows the invader shape',otherSees:'Green/blue shows its target core',tutorial1:'Keep your head still and look near the center marker.',tutorial2:'Move the split-color ship under a target.',tutorial3:'Fire at the colored core. There are no lives and no rapid flashing.',adjust:'Adjust settings',begin:'Begin',paused:'Practice paused',pauseAdvice:'Rest your eyes. Resume only when comfortable.',end:'End session',resume:'Resume',checkTitle:'Quick visibility check',checkPrompt:'Just before the wave cleared, what could you see?',both:'Both shape and core',redOnly:'Red shape only',otherOnly:'Green/blue core only',unsure:'Not sure',rebalanced:'Visibility was gently rebalanced for the next wave.',summaryTitle:'Practice complete',summaryIntro:'Nice steady work. Results describe game performance, not a clinical measurement.',targets:'Targets',waves:'Waves',comfortAfter:'Discomfort now (0 none – 5 stop)',again:'Practice again',saveProgress:'Save & view progress',playing:'Use both colors: shape + core.',waveClear:'Wave clear. Quick visibility check.',saved:'Session saved.',language:'עברית'},
+      he:{hub:'מרכז תרגול ראייה',title:'פולשי הראייה הבינוקולרית',subtitle:'תאמו בין שתי העיניים כדי למצוא ולפגוע בליבת כל מטרה.',pause:'השהיה',time:'זמן',score:'ניקוד',wave:'גל',accuracy:'דיוק',readyStatus:'כוונו את נראות שני הצבעים לפני ההתחלה.',fire:'ירי · רווח',controlHelp:'מקלדת: ← → או A D לתנועה · רווח לירי · P להשהיה',setupTitle:'הכנה לתרגול',setupIntro:'הרכיבו משקפי אדום/ירוק או אדום/כחול. כוונו עד ששני הסמלים ברורים ובולטים במידה דומה — אף אחד מהם לא אמור להיעלם.',safety:'לשימוש רק בהנחיית מטפל/ת עבור מצב יציב ומאובחן. הפסיקו אם מופיעים כאב, בחילה, כאב ראש או החמרה בכפל הראייה.',difficulty:'קצב',calm:'רגוע',standard:'רגיל',challenge:'אתגר',duration:'משך התרגול',twoMin:'2 דקות',threeMin:'3 דקות',fiveMin:'5 דקות',filterColor:'צבע המסנן השני',green:'ירוק',blueCyan:'כחול / ציאן',redContrast:'נראות אדום',otherContrast:'נראות ירוק/כחול',comfortBefore:'אי־נוחות לפני ההתחלה (0 ללא – 5 לעצור)',back:'כל המשחקים',start:'התחלת תרגול',stopStart:'אי־נוחות 5 פירושה לעצור. נוחו ופעלו לפי הנחיית המטפל/ת.',tutorialTitle:'השתמשו בשני ערוצי הצבע',redSees:'האדום מציג את צורת הפולש',otherSees:'ירוק/כחול מציג את ליבת המטרה',tutorial1:'שמרו על הראש יציב והביטו ליד סמן המרכז.',tutorial2:'הזיזו את החללית הדו־צבעית אל מתחת למטרה.',tutorial3:'ירו לעבר הליבה הצבעונית. אין פסילות ואין הבהובים מהירים.',adjust:'שינוי הגדרות',begin:'מתחילים',paused:'התרגול מושהה',pauseAdvice:'תנו לעיניים לנוח. המשיכו רק כשנוח.',end:'סיום התרגול',resume:'המשך',checkTitle:'בדיקת נראות קצרה',checkPrompt:'רגע לפני שהגל הסתיים, מה הצלחתם לראות?',both:'גם צורה וגם ליבה',redOnly:'צורה אדומה בלבד',otherOnly:'ליבה ירוקה/כחולה בלבד',unsure:'לא בטוח/ה',rebalanced:'הנראות אוזנה בעדינות לקראת הגל הבא.',summaryTitle:'התרגול הושלם',summaryIntro:'עבודה יציבה ויפה. התוצאות מתארות ביצועים במשחק ואינן מדידה קלינית.',targets:'מטרות',waves:'גלים',comfortAfter:'אי־נוחות כעת (0 ללא – 5 לעצור)',again:'תרגול נוסף',saveProgress:'שמירה וצפייה בהתקדמות',playing:'השתמשו בשני הצבעים: צורה + ליבה.',waveClear:'הגל הושלם. בדיקת נראות קצרה.',saved:'התרגול נשמר.',language:'English'}
+    };
+    const $ = (id) => document.getElementById(id);
+    const canvas = $('gameCanvas'); const ctx = canvas.getContext('2d');
+    let lang = document.documentElement.lang === 'he' ? 'he' : 'en';
+    let engine = null; let frameId = 0; let lastTime = 0; let activeDialog = $('setupOverlay');
+    let preComfort = 0; let postComfort = 0; let recorded = false; let suppressionChecks = [];
+    let hitPulse = 0;
+    const settings = { red:80, companion:80, color:'green' };
+    const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function t(key){ return I18N[lang][key] || key; }
+    function applyLanguage(next){ lang=next; document.documentElement.lang=lang; document.documentElement.dir=lang==='he'?'rtl':'ltr'; document.title=t('title')+' — '+t('hub'); document.querySelectorAll('[data-i18n]').forEach((el)=>{el.textContent=t(el.dataset.i18n);}); $('languageButton').textContent=t('language'); $('leftButton').setAttribute('aria-label',lang==='he'?'תנועה שמאלה':'Move left'); $('rightButton').setAttribute('aria-label',lang==='he'?'תנועה ימינה':'Move right'); try{localStorage.setItem('language',lang);}catch(_){} render(); }
+    function buildComfort(containerId,name,handler){ const box=$(containerId); box.innerHTML=''; for(let i=0;i<=5;i+=1){ const input=document.createElement('input'); input.type='radio'; input.name=name; input.id=name+i; input.value=i; if(i===0)input.checked=true; const label=document.createElement('label'); label.htmlFor=input.id; label.textContent=i; input.addEventListener('change',()=>handler(i)); box.append(input,label); } }
+    buildComfort('preComfort','preComfortRating',(value)=>{preComfort=value; const stop=value===5; $('startButton').disabled=stop; $('preStop').textContent=stop?t('stopStart'):'';});
+    buildComfort('postComfort','postComfortRating',(value)=>{postComfort=value;});
+
+    function companionCss(alpha){ return settings.color==='green'?'rgba(45,255,105,'+alpha+')':'rgba(25,225,255,'+alpha+')'; }
+    function updateCalibration(){ settings.red=Number($('redContrast').value); settings.companion=Number($('companionContrast').value); settings.color=$('companionColor').value; $('redValue').value=settings.red+'%'; $('redValue').textContent=settings.red+'%'; $('companionValue').value=settings.companion+'%'; $('companionValue').textContent=settings.companion+'%'; $('redTarget').style.color='rgba(255,45,65,'+(settings.red/100)+')'; $('companionTarget').style.color=companionCss(settings.companion/100); $('companionTarget').textContent=(settings.color==='green'?'G':'B')+' ●'; $('companionKey').style.color=companionCss(1); render(); saveSettings(); }
+    function saveSettings(){ try{localStorage.setItem('invadersSettings',JSON.stringify({difficulty:$('difficulty').value,duration:$('duration').value,color:settings.color,red:settings.red,companion:settings.companion}));}catch(_){} }
+    function loadSettings(){ try{const s=JSON.parse(localStorage.getItem('invadersSettings')); if(!s)return; if(['calm','standard','challenge'].includes(s.difficulty))$('difficulty').value=s.difficulty; if(['120','180','300'].includes(String(s.duration)))$('duration').value=String(s.duration); if(['green','cyan'].includes(s.color))$('companionColor').value=s.color; $('redContrast').value=Math.max(25,Math.min(100,Number(s.red)||80)); $('companionContrast').value=Math.max(25,Math.min(100,Number(s.companion)||80));}catch(_){} updateCalibration(); }
+    ['redContrast','companionContrast','companionColor','difficulty','duration'].forEach((id)=>$(id).addEventListener('input',updateCalibration));
+
+    function openOverlay(id){ document.querySelectorAll('.overlay').forEach((o)=>o.hidden=true); activeDialog=$(id); activeDialog.hidden=false; const focusable=activeDialog.querySelector('button:not([disabled]),a[href],select,input:not([disabled])'); if(focusable)setTimeout(()=>focusable.focus(),0); }
+    function closeOverlays(){ document.querySelectorAll('.overlay').forEach((o)=>o.hidden=true); activeDialog=null; }
+    document.addEventListener('keydown',(event)=>{ if(activeDialog&&event.key==='Tab'){const items=[...activeDialog.querySelectorAll('button:not([disabled]),a[href],select,input:not([disabled])')].filter((el)=>el.offsetParent!==null);if(!items.length)return;const first=items[0],last=items[items.length-1];if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}} });
+
+    function setControls(enabled){ ['leftButton','rightButton','fireButton','pauseButton'].forEach((id)=>$(id).disabled=!enabled); }
+    function startEngine(){ saveSettings(); suppressionChecks=[]; recorded=false; hitPulse=0; engine=new window.InvadersEngine({difficulty:$('difficulty').value,duration:Number($('duration').value),reducedMotion:prefersReducedMotion,onEvent:onGameEvent}); window.__invadersEngine=engine; engine.start(); closeOverlays(); setControls(true); $('status').textContent=t('playing'); lastTime=performance.now(); cancelAnimationFrame(frameId); frameId=requestAnimationFrame(loop); }
+    function onGameEvent(type,data){ if(type==='hit')hitPulse=prefersReducedMotion?0:1; if(type==='wave'){ engine.setPaused(true); setControls(false); $('status').textContent=t('waveClear'); openOverlay('checkOverlay'); } if(type==='finish')showSummary(data.summary); updateStats(); }
+    function loop(now){ if(!engine)return; const dt=(now-lastTime)/1000; lastTime=now; engine.step(dt); hitPulse=Math.max(0,hitPulse-dt*3); render(); updateStats(); if(!engine.finished)frameId=requestAnimationFrame(loop); }
+    function updateStats(){ if(!engine)return; const remain=Math.max(0,Math.ceil(engine.duration-engine.elapsed)); $('timeStat').textContent=Math.floor(remain/60)+':'+String(remain%60).padStart(2,'0'); $('scoreStat').textContent=engine.score; $('waveStat').textContent=engine.wave; $('accuracyStat').textContent=engine.shots?engine.summary().accuracy+'%':'—'; }
+
+    function drawInvader(invader){ const x=invader.x+engine.formationX,y=invader.y+engine.formationY; const redA=settings.red/100,otherA=settings.companion/100; ctx.save(); ctx.translate(x,y); ctx.strokeStyle='rgba(255,45,65,'+redA+')';ctx.fillStyle='rgba(255,45,65,'+(redA*.18)+')';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(-25,14);ctx.lineTo(-25,-7);ctx.lineTo(-13,-20);ctx.lineTo(13,-20);ctx.lineTo(25,-7);ctx.lineTo(25,14);ctx.lineTo(13,8);ctx.lineTo(7,19);ctx.lineTo(-7,19);ctx.lineTo(-13,8);ctx.closePath();ctx.fill();ctx.stroke(); ctx.strokeStyle=companionCss(otherA);ctx.fillStyle=companionCss(otherA*.25);ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,9,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.restore(); }
+    function drawPlayer(){ const x=engine?engine.playerX:400,y=452;ctx.save();ctx.translate(x,y);ctx.strokeStyle='rgba(255,45,65,'+(settings.red/100)+')';ctx.fillStyle='rgba(255,45,65,'+(settings.red/500)+')';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(-34,16);ctx.lineTo(-17,-4);ctx.lineTo(-9,-4);ctx.lineTo(0,-22);ctx.lineTo(0,16);ctx.closePath();ctx.fill();ctx.stroke();ctx.strokeStyle=companionCss(settings.companion/100);ctx.beginPath();ctx.moveTo(0,-22);ctx.lineTo(9,-4);ctx.lineTo(17,-4);ctx.lineTo(34,16);ctx.lineTo(0,16);ctx.stroke();ctx.beginPath();ctx.arc(0,2,7,0,Math.PI*2);ctx.stroke();ctx.restore(); }
+    function render(){ if(!ctx)return; ctx.clearRect(0,0,800,500); const grad=ctx.createLinearGradient(0,0,0,500);grad.addColorStop(0,'#020710');grad.addColorStop(1,'#07101c');ctx.fillStyle=grad;ctx.fillRect(0,0,800,500);ctx.fillStyle='rgba(220,235,255,.38)';for(let i=0;i<28;i+=1){const x=(i*137+31)%800,y=(i*83+19)%420;ctx.fillRect(x,y,1.5,1.5);} ctx.save();ctx.translate(400,38);ctx.strokeStyle='rgba(255,45,65,'+(settings.red/100)+')';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-13,0);ctx.lineTo(13,0);ctx.stroke();ctx.strokeStyle=companionCss(settings.companion/100);ctx.beginPath();ctx.moveTo(0,-13);ctx.lineTo(0,13);ctx.stroke();ctx.restore(); if(engine){engine.invaders.filter((i)=>i.alive).forEach(drawInvader);engine.projectiles.forEach((p)=>{ctx.strokeStyle='rgba(255,45,65,'+(settings.red/100)+')';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(p.x-2,p.y+10);ctx.lineTo(p.x-2,p.y-8);ctx.stroke();ctx.strokeStyle=companionCss(settings.companion/100);ctx.beginPath();ctx.moveTo(p.x+2,p.y+10);ctx.lineTo(p.x+2,p.y-8);ctx.stroke();});}drawPlayer(); if(hitPulse>0){ctx.strokeStyle='rgba(244,201,93,'+(hitPulse*.6)+')';ctx.lineWidth=3;ctx.strokeRect(5,5,790,490);} }
+
+    function pause(){ if(!engine||engine.finished||engine.paused)return; engine.setPaused(true);setControls(false);openOverlay('pauseOverlay'); }
+    function resume(){ if(!engine||engine.finished)return;closeOverlays();engine.setPaused(false);setControls(true);lastTime=performance.now();$('status').textContent=t('playing'); }
+    function showSummary(summary){ setControls(false);$('finalScore').textContent=summary.score;$('finalAccuracy').textContent=summary.accuracy+'%';$('finalHits').textContent=summary.hits;$('finalWaves').textContent=Math.max(0,summary.waves-1);openOverlay('summaryOverlay'); }
+    function recordSession(){ if(recorded||!engine)return;recorded=true;const s=engine.summary();if(window.DTGProgress)window.DTGProgress.record({game:'binocular_invaders',gameLabel:lang==='he'?'פולשי הראייה הבינוקולרית':'Binocular Invaders',difficulty:engine.difficulty,score:s.score,accuracy:s.accuracy,duration:s.duration,extra:{hits:s.hits,shots:s.shots,wavesCompleted:Math.max(0,s.waves-1),preComfort,postComfort,redContrast:settings.red,companionContrast:settings.companion,companionColor:settings.color,suppressionChecks:suppressionChecks.length,bothVisible:suppressionChecks.filter((v)=>v==='both').length}}); }
+
+    $('startButton').addEventListener('click',()=>{if(preComfort===5)return;openOverlay('tutorialOverlay');});
+    $('tutorialBack').addEventListener('click',()=>openOverlay('setupOverlay'));
+    $('tutorialStart').addEventListener('click',startEngine);
+    $('pauseButton').addEventListener('click',pause); $('resumeButton').addEventListener('click',resume);
+    $('endButton').addEventListener('click',()=>{if(engine)engine.finish('stopped');});
+    $('languageButton').addEventListener('click',()=>applyLanguage(lang==='en'?'he':'en'));
+    $('playAgain').addEventListener('click',()=>{recordSession();location.reload();});
+    $('saveButton').addEventListener('click',()=>{recordSession();location.href='progress.html';});
+    document.querySelectorAll('[data-check]').forEach((button)=>button.addEventListener('click',()=>{const value=button.dataset.check;suppressionChecks.push(value);if(value==='red'){settings.companion=Math.min(100,settings.companion+10);$('companionContrast').value=settings.companion;}else if(value==='companion'){settings.red=Math.min(100,settings.red+10);$('redContrast').value=settings.red;}updateCalibration();$('checkFeedback').textContent=value==='both'?'':t('rebalanced');setTimeout(()=>{$('checkFeedback').textContent='';resume();},value==='both'?100:650);}));
+    function bindHold(button,direction){const stop=()=>{if(engine)engine.setDirection(0);};button.addEventListener('pointerdown',(event)=>{event.preventDefault();if(engine)engine.setDirection(direction);});['pointerup','pointercancel','pointerleave'].forEach((name)=>button.addEventListener(name,stop));}
+    bindHold($('leftButton'),-1);bindHold($('rightButton'),1);$('fireButton').addEventListener('pointerdown',(event)=>{event.preventDefault();if(engine)engine.fire();});$('fireButton').addEventListener('click',()=>{if(engine)engine.fire();});
+    const keys=new Set();document.addEventListener('keydown',(event)=>{if(activeDialog)return;const key=event.key.toLowerCase();if(['arrowleft','arrowright','a','d',' ','p'].includes(key))event.preventDefault();keys.add(key);if(key===' '&&engine)engine.fire();if(key==='p')pause();if(engine)engine.setDirection(keys.has('arrowleft')||keys.has('a')?-1:keys.has('arrowright')||keys.has('d')?1:0);});document.addEventListener('keyup',(event)=>{keys.delete(event.key.toLowerCase());if(engine)engine.setDirection(keys.has('arrowleft')||keys.has('a')?-1:keys.has('arrowright')||keys.has('d')?1:0);});
+    document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});
+    loadSettings();applyLanguage(lang);updateStats();
+  }());
+  </script>
+  <script src="src/utils/registerServiceWorker.js"></script>
+</body>
+</html>

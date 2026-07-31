@@ -1,4 +1,4 @@
-/* Smoke-test the four games in jsdom: init without errors + exercise the
+/* Smoke-test all five games in jsdom: init without errors + exercise the
    new pause / feedback / visibility logic. Run from the repo root. */
 const fs = require('fs');
 const path = require('path');
@@ -15,6 +15,9 @@ function mockCanvas(window) {
   const ctxMock = new Proxy({}, {
     get: (t, prop) => {
       if (prop === 'canvas') return null;
+      if (prop === 'createLinearGradient' || prop === 'createRadialGradient') {
+        return () => ({ addColorStop() {} });
+      }
       return noop;
     },
     set: () => true
@@ -39,9 +42,11 @@ function mockCanvas(window) {
 function loadGame(file, { withCanvas } = { withCanvas: true }) {
   const gameHelpers = fs.readFileSync('src/utils/gameHelpers.js', 'utf8');
   const fusionScoring = fs.readFileSync('src/utils/fusionScoring.js', 'utf8');
+  const invadersEngine = fs.readFileSync('src/utils/invadersEngine.js', 'utf8');
   const html = fs.readFileSync(file, 'utf8')
     .replace('<script src="src/utils/gameHelpers.js"></script>', '<script>' + gameHelpers + '</scr' + 'ipt>')
     .replace('<script src="src/utils/fusionScoring.js"></script>', '<script>' + fusionScoring + '</scr' + 'ipt>')
+    .replace('<script src="src/utils/invadersEngine.js"></script>', '<script>' + invadersEngine + '</scr' + 'ipt>')
     // Drop external production utils; they are optional (window.X guards).
     .replace(/<script src="src\/[^"]+"><\/script>/g, '');
   const virtualConsole = new (require(path.join(process.cwd(), 'node_modules', 'jsdom')).VirtualConsole)();
@@ -186,6 +191,40 @@ console.log('== Fusion Quest (fusion_quest.html) ==');
   d.getElementById('leftButton').click();
   check('arrow taps correct drift during hold', d.getElementById('greenLayer').style.transform !== heldTransform);
   check('suppression check does not award a star', w.FusionScoring.catchStars(false) === 0);
+  dom.window.close();
+}
+
+console.log('== Binocular Invaders (space_invaders.html) ==');
+{
+  const { dom, errors } = loadGame('space_invaders.html');
+  const w = dom.window;
+  const d = w.document;
+  check('no script errors on init', errors.length === 0);
+  errors.forEach(e => console.log('   error:', e && e.message || e));
+  check('setup opens before play', d.getElementById('setupOverlay').hidden === false);
+  d.getElementById('preComfortRating5').click();
+  check('comfort 5 disables start', d.getElementById('startButton').disabled);
+  d.getElementById('preComfortRating0').click();
+  check('comfort 0 enables start', !d.getElementById('startButton').disabled);
+  d.getElementById('startButton').click();
+  check('tutorial opens', !d.getElementById('tutorialOverlay').hidden);
+  d.getElementById('tutorialStart').click();
+  check('game starts with controls enabled', !d.getElementById('fireButton').disabled && !d.getElementById('pauseButton').disabled);
+  const startX = w.__invadersEngine.playerX;
+  d.getElementById('rightButton').dispatchEvent(new w.Event('pointerdown'));
+  w.__runFrames(5);
+  check('touch control moves ship', w.__invadersEngine.playerX > startX);
+  d.getElementById('rightButton').dispatchEvent(new w.Event('pointerup'));
+  d.getElementById('fireButton').dispatchEvent(new w.Event('pointerdown'));
+  check('fire creates one shot', w.__invadersEngine.shots === 1);
+  d.getElementById('pauseButton').click();
+  check('pause freezes engine and opens dialog', w.__invadersEngine.paused && !d.getElementById('pauseOverlay').hidden);
+  d.getElementById('resumeButton').click();
+  check('resume restores play', !w.__invadersEngine.paused && d.getElementById('pauseOverlay').hidden);
+  d.getElementById('languageButton').click();
+  check('Hebrew translation and RTL apply', d.documentElement.lang === 'he' && d.documentElement.dir === 'rtl');
+  w.__invadersEngine.finish('test');
+  check('summary opens on finish', !d.getElementById('summaryOverlay').hidden);
   dom.window.close();
 }
 

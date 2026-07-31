@@ -3,9 +3,9 @@
  * Provides offline functionality, caching, and performance optimizations
  */
 
-const CACHE_NAME = 'dichoptic-therapy-v1.3.0';
-const STATIC_CACHE = 'static-resources-v1.3.0';
-const DYNAMIC_CACHE = 'dynamic-resources-v1.3.0';
+const CACHE_NAME = 'dichoptic-therapy-v1.4.0';
+const STATIC_CACHE = 'static-resources-v1.4.0';
+const DYNAMIC_CACHE = 'dynamic-resources-v1.4.0';
 const SCOPE_URL = new URL('./', self.location.href);
 
 // Files to cache immediately
@@ -16,6 +16,7 @@ const STATIC_ASSET_PATHS = [
   'ball_game.html',
   'static_ball_game.html',
   'fusion_quest.html',
+  'space_invaders.html',
   'progress.html',
   'styles.css',
   'game.js',
@@ -35,6 +36,7 @@ const STATIC_ASSET_PATHS = [
   'src/utils/progressTracker.js',
   'src/utils/gameHelpers.js',
   'src/utils/fusionScoring.js',
+  'src/utils/invadersEngine.js',
   'src/utils/registerServiceWorker.js',
   'assets/anaglyph-glasses.jpg'
 ];

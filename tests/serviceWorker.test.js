@@ -36,10 +36,12 @@ describe('service worker subdirectory support', () => {
     await installation;
     expect(addedAssets).toContain('https://onr.github.io/Dichoptic_Therapy_Games/index.html');
     expect(addedAssets).toContain('https://onr.github.io/Dichoptic_Therapy_Games/fusion_quest.html');
+    expect(addedAssets).toContain('https://onr.github.io/Dichoptic_Therapy_Games/space_invaders.html');
+    expect(addedAssets).toContain('https://onr.github.io/Dichoptic_Therapy_Games/src/utils/invadersEngine.js');
     expect(addedAssets.every((url) => url.startsWith('https://onr.github.io/Dichoptic_Therapy_Games/'))).toBe(true);
   });
 
-  test.each(['index.html', 'memory_game.html', 'ball_game.html', 'static_ball_game.html', 'fusion_quest.html', 'progress.html'])(
+  test.each(['index.html', 'memory_game.html', 'ball_game.html', 'static_ball_game.html', 'fusion_quest.html', 'space_invaders.html', 'progress.html'])(
     '%s registers offline support',
     (file) => {
       expect(fs.readFileSync(file, 'utf8')).toContain('src/utils/registerServiceWorker.js');
