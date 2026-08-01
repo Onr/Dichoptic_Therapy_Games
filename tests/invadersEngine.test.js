@@ -46,10 +46,9 @@ describe('InvadersEngine', () => {
     expect(engine.summary().accuracy).toBe(100);
   });
 
-  test('waves contain fully red and companion-color invaders', () => {
+  test('every invader uses both dichoptic color channels', () => {
     const engine = new InvadersEngine();
-    expect(engine.invaders.some((target) => target.channel === 'red')).toBe(true);
-    expect(engine.invaders.some((target) => target.channel === 'companion')).toBe(true);
+    expect(engine.invaders.every((target) => target.channel === 'both')).toBe(true);
   });
 
   test('an invader fires from a random surviving target', () => {
@@ -59,7 +58,7 @@ describe('InvadersEngine', () => {
     engine.enemyFireTimer = 0;
     engine.step(0.01);
     expect(engine.enemyProjectiles).toHaveLength(1);
-    expect(engine.enemyProjectiles[0].channel).toBe(engine.invaders[0].channel);
+    expect(engine.enemyProjectiles[0].channel).toBe('both');
     expect(events).toContain('enemyShot');
   });
 

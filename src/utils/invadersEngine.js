@@ -60,7 +60,7 @@ class InvadersEngine {
           x: startX + col * spacingX,
           y: 82 + row * spacingY,
           row,
-          channel: (row + col) % 2 === 0 ? 'red' : 'companion',
+          channel: 'both',
           alive: true
         });
       }
@@ -86,10 +86,10 @@ class InvadersEngine {
     this.enemyProjectiles.push({
       x: invader.x + this.formationX,
       y: invader.y + this.formationY + 24,
-      channel: invader.channel,
+      channel: 'both',
       active: true
     });
-    this.onEvent('enemyShot', { channel: invader.channel });
+    this.onEvent('enemyShot', { channel: 'both' });
     return true;
   }
 
