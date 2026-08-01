@@ -46,6 +46,37 @@ describe('InvadersEngine', () => {
     expect(engine.summary().accuracy).toBe(100);
   });
 
+  test('waves contain fully red and companion-color invaders', () => {
+    const engine = new InvadersEngine();
+    expect(engine.invaders.some((target) => target.channel === 'red')).toBe(true);
+    expect(engine.invaders.some((target) => target.channel === 'companion')).toBe(true);
+  });
+
+  test('an invader fires from a random surviving target', () => {
+    const events = [];
+    const engine = new InvadersEngine({ random: () => 0, onEvent: (name) => events.push(name) });
+    engine.start();
+    engine.enemyFireTimer = 0;
+    engine.step(0.01);
+    expect(engine.enemyProjectiles).toHaveLength(1);
+    expect(engine.enemyProjectiles[0].channel).toBe(engine.invaders[0].channel);
+    expect(events).toContain('enemyShot');
+  });
+
+  test('enemy shots reduce score without ending the session', () => {
+    const events = [];
+    const engine = new InvadersEngine({ onEvent: (name) => events.push(name) });
+    engine.start();
+    engine.score = 120;
+    engine.enemyProjectiles.push({ x: engine.playerX, y: 451, channel: 'red', active: true });
+    engine.step(0.01);
+    expect(engine.playerHits).toBe(1);
+    expect(engine.score).toBe(70);
+    expect(engine.finished).toBe(false);
+    expect(events).toContain('playerHit');
+    expect(engine.summary().playerHits).toBe(1);
+  });
+
   test('clearing a formation advances the wave', () => {
     const events = [];
     const engine = new InvadersEngine({ onEvent: (name) => events.push(name) });

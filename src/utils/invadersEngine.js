@@ -23,6 +23,10 @@ class InvadersEngine {
     this.playerX = this.width / 2;
     this.playerDirection = 0;
     this.projectiles = [];
+    this.enemyProjectiles = [];
+    this.playerHits = 0;
+    this.playerRecovery = 0;
+    this.enemyFireTimer = 0;
     this.formationX = 0;
     this.formationY = 0;
     this.formationDirection = 1;
@@ -32,9 +36,9 @@ class InvadersEngine {
 
   config() {
     const presets = {
-      calm: { rows: 2, cols: 5, speed: 18, bulletSpeed: 285, cooldown: 0.48 },
-      standard: { rows: 3, cols: 6, speed: 27, bulletSpeed: 320, cooldown: 0.38 },
-      challenge: { rows: 3, cols: 7, speed: 36, bulletSpeed: 350, cooldown: 0.3 }
+      calm: { rows: 2, cols: 5, speed: 18, bulletSpeed: 285, cooldown: 0.48, enemyBulletSpeed: 125, enemyFireMin: 2.4, enemyFireRange: 1.8 },
+      standard: { rows: 3, cols: 6, speed: 27, bulletSpeed: 320, cooldown: 0.38, enemyBulletSpeed: 155, enemyFireMin: 1.7, enemyFireRange: 1.4 },
+      challenge: { rows: 3, cols: 7, speed: 36, bulletSpeed: 350, cooldown: 0.3, enemyBulletSpeed: 185, enemyFireMin: 1.15, enemyFireRange: 1.15 }
     };
     const base = presets[this.difficulty] || presets.calm;
     const waveFactor = Math.min(1.35, 1 + (this.wave - 1) * 0.06);
@@ -56,6 +60,7 @@ class InvadersEngine {
           x: startX + col * spacingX,
           y: 82 + row * spacingY,
           row,
+          channel: (row + col) % 2 === 0 ? 'red' : 'companion',
           alive: true
         });
       }
@@ -64,6 +69,28 @@ class InvadersEngine {
     this.formationY = 0;
     this.formationDirection = this.random() < 0.5 ? -1 : 1;
     this.projectiles = [];
+    this.enemyProjectiles = [];
+    this.scheduleEnemyFire();
+  }
+
+  scheduleEnemyFire() {
+    const config = this.config();
+    this.enemyFireTimer = config.enemyFireMin + this.random() * config.enemyFireRange;
+  }
+
+  fireFromInvader() {
+    const alive = this.invaders.filter((invader) => invader.alive);
+    if (!alive.length || this.enemyProjectiles.length >= 3) {return false;}
+    const index = Math.min(alive.length - 1, Math.floor(this.random() * alive.length));
+    const invader = alive[index];
+    this.enemyProjectiles.push({
+      x: invader.x + this.formationX,
+      y: invader.y + this.formationY + 24,
+      channel: invader.channel,
+      active: true
+    });
+    this.onEvent('enemyShot', { channel: invader.channel });
+    return true;
   }
 
   start() {
@@ -92,6 +119,12 @@ class InvadersEngine {
     const dt = Math.min(0.05, Math.max(0, Number(deltaSeconds) || 0));
     this.elapsed += dt;
     this.fireCooldown = Math.max(0, this.fireCooldown - dt);
+    this.playerRecovery = Math.max(0, this.playerRecovery - dt);
+    this.enemyFireTimer -= dt;
+    if (this.enemyFireTimer <= 0) {
+      this.fireFromInvader();
+      this.scheduleEnemyFire();
+    }
     this.playerX += this.playerDirection * 260 * dt;
     this.playerX = Math.max(38, Math.min(this.width - 38, this.playerX));
 
@@ -127,6 +160,20 @@ class InvadersEngine {
     });
     this.projectiles = this.projectiles.filter((projectile) => projectile.active);
 
+    this.enemyProjectiles.forEach((projectile) => {
+      if (!projectile.active) {return;}
+      projectile.y += config.enemyBulletSpeed * dt;
+      if (projectile.y > this.height + 15) {projectile.active = false;}
+      if (this.playerRecovery <= 0 && Math.abs(projectile.x - this.playerX) <= 32 && Math.abs(projectile.y - 452) <= 20) {
+        projectile.active = false;
+        this.playerHits += 1;
+        this.playerRecovery = 1.25;
+        this.score = Math.max(0, this.score - 50);
+        this.onEvent('playerHit', { playerHits: this.playerHits, score: this.score });
+      }
+    });
+    this.enemyProjectiles = this.enemyProjectiles.filter((projectile) => projectile.active);
+
     if (this.invaders.every((invader) => !invader.alive)) {
       this.score += 250;
       this.wave += 1;
@@ -149,6 +196,7 @@ class InvadersEngine {
       score: this.score,
       hits: this.hits,
       shots: this.shots,
+      playerHits: this.playerHits,
       accuracy: this.shots ? Math.round(this.hits / this.shots * 100) : 0,
       waves: this.wave,
       duration: Math.round(Math.min(this.elapsed, this.duration))

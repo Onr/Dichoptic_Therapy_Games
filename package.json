@@ -1,6 +1,6 @@
 {
   "name": "dichoptic_therapy_games",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Bilingual static browser games for clinician-guided dichoptic vision practice, with private local progress tracking.",
   "main": "game.js",
   "scripts": {
