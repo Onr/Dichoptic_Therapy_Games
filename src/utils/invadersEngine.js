@@ -83,13 +83,14 @@ class InvadersEngine {
     if (!alive.length || this.enemyProjectiles.length >= 3) {return false;}
     const index = Math.min(alive.length - 1, Math.floor(this.random() * alive.length));
     const invader = alive[index];
+    const channel = this.random() < 0.5 ? 'red' : 'companion';
     this.enemyProjectiles.push({
       x: invader.x + this.formationX,
       y: invader.y + this.formationY + 24,
-      channel: 'both',
+      channel,
       active: true
     });
-    this.onEvent('enemyShot', { channel: 'both' });
+    this.onEvent('enemyShot', { channel });
     return true;
   }
 

@@ -51,15 +51,17 @@ describe('InvadersEngine', () => {
     expect(engine.invaders.every((target) => target.channel === 'both')).toBe(true);
   });
 
-  test('an invader fires from a random surviving target', () => {
+  test('invaders fire fully red or fully companion-color shots', () => {
     const events = [];
-    const engine = new InvadersEngine({ random: () => 0, onEvent: (name) => events.push(name) });
-    engine.start();
-    engine.enemyFireTimer = 0;
-    engine.step(0.01);
-    expect(engine.enemyProjectiles).toHaveLength(1);
-    expect(engine.enemyProjectiles[0].channel).toBe('both');
-    expect(events).toContain('enemyShot');
+    const randomValues = [0, 0, 0, 0, 0, 0.9];
+    const engine = new InvadersEngine({
+      random: () => randomValues.shift() || 0,
+      onEvent: (name, data) => events.push({ name, data })
+    });
+    engine.fireFromInvader();
+    engine.fireFromInvader();
+    expect(engine.enemyProjectiles.map((shot) => shot.channel)).toEqual(['red', 'companion']);
+    expect(events.filter((event) => event.name === 'enemyShot').map((event) => event.data.channel)).toEqual(['red', 'companion']);
   });
 
   test('enemy shots reduce score without ending the session', () => {
