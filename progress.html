@@ -18,6 +18,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="reading-preferences.css">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -217,6 +218,17 @@
       </div>
       <div class="header-actions">
         <a class="btn btn-secondary" href="index.html" data-i18n="backLink">← All games</a>
+        <div data-reading-controls
+          data-group-en="Text size" data-group-he="גודל הטקסט"
+          data-decrease-en="Decrease text size" data-decrease-he="הקטנת הטקסט"
+          data-reset-en="Reset text size" data-reset-he="איפוס גודל הטקסט"
+          data-increase-en="Increase text size" data-increase-he="הגדלת הטקסט"
+          data-status-en="Text size" data-status-he="גודל הטקסט">
+          <button type="button" data-reading-decrease aria-label="Decrease text size">A−</button>
+          <button type="button" data-reading-reset aria-label="Reset text size">A</button>
+          <button type="button" data-reading-increase aria-label="Increase text size">A+</button>
+          <span data-reading-status aria-live="polite"></span>
+        </div>
         <button id="toggle-language" class="btn btn-secondary" type="button" data-i18n="languageButton">עברית</button>
       </div>
     </div>
@@ -741,5 +753,6 @@
 <script src="src/utils/userCounter.js"></script>
 <script src="src/utils/adminPanel.js"></script>
 <script src="src/utils/registerServiceWorker.js"></script>
+<script src="reading-preferences.js"></script>
 </body>
 </html>

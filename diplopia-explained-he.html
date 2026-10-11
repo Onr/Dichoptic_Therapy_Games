@@ -9,6 +9,7 @@
   <meta name="description" content="מדריך מקיף להבנת דיפלופיה (כפל ראייה), סיבותיה, סוגיה ומתי לפנות לטיפול רפואי.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="reading-preferences.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -262,7 +263,20 @@
           <span>ערכת תרגול לשיקום ראייה</span>
           <a href="index.html">מרכז תרגול דיפלופיה</a>
         </div>
-        <a href="index.html" class="back-link">חזרה לדף הבית ←</a>
+        <div class="header-tools">
+          <div data-reading-controls
+            data-group-en="Text size" data-group-he="גודל הטקסט"
+            data-decrease-en="Decrease text size" data-decrease-he="הקטנת הטקסט"
+            data-reset-en="Reset text size" data-reset-he="איפוס גודל הטקסט"
+            data-increase-en="Increase text size" data-increase-he="הגדלת הטקסט"
+            data-status-en="Text size" data-status-he="גודל הטקסט">
+            <button type="button" data-reading-decrease aria-label="הקטנת הטקסט">A−</button>
+            <button type="button" data-reading-reset aria-label="איפוס גודל הטקסט">A</button>
+            <button type="button" data-reading-increase aria-label="הגדלת הטקסט">A+</button>
+            <span data-reading-status aria-live="polite"></span>
+          </div>
+          <a href="index.html" class="back-link">חזרה לדף הבית ←</a>
+        </div>
       </div>
     </div>
   </header>
@@ -284,7 +298,7 @@
 
       <h2>מתי לפנות לטיפול רפואי</h2>
 
-      <p>מכיוון שדיפלופיה יכולה לנוע ממצב פשוט יחסית ועד סימן אפשרי למחלה נוירולוגית או מערכתית משמעותית, חשוב מאוד לעבור בדיקה של רופא עיניים ולעיתים גם בדיקה נוירולוגית. לאחר שההערכה הרפואית שוללת מצבים דחופים ומבהירה את הסיבה לכפל הראייה, שיקום ראייה יכול לסייע בהפחתת הכפל, בשיפור הנוחות ובהקלת ההתנהלות בפעילויות היומיום.</p>
+      <p>לכפל ראייה יכולות להיות סיבות רבות, וחלקן דורשות טיפול רפואי מהיר. איש מקצוע בתחום רפואת העיניים יכול להעריך את הסיבה ולדון באפשרויות המתאימות. תרגילים עשויים להתאים לחלק מהאבחנות, אך אינם טיפול כללי לכל סוג של כפל ראייה.</p>
 
       <h3 class="references-heading">References</h3>
       <ol class="citations">
@@ -303,5 +317,6 @@
       <a href="privacy-policy.html" target="_blank" rel="noopener">מדיניות פרטיות</a>
     </p>
   </footer>
+  <script src="reading-preferences.js"></script>
 </body>
 </html>

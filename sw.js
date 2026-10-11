@@ -19,6 +19,8 @@ const STATIC_ASSET_PATHS = [
   'space_invaders.html',
   'progress.html',
   'styles.css',
+  'reading-preferences.css',
+  'reading-preferences.js',
   'game.js',
   'favicon.ico',
   'assets/icons/icon-192.png',

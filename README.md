@@ -47,6 +47,7 @@ Then open <http://localhost:8080/>.
 - `memory_game.html`, `ball_game.html`, `static_ball_game.html`,
   `fusion_quest.html`, `space_invaders.html`: activities
 - `progress.html`: combined local dashboard
+- `reading-preferences.css` and `reading-preferences.js`: shared text-size controls for reading pages
 - `src/utils/progressTracker.js`: shared progress schema and export/import
 - `sw.js`: offline cache, scoped for GitHub Pages subdirectory hosting
 - `tests/` and `scripts/smoke_games.js`: automated regression checks

@@ -9,6 +9,7 @@
   <meta name="description" content="Comprehensive guide to understanding diplopia (double vision), its causes, types, and when to seek medical attention.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="reading-preferences.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -250,7 +251,20 @@
           <span>Vision Therapy Toolkit</span>
           <a href="index.html">Diplopia Practice Hub</a>
         </div>
-        <a href="index.html" class="back-link">← Back to Home</a>
+        <div class="header-tools">
+          <div data-reading-controls
+            data-group-en="Text size" data-group-he="גודל הטקסט"
+            data-decrease-en="Decrease text size" data-decrease-he="הקטנת הטקסט"
+            data-reset-en="Reset text size" data-reset-he="איפוס גודל הטקסט"
+            data-increase-en="Increase text size" data-increase-he="הגדלת הטקסט"
+            data-status-en="Text size" data-status-he="גודל הטקסט">
+            <button type="button" data-reading-decrease aria-label="Decrease text size">A−</button>
+            <button type="button" data-reading-reset aria-label="Reset text size">A</button>
+            <button type="button" data-reading-increase aria-label="Increase text size">A+</button>
+            <span data-reading-status aria-live="polite"></span>
+          </div>
+          <a href="index.html" class="back-link">← Back to Home</a>
+        </div>
       </div>
     </div>
   </header>
@@ -272,7 +286,7 @@
 
       <h2>When to seek medical attention</h2>
 
-      <p>Because diplopia may range from benign to a sign of a serious neurological or systemic disease, a careful eye and neurological examination is essential. After a medical evaluation rules out urgent causes and clarifies the diagnosis, vision rehabilitation can help reduce double vision, improve comfort, and support daily activities.</p>
+      <p>Double vision has many possible causes, some of which need prompt medical attention. An eye-care professional can assess the cause and discuss appropriate options. Exercises may be considered for some diagnoses, but they are not a general treatment for all double vision.</p>
 
       <h3>References</h3>
       <ol>
@@ -291,5 +305,6 @@
       <a href="privacy-policy.html" target="_blank" rel="noopener">Privacy Policy</a>
     </p>
   </footer>
+  <script src="reading-preferences.js"></script>
 </body>
 </html>

@@ -24,6 +24,7 @@
   <meta name="twitter:description" content="Interactive binocular vision therapy exercises and educational resources for diplopia rehabilitation.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="reading-preferences.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -843,6 +844,17 @@
         </div>
         <div class="header-actions">
           <a id="progress-link" class="cta-button secondary" href="progress.html" data-i18n="progressLink">My Progress</a>
+          <div data-reading-controls
+            data-group-en="Text size" data-group-he="גודל הטקסט"
+            data-decrease-en="Decrease text size" data-decrease-he="הקטנת הטקסט"
+            data-reset-en="Reset text size" data-reset-he="איפוס גודל הטקסט"
+            data-increase-en="Increase text size" data-increase-he="הגדלת הטקסט"
+            data-status-en="Text size" data-status-he="גודל הטקסט">
+            <button type="button" data-reading-decrease aria-label="Decrease text size">A−</button>
+            <button type="button" data-reading-reset aria-label="Reset text size">A</button>
+            <button type="button" data-reading-increase aria-label="Increase text size">A+</button>
+            <span data-reading-status aria-live="polite"></span>
+          </div>
           <button id="toggle-language" type="button" aria-label="Switch language" data-i18n="languageButton">עברית</button>
         </div>
       </div>
@@ -853,7 +865,7 @@
     <section class="hero" aria-labelledby="hero-heading">
       <div class="hero-content">
         <h1 id="hero-heading" data-i18n="heroHeading">Therapist-guided practice for binocular diplopia</h1>
-        <p data-i18n="heroLead">Understand double vision, follow evidence-based guidance, and reinforce your rehabilitation with short, engaging games.</p>
+        <p data-i18n="heroLead">Learn about double vision and explore browser activities only when they are part of your clinician’s care plan.</p>
         <div class="cta-buttons">
           <a class="cta-button primary" href="#games" data-i18n="primaryCta">Start practicing</a>
           <a class="cta-button secondary" href="#about-diplopia" data-anchor-target="therapy-exercises" data-i18n="secondaryCta">Learn about the exercises</a>
@@ -864,7 +876,7 @@
     <section id="games" class="games-section" aria-labelledby="games-heading">
       <div class="section-header">
         <h2 id="games-heading" data-i18n="gamesHeading">Choose your training game</h2>
-        <p data-i18n="gamesIntro">Blend clinical guidance with playful repetitions. Short daily sessions may help coordinate eye movements and reduce double vision for some types of stable binocular diplopia under clinician guidance.</p>
+        <p data-i18n="gamesIntro">These browser activities are for practice only when recommended by your eye-care professional.</p>
       </div>
       <div class="game-grid">
         <a href="memory_game.html" class="game-card" data-cta="Play Now →">
@@ -912,7 +924,7 @@
           <div class="faq-grid">
             <div class="faq-card">
               <h3>What is dichoptic therapy?</h3>
-              <p>Dichoptic therapy presents different images to each eye simultaneously. Our games balance contrast and motion to encourage binocular fusion and help the eyes work together.</p>
+              <p>Dichoptic activities present different visual elements to each eye at the same time. Whether an exercise is appropriate depends on the cause of double vision and should be discussed with an eye-care professional.</p>
             </div>
             <div class="faq-card">
               <h3>Do I need special equipment?</h3>
@@ -926,7 +938,7 @@
             </div>
             <div class="faq-card">
               <h3>When can vision rehabilitation help?</h3>
-              <p>It is very important to first have a full medical evaluation by an eye doctor. After urgent causes are ruled out and the diagnosis is clear, vision rehabilitation can help reduce double vision, improve comfort, and support daily activities.</p>
+              <p>Double vision has many possible causes. An eye-care professional should assess it first; rehabilitation exercises may be considered as part of care for some diagnoses.</p>
             </div>
             <div class="faq-card">
               <h3>Are these exercises a substitute for medical evaluation?</h3>
@@ -934,15 +946,15 @@
             </div>
             <div class="faq-card">
               <h3>Do eye exercises really help with double vision?</h3>
-              <p>Research shows that structured eye exercises can help reduce symptoms of double vision in some conditions.</p>
+              <p>Exercise-based care is used for some specific diagnoses, but evidence and suitability vary. These activities are not validated for every cause of double vision; ask your eye-care professional whether they fit your diagnosis and care plan.</p>
             </div>
             <div class="faq-card">
               <h3>How often should I practice?</h3>
-              <p>The recommendation is about 10–15 minutes per day, split into several short sessions.</p>
+              <p>There is no single schedule that is right for everyone. Follow the plan from the clinician who knows your diagnosis, and ask before changing the length or intensity of practice.</p>
             </div>
             <div class="faq-card">
               <h3>How long does it usually take to see improvement?</h3>
-              <p>Usually people start to notice improvement after a few weeks, but the exact timing is different for each patient and depends on the type of diplopia and the severity of the condition. Your eye doctor and vision rehabilitation specialist will review your progress in follow up evaluations and adjust the plan for you.</p>
+              <p>There is no general timeline, and this site cannot predict whether these activities will change symptoms. Discuss changes with your clinician and stop if symptoms are new or worsening.</p>
             </div>
           </div>
         </article>
@@ -951,10 +963,10 @@
           <h2 id="therapy-tips-heading">Therapy tips</h2>
           <p>Blend these strategies into your daily practice routine:</p>
           <ul class="tips-list">
-            <li>Warm up with slow eye stretches—gently trace a sideways figure eight to prime extraocular muscles.</li>
-            <li>Keep a therapy journal. Note which mechanics—scanning, pursuit tracking, or saccades—felt easiest and hardest.</li>
-            <li>Celebrate small wins such as smoother pursuits or fewer double vision episodes to reinforce adherence.</li>
-            <li>While practicing, it is recommended to use a larger screen (such as a computer monitor or tablet) and sit so the screen is at eye level.</li>
+            <li>Only use activities and settings that your eye-care professional has recommended for you.</li>
+            <li>If your clinician asks you to track practice, note the activity and how you felt during and after it.</li>
+            <li>Pause or stop if an activity causes significant discomfort or makes symptoms worse, and contact your clinician for guidance.</li>
+            <li>Use the screen position and viewing distance specified in your care plan.</li>
             <li>Safety note: If double vision is sudden, new, or rapidly worsening, or comes with severe headache, eye pain, weakness, confusion, or slurred speech, seek urgent medical care.</li>
           </ul>
           <div class="faq-references" aria-label="References">
@@ -978,7 +990,7 @@
           <div class="faq-grid">
             <div class="faq-card">
               <h3>מה התרגול כולל?</h3>
-              <p>במהלך התרגול מוצגות תמונות שונות לכל עין בו־זמנית. המטרה היא לתמוך במיזוג (פיוז׳ן) ובשיתוף פעולה בין העיניים, כדי לעזור לעיניים לעבוד יחד.</p>
+              <p>בתרגילים דיכופטיים מוצגים רכיבים חזותיים שונים לכל עין בו־זמנית. התאמת התרגיל תלויה בסיבה לכפל הראייה, ויש להתייעץ עם איש מקצוע בתחום רפואת העיניים.</p>
             </div>
             <div class="faq-card">
               <h3>האם צריך ציוד מיוחד?</h3>
@@ -992,7 +1004,7 @@
             </div>
             <div class="faq-card">
               <h3>מתי שיקום ראייה יכול לעזור?</h3>
-              <p>חשוב לעבור הערכה רפואית על ידי רופא עיניים. לאחר שנשללים מצבים דחופים והאבחנה ברורה, שיקום ראייה יכול לעזור להפחית כפל ראייה, לשפר נוחות, ולתמוך בתפקוד בפעילויות היומיום.</p>
+              <p>לכפל ראייה יכולות להיות סיבות רבות. חשוב להיבדק תחילה אצל איש מקצוע בתחום רפואת העיניים; תרגילי שיקום עשויים להתאים כחלק מהטיפול בחלק מהאבחנות.</p>
             </div>
             <div class="faq-card">
               <h3>האם התרגילים מחליפים בדיקה רפואית?</h3>
@@ -1000,15 +1012,15 @@
             </div>
             <div class="faq-card">
               <h3>האם תרגילי עיניים באמת עוזרים בכפל ראייה?</h3>
-              <p>מחקרים מראים שתרגילי עיניים מובנים יכולים לעזור להפחית סימפטומים של כפל ראייה בחלק מהמקרים.</p>
+              <p>תרגול עשוי לשמש לטיפול באבחנות מסוימות, אך הראיות וההתאמה משתנות. התרגילים באתר אינם מתאימים או מבוססים לכל סיבה לכפל ראייה; התייעצו עם איש מקצוע אם הם מתאימים לאבחנה ולתכנית הטיפול שלכם.</p>
             </div>
             <div class="faq-card">
               <h3>כל כמה זמן כדאי לתרגל?</h3>
-              <p>ההמלצה היא לתרגל כ־10–15 דקות ביום, מחולקות למספר מקטעים קצרים.</p>
+              <p>אין משך תרגול אחד שמתאים לכולם. פעלו לפי התכנית שקיבלתם מהמטפל/ת שמכיר/ה את האבחנה, והתייעצו לפני שינוי משך התרגול או עצימותו.</p>
             </div>
             <div class="faq-card">
               <h3>תוך כמה זמן בדרך כלל רואים שיפור?</h3>
-              <p>בדרך כלל אנשים מתחילים להרגיש שיפור אחרי מספר שבועות, אך משך הזמן משתנה מאדם לאדם ותלוי בסוג הדיפלופיה ובחומרת המצב. רופא העיניים והמומחה לשיקום תפקודי ראייה יעקבו אחר ההתקדמות בביקורות תקופתיות ויתאימו את התכנית לפי הצורך.</p>
+              <p>אין לוח זמנים כללי לשיפור, והאתר אינו יכול לחזות אם התרגילים ישנו את התסמינים. עדכנו את המטפל/ת בשינויים והפסיקו אם התסמינים חדשים או מחמירים.</p>
             </div>
             <div class="faq-card">
               <h3>מי מלווה אותי בתהליך שיקום תפקודי הראייה?</h3>
@@ -1022,10 +1034,10 @@
 
           <p>שלבו אסטרטגיות אלה כדי לתמוך בתרגול היומי:</p>
           <ul class="tips-list">
-            <li>התחילו בחימום בעיניים במתיחות איטיות, ציירו בעדינות צורת שמונה אופקית כדי להכין את שרירי העיניים.</li>
-            <li>נהלו יומן תרגול. ציינו אילו תרגולים, סריקה, מעקב חלק או סקדות, הרגישו קלים או קשים.</li>
-            <li>חגגו נצחונות קטנים כמו מעקבים חלקים יותר או פחות אפיזודות של כפילות כדי לחזק את המחויבות.</li>
-            <li>בזמן התרגול, מומלץ להשתמש במסך גדול יותר (כגון צג מחשב או טאבלט) ולשבת כך שהמסך יהיה בגובה העיניים.</li>
+            <li>השתמשו רק בתרגילים ובהגדרות שאיש מקצוע בתחום רפואת העיניים המליץ עליהם.</li>
+            <li>אם התבקשתם לעקוב אחר התרגול, רשמו את הפעילות ואיך הרגשתם במהלכה ואחריה.</li>
+            <li>עצרו אם הפעילות גורמת לאי־נוחות משמעותית או מחמירה תסמינים, ופנו למטפל/ת לקבלת הנחיות.</li>
+            <li>מקמו את המסך ושמרו על מרחק הצפייה בהתאם להנחיות שקיבלתם.</li>
             <li>הערת בטיחות: אם הראייה הכפולה היא פתאומית, חדשה או מחמירה במהירות, או שמגיעה עם כאב ראש חמור, כאבי עיניים, חולשה, בלבול או דיבור לא ברור, פנו לטיפול רפואי דחוף.</li>
           </ul>
           <div class="faq-references" aria-label="References">
@@ -1061,11 +1073,11 @@
         languageButtonLabel: 'Switch to Hebrew',
         progressLink: 'My Progress',
         heroHeading: 'Therapist-guided practice for binocular diplopia',
-        heroLead: 'Understand double vision, follow evidence-based guidance, and reinforce your rehabilitation with short, engaging games.',
+        heroLead: 'Learn about double vision and explore browser activities only when they are part of your clinician’s care plan.',
         primaryCta: 'Start practicing',
         secondaryCta: 'Learn about the exercises',
         gamesHeading: 'Choose your training game',
-        gamesIntro: 'Blend clinical guidance with playful repetitions. Short daily sessions may help coordinate eye movements and reduce double vision for some types of stable binocular diplopia under clinician guidance.',
+        gamesIntro: 'These browser activities are for practice only when recommended by your eye-care professional.',
         memoryGameTitle: 'Scanning',
         memoryGameDesc: 'Match the pairs in this classic memory challenge to boost sustained attention and binocular coordination.',
         memoryGameInsight: 'Best for building tracking accuracy across the visual field.',
@@ -1094,11 +1106,11 @@
         languageButtonLabel: 'החלפה לאנגלית',
         progressLink: 'ההתקדמות שלי',
         heroHeading: 'תרגול מודרך לדיפלופיה בינוקולרית',
-        heroLead: 'הכירו את כפל הראייה, קבלו הנחיות מבוססות מחקר, וחזקו את השיקום בעזרת משחקים קצרים ומהנים.',
+        heroLead: 'למדו על כפל ראייה והשתמשו בפעילויות שבדפדפן רק אם הן חלק מתכנית הטיפול שקיבלתם.',
         primaryCta: 'התחילו לתרגל',
         secondaryCta: 'קראו על התרגילים',
         gamesHeading: 'בחרו את התרגול שלכם',
-        gamesIntro: 'שלבו הנחיות קליניות עם משחקיות נעימה. תרגול יומי קצר עשוי לסייע לתאם את תנועות העיניים ולהפחית כפל ראייה.',
+        gamesIntro: 'הפעילויות שבדפדפן מיועדות לתרגול רק אם איש מקצוע בתחום רפואת העיניים המליץ עליהן.',
         memoryGameTitle: 'סריקה',
         memoryGameDesc: 'התאימו זוגות זהים במשחק זיכרון קלאסי כדי לחזק קשב ממושך ותיאום בין העיניים.',
         memoryGameInsight: 'מתאים במיוחד לשיפור דיוק המעקב ברחבי שדה הראייה.',
@@ -1178,5 +1190,6 @@
   <script src="src/utils/userCounter.js"></script>
   <script src="src/utils/adminPanel.js"></script>
   <script src="src/utils/registerServiceWorker.js"></script>
+  <script src="reading-preferences.js"></script>
 </body>
 </html>
